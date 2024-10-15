@@ -9,6 +9,6 @@ connectDB();
 app.use(express.json());
 app.use("/api", routes);
 const PORT = process.env.PORT || 5000;
-app.listen(3000, () => {
-  console.log(`Server Started at ${PORT}`);
+app.listen(PORT, () => {
+  console.log(`Server started at http://localhost:${PORT}`);
 });

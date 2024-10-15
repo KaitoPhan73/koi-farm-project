@@ -2,11 +2,6 @@
 const User = require("../models/User");
 
 class UserService {
-  async createUser(data) {
-    const user = new User(data);
-    return await user.save();
-  }
-
   async getUsers() {
     return await User.find();
   }
