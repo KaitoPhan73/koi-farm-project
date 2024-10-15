@@ -1,21 +1,24 @@
-// models/User.js
 const mongoose = require("mongoose");
-const { Schema } = mongoose;
-
-const userSchema = new Schema(
+const UserSchema = new mongoose.Schema(
   {
-    username: { type: String, required: true, unique: true },
+    name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
+    phone: { type: String, required: true },
+    address: { type: String, required: true },
+    koiSent: [{ type: mongoose.Schema.Types.ObjectId, ref: "Koi" }], // Danh sách cá Koi ký gửi
+    orders: [{ type: mongoose.Schema.Types.ObjectId, ref: "Order" }], // Lịch sử đơn hàng
     role: {
       type: String,
-      enum: ["Guest", "Customer", "Staff", "Manager"],
-      default: "Guest",
+      enum: ["Customer", "Staff", "Manager", "Admin"],
+      default: "Customer",
     },
-    address: String,
-    phoneNumber: String,
+    status: {
+      type: String,
+      enum: ["Active", "Inactive", "Banned"],
+      default: "Active",
+    },
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.model("User", UserSchema);
