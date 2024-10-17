@@ -1,25 +1,22 @@
-// models/Consignment.js
-const mongoose = require("mongoose");
-const { Schema } = mongoose;
+const mongoose = require('mongoose');
 
-const consignmentSchema = new Schema(
+const ConsignmentSchema = new mongoose.Schema(
   {
-    customer: { type: Schema.Types.ObjectId, ref: "User", required: true }, // Khách hàng ký gửi
-    koi: { type: Schema.Types.ObjectId, ref: "Koi", required: true }, // Cá Koi được ký gửi
-    consignmentType: {
-      type: String,
-      enum: ["Sell-Offline", "Sell-Online", "Care"],
+    customer: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
       required: true,
-    }, // Loại ký gửi: bán offline, bán online, hoặc chăm sóc
-    priceAgreed: Number, // Giá đã thỏa thuận cho việc bán cá (nếu là ký gửi bán)
+    },
+    koi: { type: mongoose.Schema.Types.ObjectId, ref: 'Koi', required: true },
+    sentDate: { type: Date, default: Date.now }, // Ngày ký gửi
+    returnDate: { type: Date }, // Ngày trả lại cá
     status: {
       type: String,
-      enum: ["Pending", "Approved", "Rejected", "Sold", "Under Care"],
-      default: "Pending",
-    }, // Trạng thái: Đang chờ, Đã đồng ý, Đã bán, Đang chăm sóc, ...
-    consignmentDate: { type: Date, default: Date.now }, // Ngày ký gửi
+      enum: ['Pending', 'Accepted', 'Under Care', 'Returned'],
+      default: 'Pending',
+    },
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Consignment", consignmentSchema);
+module.exports = mongoose.model('Consignment', ConsignmentSchema);

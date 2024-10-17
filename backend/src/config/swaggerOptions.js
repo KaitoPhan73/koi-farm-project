@@ -5,17 +5,17 @@ const options = {
   swaggerDefinition: {
     openapi: '3.0.0',
     info: {
-      title: 'Koi Farm API',
+      title: 'Koi Farm Shop API',
       version: '1.0.0',
-      description: 'API cho Koi Farm để quản lý cá Koi',
+      description: 'API cho Koi Farm để quản lý cá loại cá Koi',
     },
     servers: [
       {
-        url: 'http://localhost:3000', // Địa chỉ của API
+        url: 'http://localhost:5000',
       },
     ],
   },
-  apis: ['./src/routes/*.js'], // Đường dẫn tới các tệp route của bạn
+  apis: ['./src/routes/*.js'],
 };
 
 const swaggerDocs = swaggerJsDoc(options);

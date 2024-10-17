@@ -1,21 +1,35 @@
-// models/User.js
-const mongoose = require("mongoose");
-const { Schema } = mongoose;
+const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 
-const userSchema = new Schema(
+const UserSchema = new mongoose.Schema(
   {
     username: { type: String, required: true, unique: true },
+    fullName: { type: String, required: true },
     email: { type: String, required: true, unique: true },
+    phone: { type: String, required: true },
+    address: { type: String, required: true },
     password: { type: String, required: true },
     role: {
       type: String,
-      enum: ["Guest", "Customer", "Staff", "Manager"],
-      default: "Guest",
+      enum: ['Customer', 'Staff', 'Manager', 'Admin'],
+      default: 'Customer',
     },
-    address: String,
-    phoneNumber: String,
+    status: {
+      type: String,
+      enum: ['Active', 'Inactive', 'Banned'],
+      default: 'Active',
+    },
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("User", userSchema);
+// Middleware để mã hóa mật khẩu trước khi lưu
+UserSchema.pre('save', async function (next) {
+  if (this.isModified('password') || this.isNew) {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+  }
+  next();
+});
+
+module.exports = mongoose.model('User', UserSchema);

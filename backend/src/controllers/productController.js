@@ -1,64 +1,71 @@
-const koiService = require("../services/productService");
+// controllers/productController.js
+const productService = require('../services/productService');
 
-const createKoi = async (req, res) => {
+class ProductController {
+  async create(req, res) {
     try {
-        const koiData = req.body; 
-        const koi = await koiService.createKoiService(koiData);
-        res.status(201).json(koi); 
+      const product = await productService.createProduct(req.body);
+      res.status(201).json(product);
     } catch (error) {
-        res.status(400).json({ error: error.message }); 
+      res.status(500).json({ message: error.message });
     }
-};
+  }
 
-const getAllKois = async (req, res) => {
+  async getAll(req, res) {
     try {
-        const kois = await koiService.getAllKois();
-        res.status(200).json(kois);
+      const products = await productService.getProducts();
+      res.status(200).json(products);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+      res.status(500).json({ message: error.message });
     }
-};
+  }
 
-const getKoiById = async (req, res) => {
+  async getPagination(req, res) {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
     try {
-        const koi = await koiService.getKoiByIdService(req.params.id); 
-        if (!koi) {
-            return res.status(404).json({ message: 'Koi not found' });
-        }
-        res.status(200).json(koi); 
+      const result = await productService.getPagination(page, limit);
+      res.status(200).json(result);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+      res.status(500).json({ message: error.message });
     }
-};
+  }
 
-const updateKoi = async (req, res) => {
+  async getById(req, res) {
     try {
-        const koi = await koiService.updateKoiService(req.params.id, req.body); 
-        if (!koi) {
-            return res.status(404).json({ message: 'Koi not found' });
-        }
-        res.status(200).json(koi);
+      const product = await productService.getProductById(req.params.id);
+      if (!product)
+        return res.status(404).json({ message: 'Product not found' });
+      res.status(200).json(product);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+      res.status(500).json({ message: error.message });
     }
-};
+  }
 
-const deleteKoi = async (req, res) => {
+  async update(req, res) {
     try {
-        const koi = await koiService.deleteKoiService(req.params.id); 
-        if (!koi) {
-            return res.status(404).json({ message: 'Koi not found' });
-        }
-        res.status(204).send(); 
+      const updatedProduct = await productService.updateProduct(
+        req.params.id,
+        req.body
+      );
+      if (!updatedProduct)
+        return res.status(404).json({ message: 'Product not found' });
+      res.status(200).json(updatedProduct);
     } catch (error) {
-        res.status(500).json({ error: error.message }); 
+      res.status(500).json({ message: error.message });
     }
-};
+  }
 
-module.exports = {
-    createKoi,
-    getAllKois,
-    getKoiById,
-    updateKoi,
-    deleteKoi
-};
+  async delete(req, res) {
+    try {
+      const deletedProduct = await productService.deleteProduct(req.params.id);
+      if (!deletedProduct)
+        return res.status(404).json({ message: 'Product not found' });
+      res.status(200).json({ message: 'Product deleted successfully' });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
+}
+
+module.exports = new ProductController();
