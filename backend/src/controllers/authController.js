@@ -1,5 +1,5 @@
 // controllers/authController.js
-const authService = require("../services/authService");
+const authService = require('../services/authService');
 
 class AuthController {
   // Hàm xử lý yêu cầu đăng nhập
@@ -41,7 +41,7 @@ class AuthController {
         username,
         newPassword
       );
-      res.json({ message: "Password reset successfully", user: updatedUser });
+      res.json({ message: 'Password reset successfully', user: updatedUser });
     } catch (error) {
       res.status(400).json({ message: error.message });
     }

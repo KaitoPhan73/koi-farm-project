@@ -1,22 +1,22 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const ConsignmentSchema = new mongoose.Schema(
   {
     customer: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       required: true,
     },
-    koi: { type: mongoose.Schema.Types.ObjectId, ref: "Koi", required: true },
+    koi: { type: mongoose.Schema.Types.ObjectId, ref: 'Koi', required: true },
     sentDate: { type: Date, default: Date.now }, // Ngày ký gửi
     returnDate: { type: Date }, // Ngày trả lại cá
     status: {
       type: String,
-      enum: ["Pending", "Accepted", "Under Care", "Returned"],
-      default: "Pending",
+      enum: ['Pending', 'Accepted', 'Under Care', 'Returned'],
+      default: 'Pending',
     },
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Consignment", ConsignmentSchema);
+module.exports = mongoose.model('Consignment', ConsignmentSchema);

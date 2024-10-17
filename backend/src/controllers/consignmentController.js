@@ -1,5 +1,5 @@
 // controllers/consignmentController.js
-const consignmentService = require("../services/consignmentService");
+const consignmentService = require('../services/consignmentService');
 
 class ConsignmentController {
   async create(req, res) {
@@ -37,7 +37,7 @@ class ConsignmentController {
         req.params.id
       );
       if (!consignment)
-        return res.status(404).json({ message: "Consignment not found" });
+        return res.status(404).json({ message: 'Consignment not found' });
       res.status(200).json(consignment);
     } catch (error) {
       res.status(500).json({ message: error.message });
@@ -51,7 +51,7 @@ class ConsignmentController {
         req.body
       );
       if (!updatedConsignment)
-        return res.status(404).json({ message: "Consignment not found" });
+        return res.status(404).json({ message: 'Consignment not found' });
       res.status(200).json(updatedConsignment);
     } catch (error) {
       res.status(500).json({ message: error.message });
@@ -64,8 +64,8 @@ class ConsignmentController {
         req.params.id
       );
       if (!deletedConsignment)
-        return res.status(404).json({ message: "Consignment not found" });
-      res.status(200).json({ message: "Consignment deleted successfully" });
+        return res.status(404).json({ message: 'Consignment not found' });
+      res.status(200).json({ message: 'Consignment deleted successfully' });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }

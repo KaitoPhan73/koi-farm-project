@@ -1,5 +1,5 @@
 // services/orderItemService.js
-const OrderItem = require("../models/OrderItem");
+const OrderItem = require('../models/OrderItem');
 
 class OrderItemService {
   async createOrderItem(data) {

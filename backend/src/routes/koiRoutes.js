@@ -1,12 +1,12 @@
-// routes/koiRoutes.js
-const express = require("express");
-const router = express.Router();
-const koiController = require("../controllers/koiController");
+// // routes/koiRoutes.js
+// const express = require("express");
+// const router = express.Router();
+// const productController = require("../controllers/productController");
 
-router.post("/", koiController.create);
-router.get("/", koiController.getPagination); // Sử dụng getPagination ở đây
-router.get("/:id", koiController.getById);
-router.put("/:id", koiController.update);
-router.delete("/:id", koiController.delete);
+// router.post("/", productController.create);
+// router.get("/", productController.getPagination); // Sử dụng getPagination ở đây
+// router.get("/:id", productController.getById);
+// router.put("/:id", productController.update);
+// router.delete("/:id", productController.delete);
 
-module.exports = router;
+// module.exports = router;
