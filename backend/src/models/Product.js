@@ -2,7 +2,7 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
-const koiSchema = new Schema(
+const productSchema = new Schema(
   {
     name: { type: String, required: true },
     origin: { type: String, required: true }, // Nguồn gốc xuất xứ
@@ -23,4 +23,4 @@ const koiSchema = new Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Koi", koiSchema);
+module.exports = mongoose.model("Products", productSchema);
