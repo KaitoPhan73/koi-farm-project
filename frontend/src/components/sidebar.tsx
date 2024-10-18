@@ -20,20 +20,20 @@ import { SidebarItems } from "./types";
 
 const sidebarItems: SidebarItems = {
   links: [
-    { label: "Trang Chủ", href: "/", icon: Home },
-    { label: "Báo cáo", href: "/admin/report", icon: Megaphone },
+    // { label: "Trang Chủ", href: "/", icon: Home },
+    // { label: "Báo cáo", href: "/admin/report", icon: Megaphone },
     {
-      href: "/admin/users",
+      href: "/users",
       icon: User,
-      label: "Nguời Dùng",
+      label: "Account",
     },
     {
-      href: "/admin/orders",
+      href: "/orders",
       icon: ShoppingCart,
       label: "Đơn Hàng",
     },
     {
-      href: "/admin/customs",
+      href: "/feedbacks",
       icon: List,
       label: "Sản Phẩm Tùy Chỉnh",
     },
