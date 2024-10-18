@@ -6,16 +6,16 @@ const router = express.Router();
 /**
  * @swagger
  * tags:
- *   name: API Management
- *   description: Các API liên quan đến cá Koi
+ *   name: Product
+ *   description: Các API liên quan đến sản phẩm
  */
 
 /**
  * @swagger
  * /kois/product:
  *   post:
- *     tags: [Koi]
- *     summary: Add a new Koi fish
+ *     tags: [Product]
+ *     summary: Thêm một con cá Koi mới
  *     requestBody:
  *       required: true
  *       content:
@@ -31,20 +31,21 @@ const router = express.Router();
  *               - size
  *               - price
  *               - healthStatus
+ *               - categoryId
  *             properties:
  *               name:
  *                 type: string
- *                 example: "Golden Koi"
+ *                 example: "Cá Koi Vàng"
  *               origin:
  *                 type: string
- *                 example: "Japan"
+ *                 example: "Nhật Bản"
  *               breed:
  *                 type: string
  *                 example: "Kohaku"
  *               gender:
  *                 type: string
- *                 enum: [Male, Female]
- *                 example: "Male"
+ *                 enum: [Nam, Nữ]
+ *                 example: "Nam"
  *               age:
  *                 type: number
  *                 example: 2
@@ -53,46 +54,50 @@ const router = express.Router();
  *                 example: 30
  *               personality:
  *                 type: string
- *                 example: "Calm"
+ *                 example: "Điềm tĩnh"
  *               dailyFeedAmount:
  *                 type: number
- *                 description: Amount of food per day in grams
+ *                 description: Lượng thức ăn mỗi ngày tính bằng gram
  *                 example: 50
  *               screeningRate:
  *                 type: number
- *                 description: Screening rate in percentage
+ *                 description: Tỷ lệ sàng lọc tính theo phần trăm
  *                 example: 3
  *               healthStatus:
  *                 type: string
- *                 description: Health status of the Koi fish
- *                 example: "Healthy"
+ *                 description: Tình trạng sức khỏe của cá Koi
+ *                 example: "Khỏe mạnh"
  *               imageUrl:
  *                 type: string
- *                 description: Image URL of the Koi fish
+ *                 description: URL hình ảnh của cá Koi
  *                 example: "https://example.com/image.jpg"
  *               price:
  *                 type: number
- *                 description: Price of the Koi fish
+ *                 description: Giá của cá Koi
  *                 example: 200
  *               status:
  *                 type: string
- *                 enum: [Available, Sold, Pending, Not for Sale]
- *                 example: "Available"
+ *                 enum: [Có sẵn, Đã bán, Đang chờ, Không bán]
+ *                 example: "Có sẵn"
  *               isImportedPurebred:
  *                 type: boolean
- *                 description: Whether the Koi is an imported purebred
+ *                 description: Liệu cá Koi có phải là giống thuần chủng nhập khẩu không
  *                 example: true
  *               isF1Hybrid:
  *                 type: boolean
- *                 description: Whether the Koi is an F1 hybrid
+ *                 description: Liệu cá Koi có phải là giống F1 lai không
  *                 example: false
  *               isPureVietnamese:
  *                 type: boolean
- *                 description: Whether the Koi is purely Vietnamese
+ *                 description: Liệu cá Koi có phải là giống thuần Việt không
  *                 example: false
+ *               categoryId:
+ *                 type: string
+ *                 description: ID của danh mục cá Koi
+ *                 example: "60d21b4667d0d8992e610c85"
  *     responses:
  *       201:
- *         description: Koi fish added successfully.
+ *         description: Cá Koi đã được thêm thành công.
  *         content:
  *           application/json:
  *             schema:
@@ -100,11 +105,11 @@ const router = express.Router();
  *               properties:
  *                 message:
  *                   type: string
- *                   example: "Koi fish added successfully."
+ *                   example: "Cá Koi đã được thêm thành công."
  *                 data:
  *                   $ref: '#/components/schemas/Koi'
  *       400:
- *         description: Invalid data.
+ *         description: Dữ liệu không hợp lệ.
  *         content:
  *           application/json:
  *             schema:
@@ -112,9 +117,9 @@ const router = express.Router();
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Name is required"
+ *                   example: "Tên là bắt buộc"
  *       422:
- *         description: Validation error.
+ *         description: Lỗi xác thực.
  *         content:
  *           application/json:
  *             schema:
@@ -122,9 +127,9 @@ const router = express.Router();
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Age must be a positive number."
+ *                   example: "Tuổi phải là số dương."
  *       500:
- *         description: Internal server error.
+ *         description: Lỗi máy chủ nội bộ.
  *         content:
  *           application/json:
  *             schema:
@@ -132,7 +137,7 @@ const router = express.Router();
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Internal server error."
+ *                   example: "Lỗi máy chủ nội bộ."
  */
 router.post('/product', productController.create);
 
@@ -140,24 +145,24 @@ router.post('/product', productController.create);
  * @swagger
  * /kois/products:
  *   get:
- *     tags: [Koi]
- *     summary: Retrieve a list of all Koi fish
+ *     tags: [Product]
+ *     summary: Lấy danh sách tất cả cá Koi
  *     parameters:
  *       - in: query
  *         name: page
  *         schema:
  *           type: integer
  *           example: 1
- *         description: Page number for pagination (e.g., 1, 2, 3)
+ *         description: "Số trang cho phân trang (ví dụ: 1, 2, 3)"
  *       - in: query
  *         name: limit
  *         schema:
  *           type: integer
  *           example: 10
- *         description: Limit of items per page (e.g., 10, 20, 50)
+ *         description: "Giới hạn số lượng sản phẩm mỗi trang (ví dụ: 10, 20, 50)"
  *     responses:
  *       200:
- *         description: A list of Koi fish.
+ *         description: Danh sách cá Koi.
  *         content:
  *           application/json:
  *             schema:
@@ -165,26 +170,26 @@ router.post('/product', productController.create);
  *               properties:
  *                 total:
  *                   type: integer
- *                   description: Total number of Koi fish available.
+ *                   description: Tổng số cá Koi có sẵn.
  *                   example: 100
  *                 page:
  *                   type: integer
- *                   description: Current page number.
+ *                   description: Số trang hiện tại.
  *                   example: 1
  *                 limit:
  *                   type: integer
- *                   description: Number of items per page.
+ *                   description: Số lượng sản phẩm mỗi trang.
  *                   example: 10
  *                 data:
  *                   type: array
  *                   items:
  *                     $ref: '#/components/schemas/Koi'
  *       400:
- *         description: Bad request. Invalid query parameters.
+ *         description: Yêu cầu không hợp lệ. Tham số truy vấn không hợp lệ.
  *       404:
- *         description: No Koi fish found.
+ *         description: Không tìm thấy cá Koi nào.
  *       500:
- *         description: Internal server error.
+ *         description: Lỗi máy chủ nội bộ.
  */
 router.get('/products', productController.getAll);
 
@@ -192,24 +197,24 @@ router.get('/products', productController.getAll);
  * @swagger
  * /kois/product/{id}:
  *   get:
- *     tags: [Koi]
- *     summary: Retrieve a Koi fish by ID
+ *     tags: [Product]
+ *     summary: Lấy cá Koi theo ID
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: ID of the Koi fish
+ *         description: ID của cá Koi
  *         schema:
  *           type: string
  *     responses:
  *       200:
- *         description: Koi fish found.
+ *         description: Cá Koi đã tìm thấy.
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Koi'
  *       400:
- *         description: Invalid ID format.
+ *         description: Định dạng ID không hợp lệ.
  *         content:
  *           application/json:
  *             schema:
@@ -217,11 +222,11 @@ router.get('/products', productController.getAll);
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Invalid ID format"
+ *                   example: "Định dạng ID không hợp lệ"
  *       404:
- *         description: Koi fish not found.
+ *         description: Không tìm thấy cá Koi.
  *       500:
- *         description: Internal server error.
+ *         description: Lỗi máy chủ nội bộ.
  */
 router.get('/product/:id', productController.getById);
 
@@ -229,13 +234,13 @@ router.get('/product/:id', productController.getById);
  * @swagger
  * /kois/product/{id}:
  *   patch:
- *     tags: [Koi]
- *     summary: Update a Koi fish by ID
+ *     tags: [Product]
+ *     summary: Cập nhật cá Koi theo ID
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: ID of the Koi fish
+ *         description: ID của cá Koi
  *         schema:
  *           type: string
  *     requestBody:
@@ -247,17 +252,17 @@ router.get('/product/:id', productController.getById);
  *             properties:
  *               name:
  *                 type: string
- *                 example: "Golden Koi"
+ *                 example: "Cá Koi Vàng"
  *               origin:
  *                 type: string
- *                 example: "Japan"
+ *                 example: "Nhật Bản"
  *               breed:
  *                 type: string
  *                 example: "Kohaku"
  *               gender:
  *                 type: string
- *                 enum: [Male, Female]
- *                 example: "Male"
+ *                 enum: [Nam, Nữ]
+ *                 example: "Nam"
  *               age:
  *                 type: number
  *                 example: 3
@@ -266,46 +271,50 @@ router.get('/product/:id', productController.getById);
  *                 example: 35
  *               personality:
  *                 type: string
- *                 example: "Energetic"
+ *                 example: "Năng động"
  *               dailyFeedAmount:
  *                 type: number
- *                 description: Amount of food per day in grams
+ *                 description: Lượng thức ăn mỗi ngày tính bằng gram
  *                 example: 60
  *               screeningRate:
  *                 type: number
- *                 description: Screening rate in percentage
+ *                 description: Tỷ lệ sàng lọc tính theo phần trăm
  *                 example: 4
  *               healthStatus:
  *                 type: string
- *                 description: Health status of the Koi fish
- *                 example: "Healthy"
+ *                 description: Tình trạng sức khỏe của cá Koi
+ *                 example: "Khỏe mạnh"
  *               imageUrl:
  *                 type: string
- *                 description: Image URL of the Koi fish
- *                 example: "https://example.com/new-image.jpg"
+ *                 description: URL hình ảnh của cá Koi
+ *                 example: "https://example.com/image.jpg"
  *               price:
  *                 type: number
- *                 description: Price of the Koi fish
- *                 example: 220
+ *                 description: Giá của cá Koi
+ *                 example: 250
  *               status:
  *                 type: string
- *                 enum: [Available, Sold, Pending, Not for Sale]
- *                 example: "Available"
+ *                 enum: [Có sẵn, Đã bán, Đang chờ, Không bán]
+ *                 example: "Có sẵn"
  *               isImportedPurebred:
  *                 type: boolean
- *                 description: Whether the Koi is an imported purebred
+ *                 description: Liệu cá Koi có phải là giống thuần chủng nhập khẩu không
  *                 example: true
  *               isF1Hybrid:
  *                 type: boolean
- *                 description: Whether the Koi is an F1 hybrid
+ *                 description: Liệu cá Koi có phải là giống F1 lai không
  *                 example: false
  *               isPureVietnamese:
  *                 type: boolean
- *                 description: Whether the Koi is purely Vietnamese
+ *                 description: Liệu cá Koi có phải là giống thuần Việt không
  *                 example: false
+ *               categoryId:
+ *                 type: string
+ *                 description: ID của danh mục cá Koi
+ *                 example: "60d21b4667d0d8992e610c85"
  *     responses:
  *       200:
- *         description: Koi fish updated successfully.
+ *         description: Cá Koi đã được cập nhật thành công.
  *         content:
  *           application/json:
  *             schema:
@@ -313,15 +322,23 @@ router.get('/product/:id', productController.getById);
  *               properties:
  *                 message:
  *                   type: string
- *                   example: "Koi fish updated successfully."
+ *                   example: "Cá Koi đã được cập nhật thành công."
  *                 data:
  *                   $ref: '#/components/schemas/Koi'
  *       400:
- *         description: Invalid ID or data.
+ *         description: Dữ liệu không hợp lệ.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Tên là bắt buộc"
  *       404:
- *         description: Koi fish not found.
+ *         description: Không tìm thấy cá Koi.
  *       500:
- *         description: Internal server error.
+ *         description: Lỗi máy chủ nội bộ.
  */
 router.patch('/product/:id', productController.update);
 
@@ -329,24 +346,40 @@ router.patch('/product/:id', productController.update);
  * @swagger
  * /kois/product/{id}:
  *   delete:
- *     tags: [Koi]
- *     summary: Delete a Koi fish by ID
+ *     tags: [Product]
+ *     summary: Xóa cá Koi theo ID
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: ID of the Koi fish
+ *         description: ID của cá Koi
  *         schema:
  *           type: string
  *     responses:
- *       204:
- *         description: Koi fish deleted.
+ *       200:
+ *         description: Cá Koi đã được xóa thành công.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Cá Koi đã được xóa thành công."
  *       400:
- *         description: Invalid ID.
+ *         description: Định dạng ID không hợp lệ.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Định dạng ID không hợp lệ"
  *       404:
- *         description: Koi fish not found.
+ *         description: Không tìm thấy cá Koi.
  *       500:
- *         description: Internal server error.
+ *         description: Lỗi máy chủ nội bộ.
  */
 router.delete('/product/:id', productController.delete);
 

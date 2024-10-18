@@ -10,6 +10,11 @@ const productSchema = new Schema(
       minlength: [3, 'Name must be at least 3 characters'],
       maxlength: [50, 'Name cannot exceed 50 characters'],
     },
+    categoryId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Categories',
+      required: true,
+    },
     age: {
       type: Number,
       required: [true, 'Age is required'],

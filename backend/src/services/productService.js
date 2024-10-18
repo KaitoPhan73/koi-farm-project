@@ -10,14 +10,6 @@ class ProductService {
     return await Product.find();
   }
 
-  async getPagination(page = 1, limit = 10) {
-    const products = await Product.find()
-      .skip((page - 1) * limit)
-      .limit(limit);
-    const total = await Product.countDocuments();
-    return { products, total, page, limit };
-  }
-
   async getProductById(id) {
     return await Product.findById(id);
   }
@@ -28,6 +20,13 @@ class ProductService {
 
   async deleteProduct(id) {
     return await Product.findByIdAndDelete(id);
+  }
+
+  async getPagination(page, limit) {
+    const skip = (page - 1) * limit;
+    const products = await Product.find().skip(skip).limit(limit);
+    const total = await Product.countDocuments();
+    return { total, products };
   }
 }
 
