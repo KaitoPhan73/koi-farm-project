@@ -10,7 +10,7 @@ const productSchema = new Schema(
       minlength: [3, 'Name must be at least 3 characters'],
       maxlength: [50, 'Name cannot exceed 50 characters'],
     },
-    categoryId: {
+    category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Categories',
       required: true,
@@ -87,18 +87,6 @@ const productSchema = new Schema(
         message: 'Status must be Available, Sold, Pending, or Not for Sale',
       },
       default: 'Available',
-    },
-    isImportedPurebred: {
-      type: Boolean,
-      default: false,
-    },
-    isF1Hybrid: {
-      type: Boolean,
-      default: false,
-    },
-    isPureVietnamese: {
-      type: Boolean,
-      default: false,
     },
   },
   { timestamps: true }

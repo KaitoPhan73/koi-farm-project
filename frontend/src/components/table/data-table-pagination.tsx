@@ -20,7 +20,7 @@ interface DataTablePaginationProps<TData> {
   paginationProps: {
     page: number;
     limit: number;
-    totalPage: number;
+    totalPages: number;
   };
 }
 
@@ -116,7 +116,7 @@ export function DataTablePagination<TData>({
 
           <div className="text-sm font-medium">
             Trang {paginationProps?.page} trong tổng{" "}
-            {paginationProps?.totalPage}
+            {paginationProps?.totalPages}
           </div>
 
           <div className="flex items-center space-x-2">
@@ -142,7 +142,7 @@ export function DataTablePagination<TData>({
               variant="outline"
               className="h-8 w-8 p-0"
               onClick={() => handlePageChange(paginationProps.page + 1)}
-              disabled={paginationProps.page >= paginationProps.totalPage}
+              disabled={paginationProps.page >= paginationProps.totalPages}
             >
               <span className="sr-only">Go to next page</span>
               <ChevronRightIcon className="h-4 w-4" />
@@ -150,8 +150,8 @@ export function DataTablePagination<TData>({
             <Button
               variant="outline"
               className="h-8 w-8 p-0"
-              onClick={() => handlePageChange(paginationProps.totalPage)}
-              disabled={paginationProps.page >= paginationProps.totalPage}
+              onClick={() => handlePageChange(paginationProps.totalPages)}
+              disabled={paginationProps.page >= paginationProps.totalPages}
             >
               <span className="sr-only">Go to last page</span>
               <DoubleArrowRightIcon className="h-4 w-4" />

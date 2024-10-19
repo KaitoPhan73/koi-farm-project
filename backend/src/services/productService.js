@@ -6,8 +6,15 @@ class ProductService {
     return await product.save();
   }
 
-  async getProducts() {
-    return await Product.find();
+  async getAllProducts(page, limit) {
+    if (page && limit) {
+      const skip = (page - 1) * limit; // Tính toán số mục cần bỏ qua
+      const products = await Product.find().skip(skip).limit(limit); // Lấy dữ liệu theo phân trang
+      const totalItems = await Product.countDocuments(); // Tổng số sản phẩm
+      const totalPages = Math.ceil(totalItems / limit); // Tính toán tổng số trang
+      return { products, totalPages, totalItems };
+    }
+    return await Product.find(); // Nếu không có phân trang thì trả về toàn bộ
   }
 
   async getProductById(id) {
@@ -20,13 +27,6 @@ class ProductService {
 
   async deleteProduct(id) {
     return await Product.findByIdAndDelete(id);
-  }
-
-  async getPagination(page, limit) {
-    const skip = (page - 1) * limit;
-    const products = await Product.find().skip(skip).limit(limit);
-    const total = await Product.countDocuments();
-    return { total, products };
   }
 }
 

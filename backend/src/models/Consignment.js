@@ -2,12 +2,16 @@ const mongoose = require('mongoose');
 
 const ConsignmentSchema = new mongoose.Schema(
   {
-    customer: {
+    user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true,
     },
-    koi: { type: mongoose.Schema.Types.ObjectId, ref: 'Koi', required: true },
+    orderItem: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "OrderItem",
+      required: true,
+    },
     sentDate: { type: Date, default: Date.now }, // Ngày ký gửi
     returnDate: { type: Date }, // Ngày trả lại cá
     status: {

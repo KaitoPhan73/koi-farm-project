@@ -12,24 +12,30 @@ class ProductController {
 
   async getAll(req, res) {
     try {
-      const products = await productService.getProducts();
-      res.status(200).json(products);
+      const { page, limit } = req.query;
+
+      // Sử dụng phương thức getAllProducts từ productService
+      const productsData = await productService.getAllProducts(
+        parseInt(page),
+        parseInt(limit)
+      );
+
+      if (page && limit) {
+        const { products, totalItems, totalPages } = productsData;
+        return res.status(200).json({
+          page: parseInt(page),
+          limit: parseInt(limit),
+          totalPages,
+          totalItems,
+          items: products,
+        });
+      } else {
+        return res.status(200).json(productsData); // Trả về toàn bộ sản phẩm nếu không có phân trang
+      }
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      return res.status(500).json({ message: error.message });
     }
   }
-
-  async getPagination(req, res) {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-    try {
-      const result = await productService.getPagination(page, limit);
-      res.status(200).json(result);
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
-  }
-
   async getById(req, res) {
     try {
       const product = await productService.getProductById(req.params.id);
