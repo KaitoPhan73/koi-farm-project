@@ -4,6 +4,7 @@ import "./globals.css";
 import { Sidebar } from "@/components/sidebar";
 import { ModeToggle } from "@/components/mode-toggle";
 import { UserNav } from "@/components/user-nav";
+import AppProvider from "@/redux/AppProvider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -31,12 +32,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <div>
+        <AppProvider>
           <Sidebar />
           <main className="mx-5 mt-16 sm:ml-[300px] sm:mt-3">
             <div className="border-b">
               <div className="flex h-16 items-center px-4">
-                {/* <MainNav className="" /> */}
                 <div className="ml-auto flex items-center space-x-4">
                   <ModeToggle />
                   <UserNav />
@@ -47,7 +47,7 @@ export default function RootLayout({
               {children}
             </div>
           </main>
-        </div>
+        </AppProvider>
       </body>
     </html>
   );

@@ -1,5 +1,5 @@
 // controllers/orderController.js
-const orderService = require("../services/orderService");
+const orderService = require('../services/orderService');
 
 class OrderController {
   async create(req, res) {
@@ -34,7 +34,7 @@ class OrderController {
   async getById(req, res) {
     try {
       const order = await orderService.getOrderById(req.params.id);
-      if (!order) return res.status(404).json({ message: "Order not found" });
+      if (!order) return res.status(404).json({ message: 'Order not found' });
       res.status(200).json(order);
     } catch (error) {
       res.status(500).json({ message: error.message });
@@ -48,7 +48,7 @@ class OrderController {
         req.body
       );
       if (!updatedOrder)
-        return res.status(404).json({ message: "Order not found" });
+        return res.status(404).json({ message: 'Order not found' });
       res.status(200).json(updatedOrder);
     } catch (error) {
       res.status(500).json({ message: error.message });
@@ -59,8 +59,8 @@ class OrderController {
     try {
       const deletedOrder = await orderService.deleteOrder(req.params.id);
       if (!deletedOrder)
-        return res.status(404).json({ message: "Order not found" });
-      res.status(200).json({ message: "Order deleted successfully" });
+        return res.status(404).json({ message: 'Order not found' });
+      res.status(200).json({ message: 'Order deleted successfully' });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }

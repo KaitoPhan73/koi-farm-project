@@ -1,5 +1,5 @@
 // services/consignmentService.js
-const Consignment = require("../models/Consignment");
+const Consignment = require('../models/Consignment');
 
 class ConsignmentService {
   async createConsignment(data) {

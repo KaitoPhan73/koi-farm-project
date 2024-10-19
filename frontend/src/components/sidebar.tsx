@@ -20,37 +20,25 @@ import { SidebarItems } from "./types";
 
 const sidebarItems: SidebarItems = {
   links: [
-    // { label: "Trang Chủ", href: "/", icon: Home },
-    // { label: "Báo cáo", href: "/admin/report", icon: Megaphone },
     {
-      href: "/users",
+      href: "admin/users",
       icon: User,
       label: "Account",
     },
     {
-      href: "/orders",
+      href: "admin/orders",
       icon: ShoppingCart,
-      label: "Đơn Hàng",
+      label: "Order",
     },
     {
-      href: "/feedbacks",
+      href: "admin/feedbacks",
       icon: List,
-      label: "Sản Phẩm Tùy Chỉnh",
+      label: "Feedback",
     },
     {
-      href: "/admin/products",
+      href: "admin/products",
       icon: Package,
-      label: "Sản Phẩm",
-    },
-    {
-      href: "/admin/base-models",
-      icon: Package,
-      label: "Sản Phẩm Gốc",
-    },
-    {
-      href: "/admin/categories",
-      icon: ChartBarStacked,
-      label: "Phân Loại",
+      label: "Product",
     },
   ],
   extras: (
