@@ -1,6 +1,6 @@
 export type TTableResponse<T> = {
-  listResult: T[];
-  totalPage: number;
+  items: T[];
+  totalPages: number;
   limit: number;
   page: number;
 };

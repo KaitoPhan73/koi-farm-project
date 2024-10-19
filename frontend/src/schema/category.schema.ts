@@ -27,9 +27,9 @@ export const CategoryUpdateSchema = z.object({
 
 // Tạo loại dữ liệu từ schema
 export type TCategoryRequest = z.TypeOf<typeof CategorySchema>;
-export type TCategoryUpdateRequest = z.TypeOf<typeof CategoryUpdateSchema>;
+export type TUpdateCategoryRequest = z.TypeOf<typeof CategoryUpdateSchema>;
 export type TCategoryResponse = z.TypeOf<typeof CategorySchema> & {
-  _id?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+  _id: string;
+  createdAt?: string;
+  updatedAt?: string;
 };

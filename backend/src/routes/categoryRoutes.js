@@ -46,10 +46,54 @@ router.post('/', categoryController.create);
  * /categories:
  *   get:
  *     tags: [Category]
- *     summary: Lấy tất cả danh mục
+ *     summary: Lấy tất cả danh mục (có phân trang)
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *         description: Số trang
+ *         example: 1
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *         description: Số lượng mục trên mỗi trang
+ *         example: 10
  *     responses:
  *       200:
- *         description: Danh sách danh mục.
+ *         description: Danh sách danh mục theo phân trang.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 page:
+ *                   type: integer
+ *                   description: Trang hiện tại
+ *                 limit:
+ *                   type: integer
+ *                   description: Số lượng mục trên mỗi trang
+ *                 totalPages:
+ *                   type: integer
+ *                   description: Tổng số trang
+ *                 totalItems:
+ *                   type: integer
+ *                   description: Tổng số danh mục
+ *                 items:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                         description: ID của danh mục
+ *                       name:
+ *                         type: string
+ *                         description: Tên danh mục
+ *                       description:
+ *                         type: string
+ *                         description: Mô tả danh mục
  *       500:
  *         description: Lỗi máy chủ nội bộ.
  */

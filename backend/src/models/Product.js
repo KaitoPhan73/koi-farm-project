@@ -88,18 +88,6 @@ const productSchema = new Schema(
       },
       default: 'Available',
     },
-    isImportedPurebred: {
-      type: Boolean,
-      default: false,
-    },
-    isF1Hybrid: {
-      type: Boolean,
-      default: false,
-    },
-    isPureVietnamese: {
-      type: Boolean,
-      default: false,
-    },
   },
   { timestamps: true }
 );

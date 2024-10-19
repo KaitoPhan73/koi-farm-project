@@ -15,20 +15,14 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  UpdateCategorySchema,
-  TUpdateCategoryRequest,
-} from "@/schema/category.schema";
-import { updateCategory } from "@/api/category";
+
+import { updateCategory } from "@/apis/category";
 import { ReloadIcon } from "@radix-ui/react-icons";
-import { statusCategory } from "../../_components/config";
+import {
+  TUpdateCategoryRequest,
+  CategoryUpdateSchema,
+} from "@/schema/category.schema";
+import { useRouter } from "next/navigation";
 
 interface FormUpdateCategoryProps extends React.HTMLAttributes<HTMLDivElement> {
   initialData: TUpdateCategoryRequest;
@@ -41,8 +35,9 @@ export function FormUpdateCategory({
 }: FormUpdateCategoryProps) {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const { toast } = useToast();
+  const router = useRouter();
   const form = useForm<TUpdateCategoryRequest>({
-    resolver: zodResolver(UpdateCategorySchema),
+    resolver: zodResolver(CategoryUpdateSchema),
     defaultValues: initialData,
   });
 
@@ -50,12 +45,12 @@ export function FormUpdateCategory({
     // console.log(data);
     setIsLoading(true);
     try {
-      const response = await updateCategory(data);
+      const response = await updateCategory(data._id, data);
       if (response.status === 200) {
         toast({
           title: "Cập Nhật Thành Công",
         });
-        // Redirect hoặc refresh trang nếu cần
+        router.push("/admin/categories");
       }
     } catch (error) {
       toast({
@@ -74,7 +69,7 @@ export function FormUpdateCategory({
           <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mb-2">
             <FormField
               control={form.control}
-              name="categoryName"
+              name="name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Tên</FormLabel>
@@ -94,34 +89,6 @@ export function FormUpdateCategory({
                   <FormControl>
                     <Input placeholder="Mô Tả..." {...field} />
                   </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="status"
-              render={({ field }) => (
-                <FormItem>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormLabel>Trạng thái</FormLabel>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Chọn trạng thái" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {statusCategory.map((item, index) => (
-                        <SelectItem key={index} value={item.value}>
-                          {item.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

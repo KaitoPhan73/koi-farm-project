@@ -26,9 +26,9 @@ export const UpdateOrderSchema = z.object({
 });
 
 // Tạo loại dữ liệu từ schema
-export type TRequestCreateOrder = z.TypeOf<typeof OrderSchema>;
-export type TRequestUpdateOrder = z.TypeOf<typeof UpdateOrderSchema>;
-export type TResponseOrder = z.TypeOf<typeof OrderSchema> & {
+export type TOrderRequest = z.TypeOf<typeof OrderSchema>;
+export type TUpdateOrderRequest = z.TypeOf<typeof UpdateOrderSchema>;
+export type TOrderResponse = z.TypeOf<typeof OrderSchema> & {
   _id?: string;
   createdAt?: Date;
   updatedAt?: Date;

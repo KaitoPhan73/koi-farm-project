@@ -6,8 +6,15 @@ class CategoryService {
     return await category.save();
   }
 
-  async getAllCategories() {
-    return await Category.find();
+  async getAllCategories(page, limit) {
+    if (page && limit) {
+      const skip = (page - 1) * limit; // Tính toán số mục cần bỏ qua
+      const categories = await Category.find().skip(skip).limit(limit); // Lấy dữ liệu theo phân trang
+      const totalItems = await Category.countDocuments(); // Tổng số danh mục
+      const totalPages = Math.ceil(totalItems / limit); // Tính toán tổng số trang
+      return { categories, totalPages, totalItems };
+    }
+    return await Category.find(); // Nếu không có phân trang thì trả về toàn bộ
   }
 
   async getCategoryById(id) {
@@ -17,7 +24,7 @@ class CategoryService {
   async getCategoryByName(name) {
     return await Category.findOne({ name });
   }
-  
+
   async updateCategory(id, data) {
     return await Category.findByIdAndUpdate(id, data, { new: true });
   }

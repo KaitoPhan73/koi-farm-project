@@ -28,7 +28,7 @@ export const UpdateUserSchema = z.object({
 });
 
 // Tạo loại dữ liệu từ schema
-export type TCreateUserRequest = z.TypeOf<typeof UserSchema>;
+export type TUserRequest = z.TypeOf<typeof UserSchema>;
 export type TUpdateUserRequest = z.TypeOf<typeof UpdateUserSchema>;
 export type TUserResponse = z.TypeOf<typeof UserSchema> & {
   _id?: string;

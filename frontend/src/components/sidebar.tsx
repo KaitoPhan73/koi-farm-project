@@ -21,22 +21,27 @@ import { SidebarItems } from "./types";
 const sidebarItems: SidebarItems = {
   links: [
     {
-      href: "admin/users",
+      href: "/admin/users",
       icon: User,
       label: "Account",
     },
     {
-      href: "admin/orders",
+      href: "/admin/orders",
       icon: ShoppingCart,
       label: "Order",
     },
     {
-      href: "admin/feedbacks",
+      href: "/admin/feedbacks",
       icon: List,
       label: "Feedback",
     },
     {
-      href: "admin/products",
+      href: "/admin/categories",
+      icon: List,
+      label: "Category",
+    },
+    {
+      href: "/admin/products",
       icon: Package,
       label: "Product",
     },

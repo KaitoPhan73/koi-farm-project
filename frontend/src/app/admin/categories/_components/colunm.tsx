@@ -1,7 +1,9 @@
+"use client";
 import { DataTableColumnHeader } from "../../../../components/table/data-table-column-header";
 import { CustomColumnDef } from "@/types/Colunm";
 import { TCategoryResponse } from "@/schema/category.schema";
 import { RowAction } from "./row-action";
+import { formatDate, formattedDateTime } from "@/lib/formatter";
 
 export const categoryColumns: CustomColumnDef<TCategoryResponse>[] = [
   {
@@ -34,29 +36,23 @@ export const categoryColumns: CustomColumnDef<TCategoryResponse>[] = [
     enableColumnFilter: false,
   },
   {
-    id: "createdAt",
+    accessorKey: "createdAt",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Created At" />
     ),
     cell: ({ row }) => (
-      <div>
-        {new Date(row.getValue("createdAt")).toLocaleDateString()}{" "}
-        {/* Format date */}
-      </div>
+      <div>{formattedDateTime(row.getValue("createdAt"))}</div>
     ),
     enableSorting: true,
     enableColumnFilter: true,
   },
   {
-    id: "updatedAt",
+    accessorKey: "updatedAt",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Updated At" />
     ),
     cell: ({ row }) => (
-      <div>
-        {new Date(row.getValue("updatedAt")).toLocaleDateString()}{" "}
-        {/* Format date */}
-      </div>
+      <div>{formattedDateTime(row.getValue("updatedAt"))}</div>
     ),
     enableSorting: true,
     enableColumnFilter: true,

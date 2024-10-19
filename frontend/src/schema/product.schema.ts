@@ -75,7 +75,7 @@ export const ProductSchema = z.object({
 
 // Schema cho cập nhật Product
 export const UpdateProductSchema = z.object({
-  _id: z.string().min(1, { message: "Product ID is required" }), // Trường bắt buộc
+  _id: z.string().min(1, { message: "Product ID is required" }),
   name: z
     .string()
     .min(3, { message: "Name must be at least 3 characters" })
@@ -161,7 +161,7 @@ export const UpdateProductSchema = z.object({
 export type TUpdateProductRequest = z.TypeOf<typeof UpdateProductSchema>;
 export type TProductRequest = z.TypeOf<typeof ProductSchema>;
 export type TProductResponse = z.TypeOf<typeof ProductSchema> & {
-  _id?: string;
+  _id: string;
   category: TCategoryResponse;
   createdAt?: Date;
   updatedAt?: Date;

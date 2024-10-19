@@ -12,7 +12,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /kois/product:
+ * /products:
  *   post:
  *     tags: [Product]
  *     summary: Thêm một con cá Koi mới
@@ -139,11 +139,11 @@ const router = express.Router();
  *                   type: string
  *                   example: "Lỗi máy chủ nội bộ."
  */
-router.post('/product', productController.create);
+router.post('/', productController.create);
 
 /**
  * @swagger
- * /kois/products:
+ * /products:
  *   get:
  *     tags: [Product]
  *     summary: Lấy danh sách tất cả cá Koi
@@ -191,11 +191,11 @@ router.post('/product', productController.create);
  *       500:
  *         description: Lỗi máy chủ nội bộ.
  */
-router.get('/products', productController.getAll);
+router.get('/', productController.getAll);
 
 /**
  * @swagger
- * /kois/product/{id}:
+ * /products/{id}:
  *   get:
  *     tags: [Product]
  *     summary: Lấy cá Koi theo ID
@@ -228,11 +228,11 @@ router.get('/products', productController.getAll);
  *       500:
  *         description: Lỗi máy chủ nội bộ.
  */
-router.get('/product/:id', productController.getById);
+router.get('/:id', productController.getById);
 
 /**
  * @swagger
- * /kois/product/{id}:
+ * /products/{id}:
  *   patch:
  *     tags: [Product]
  *     summary: Cập nhật cá Koi theo ID
@@ -340,11 +340,11 @@ router.get('/product/:id', productController.getById);
  *       500:
  *         description: Lỗi máy chủ nội bộ.
  */
-router.patch('/product/:id', productController.update);
+router.patch('/:id', productController.update);
 
 /**
  * @swagger
- * /kois/product/{id}:
+ * /products/{id}:
  *   delete:
  *     tags: [Product]
  *     summary: Xóa cá Koi theo ID
@@ -381,6 +381,6 @@ router.patch('/product/:id', productController.update);
  *       500:
  *         description: Lỗi máy chủ nội bộ.
  */
-router.delete('/product/:id', productController.delete);
+router.delete('/:id', productController.delete);
 
 module.exports = router;

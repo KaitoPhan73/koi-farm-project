@@ -17,7 +17,7 @@ export const UpdateConsignmentSchema = z.object({
 });
 
 // Tạo loại dữ liệu từ schema
-export type TCreateConsignmentRequest = z.TypeOf<typeof ConsignmentSchema>;
+export type TConsignmentRequest = z.TypeOf<typeof ConsignmentSchema>;
 export type TUpdateConsignmentRequest = z.TypeOf<
   typeof UpdateConsignmentSchema
 >;
