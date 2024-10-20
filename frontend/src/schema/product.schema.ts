@@ -9,7 +9,7 @@ export const ProductSchema = z.object({
 
   category: z.string().min(1, { message: "Category ID is required" }),
 
-  age: z
+  age: z.coerce
     .number()
     .min(0, { message: "Age cannot be negative" })
     .max(50, { message: "Age cannot exceed 50 years" }),
@@ -20,7 +20,7 @@ export const ProductSchema = z.object({
     message: "Gender must be either Male or Female",
   }),
 
-  size: z
+  size: z.coerce
     .number()
     .min(10, { message: "Size must be at least 10 cm" })
     .max(100, { message: "Size cannot exceed 100 cm" }),
@@ -34,13 +34,13 @@ export const ProductSchema = z.object({
     })
     .optional(),
 
-  dailyFeedAmount: z
+  dailyFeedAmount: z.coerce
     .number()
     .min(1, { message: "Daily feed amount must be at least 1 gram" })
     .max(500, { message: "Daily feed amount cannot exceed 500 grams" })
     .optional(),
 
-  screeningRate: z
+  screeningRate: z.coerce
     .number()
     .min(0, { message: "Screening rate must be at least 0%" })
     .max(100, { message: "Screening rate cannot exceed 100%" })
@@ -56,38 +56,30 @@ export const ProductSchema = z.object({
     })
     .optional(),
 
-  price: z.number().min(1, { message: "Price must be at least 1" }),
-
-  available: z.boolean().optional(),
+  price: z.coerce.number().min(1, { message: "Price must be at least 1" }),
 
   status: z
     .enum(["Available", "Sold", "Pending", "Not for Sale"], {
       message: "Status must be Available, Sold, Pending, or Not for Sale",
     })
     .optional(),
-
-  isImportedPurebred: z.boolean().default(false).optional(),
-
-  isF1Hybrid: z.boolean().default(false).optional(),
-
-  isPureVietnamese: z.boolean().default(false).optional(),
 });
 
-// Schema cho cập nhật Product
+// Schema for updating Product
 export const UpdateProductSchema = z.object({
   _id: z.string().min(1, { message: "Product ID is required" }),
   name: z
     .string()
     .min(3, { message: "Name must be at least 3 characters" })
     .max(50, { message: "Name cannot exceed 50 characters" })
-    .optional(), // Có thể bỏ qua trường này nếu không cần cập nhật
+    .optional(),
 
   category: z
     .string()
     .min(1, { message: "Category ID is required" })
     .optional(),
 
-  age: z
+  age: z.coerce
     .number()
     .min(0, { message: "Age cannot be negative" })
     .max(50, { message: "Age cannot exceed 50 years" })
@@ -101,7 +93,7 @@ export const UpdateProductSchema = z.object({
     })
     .optional(),
 
-  size: z
+  size: z.coerce
     .number()
     .min(10, { message: "Size must be at least 10 cm" })
     .max(100, { message: "Size cannot exceed 100 cm" })
@@ -116,13 +108,13 @@ export const UpdateProductSchema = z.object({
     })
     .optional(),
 
-  dailyFeedAmount: z
+  dailyFeedAmount: z.coerce
     .number()
     .min(1, { message: "Daily feed amount must be at least 1 gram" })
     .max(500, { message: "Daily feed amount cannot exceed 500 grams" })
     .optional(),
 
-  screeningRate: z
+  screeningRate: z.coerce
     .number()
     .min(0, { message: "Screening rate must be at least 0%" })
     .max(100, { message: "Screening rate cannot exceed 100%" })
@@ -141,21 +133,16 @@ export const UpdateProductSchema = z.object({
     })
     .optional(),
 
-  price: z.number().min(1, { message: "Price must be at least 1" }).optional(),
-
-  available: z.boolean().optional(),
+  price: z.coerce
+    .number()
+    .min(1, { message: "Price must be at least 1" })
+    .optional(),
 
   status: z
     .enum(["Available", "Sold", "Pending", "Not for Sale"], {
       message: "Status must be Available, Sold, Pending, or Not for Sale",
     })
     .optional(),
-
-  isImportedPurebred: z.boolean().optional(),
-
-  isF1Hybrid: z.boolean().optional(),
-
-  isPureVietnamese: z.boolean().optional(),
 });
 
 export type TUpdateProductRequest = z.TypeOf<typeof UpdateProductSchema>;

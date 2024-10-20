@@ -9,12 +9,15 @@ class CategoryService {
   async getAllCategories(page, limit) {
     if (page && limit) {
       const skip = (page - 1) * limit; // Tính toán số mục cần bỏ qua
-      const categories = await Category.find().skip(skip).limit(limit); // Lấy dữ liệu theo phân trang
+      const categories = await Category.find()
+        .skip(skip)
+        .sort({ createdAt: -1 })
+        .limit(limit); // Lấy dữ liệu theo phân trang
       const totalItems = await Category.countDocuments(); // Tổng số danh mục
       const totalPages = Math.ceil(totalItems / limit); // Tính toán tổng số trang
       return { categories, totalPages, totalItems };
     }
-    return await Category.find(); // Nếu không có phân trang thì trả về toàn bộ
+    return await Category.find().sort({ createdAt: -1 }); // Nếu không có phân trang thì trả về toàn bộ
   }
 
   async getCategoryById(id) {

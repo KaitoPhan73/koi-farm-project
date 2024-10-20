@@ -23,13 +23,14 @@ export const productColumns: CustomColumnDef<TProductResponse>[] = [
     enableColumnFilter: false,
   },
   {
-    accessorKey: "category.name", // Assuming category has a name field
+    accessorKey: "category.name",
+    id: "categoryName",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Category" />
+      <DataTableColumnHeader column={column} title="Category Name" />
     ),
     cell: ({ row }) => (
-      <div className="w-36 truncate" title={row.getValue("category.name")}>
-        {row.getValue("category.name") || "No category provided"}
+      <div className="w-36 truncate" title={row.getValue("categoryName")}>
+        {row.getValue("categoryName") || "N/A"}
       </div>
     ),
     enableSorting: false,

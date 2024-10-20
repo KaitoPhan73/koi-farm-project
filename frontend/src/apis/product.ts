@@ -12,7 +12,6 @@ import { revalidateTag } from "next/cache";
 const getAllProducts = async (params?: any) => {
   return await httpBag.get<TTableResponse<TProductResponse>>(`/products`, {
     params,
-    cache: "no-store",
   });
 };
 

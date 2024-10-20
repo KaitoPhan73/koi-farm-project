@@ -8,17 +8,23 @@ class ProductService {
 
   async getAllProducts(page, limit) {
     if (page && limit) {
-      const skip = (page - 1) * limit; // Tính toán số mục cần bỏ qua
-      const products = await Product.find().skip(skip).limit(limit); // Lấy dữ liệu theo phân trang
-      const totalItems = await Product.countDocuments(); // Tổng số sản phẩm
-      const totalPages = Math.ceil(totalItems / limit); // Tính toán tổng số trang
+      const skip = (page - 1) * limit; // Calculate the number of items to skip
+      const products = await Product.find()
+        .skip(skip)
+        .limit(limit)
+        .sort({ createdAt: -1 })
+        .populate('category'); // Populate category information
+      const totalItems = await Product.countDocuments(); // Total number of products
+      const totalPages = Math.ceil(totalItems / limit); // Calculate total pages
       return { products, totalPages, totalItems };
     }
-    return await Product.find(); // Nếu không có phân trang thì trả về toàn bộ
+
+    // If no pagination is provided, return all products with populated categories
+    return await Product.find().populate('category').sort({ createdAt: -1 });
   }
 
   async getProductById(id) {
-    return await Product.findById(id);
+    return await Product.findById(id).populate('category'); // Populate category information
   }
 
   async updateProduct(id, data) {
