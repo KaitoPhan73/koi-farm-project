@@ -5,8 +5,9 @@ import { DataTable } from "@/components/table/data-table";
 import { CustomColumnDef } from "@/types/Colunm";
 import { TTableResponse } from "@/types/Table";
 import { useRouter } from "next/navigation";
+import { TOrderResponse } from "@/schema/order.schema";
 
-interface DataTableProps<TData, TValue> {
+interface OrderIndexProps<TData, TValue> {
   columns: CustomColumnDef<TData, TValue>[];
   payload: TTableResponse<TData>;
   params: {
@@ -15,26 +16,24 @@ interface DataTableProps<TData, TValue> {
   };
 }
 
-const ProductIndex = <TData, TValue>({
+const OrderIndex = <TData, TValue>({
   columns,
   payload,
   params,
-}: DataTableProps<TData, TValue>) => {
+}: OrderIndexProps<TData, TValue>) => {
   const router = useRouter();
+
   return (
     <div>
       <div className="flex h-full flex-1 flex-col">
-        {/* <CardReports data={response.payload} /> */}
-
         <div className="flex items-center justify-between">
-          <p className="text-3xl">Product Management</p>
-
+          <p className="text-3xl">Order Management</p>
           <Button
             variant="default"
             className="mb-3"
-            onClick={() => router.push("/admin/products/create")}
+            onClick={() => router.push("/admin/orders/create")}
           >
-            Create Product
+            Create Order
           </Button>
         </div>
         <DataTable
@@ -50,4 +49,4 @@ const ProductIndex = <TData, TValue>({
   );
 };
 
-export default ProductIndex;
+export default OrderIndex;

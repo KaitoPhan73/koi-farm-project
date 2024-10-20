@@ -1,6 +1,6 @@
 import React from "react";
 import { FormUpdateCategory } from "./components/form-update-category";
-import { getCategoryById } from "@/api/category";
+import { getCategoryById } from "@/apis/category";
 
 const UpdateCategory = async ({ params }: { params: { slug: string } }) => {
   const response = await getCategoryById(params.slug);

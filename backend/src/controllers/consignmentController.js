@@ -13,21 +13,29 @@ class ConsignmentController {
 
   async getAll(req, res) {
     try {
-      const consignments = await consignmentService.getConsignments();
-      res.status(200).json(consignments);
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
-  }
+      const { page, limit } = req.query;
 
-  async getPagination(req, res) {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-    try {
-      const result = await consignmentService.getPagination(page, limit);
-      res.status(200).json(result);
+      // Use the getConsignments method from consignmentService
+      const consignmentsData = await consignmentService.getConsignments(
+        parseInt(page),
+        parseInt(limit)
+      );
+
+      if (page && limit) {
+        const { consignments, totalItems, totalPages } = consignmentsData;
+        return res.status(200).json({
+          page: parseInt(page),
+          limit: parseInt(limit),
+          totalPages,
+          totalItems,
+          items: consignments,
+        });
+      } else {
+        // Return all consignments if pagination is not provided
+        return res.status(200).json({ items: consignmentsData });
+      }
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      return res.status(500).json({ message: error.message });
     }
   }
 

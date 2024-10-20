@@ -21,7 +21,7 @@ import { FaEye } from "react-icons/fa";
 import { TbEyeClosed } from "react-icons/tb";
 import { FaDeleteLeft } from "react-icons/fa6";
 import { toast } from "sonner";
-import { TProductResponse } from "@/schema/product.schema";
+import { TOrderResponse } from "@/schema/order.schema";
 import { deleteProduct } from "@/apis/product";
 import { useToast } from "@/hooks/use-toast";
 
@@ -29,7 +29,7 @@ interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
 }
 
-export function RowAction<TData extends TProductResponse>({
+export function RowAction<TData extends TOrderResponse>({
   row,
 }: DataTableRowActionsProps<TData>) {
   const { toast } = useToast();
@@ -38,18 +38,18 @@ export function RowAction<TData extends TProductResponse>({
     router.push(`/admin/products/${row.original._id}`);
   };
   const handleDelete = async () => {
-    try {
-      const response = await deleteProduct(row.original._id);
-      toast({
-        title: "Delete Success",
-      });
-      router.refresh();
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: `Failed to delete product: ${error}`,
-      });
-    }
+    // try {
+    //   const response = await deleteProduct(row.original._id);
+    //   toast({
+    //     title: "Delete Success",
+    //   });
+    //   router.refresh();
+    // } catch (error) {
+    //   toast({
+    //     title: "Error",
+    //     description: `Failed to delete product: ${error}`,
+    //   });
+    // }
   };
   return (
     <DropdownMenu>

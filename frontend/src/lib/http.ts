@@ -88,6 +88,7 @@ const createHttpClient = (defaultBaseUrl: string) => {
           ? options.body
           : JSON.stringify(options?.body),
       next: options?.next,
+      cache: options?.cache || (options?.next ? undefined : "no-store"),
     };
     console.log("config", config);
     try {

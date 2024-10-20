@@ -10,6 +10,7 @@ export default async function ProductsPage(props: any) {
   };
 
   const response = await getAllProducts(params);
+  console.log(response.payload.items[0]);
   return (
     <>
       <div className="flex h-full flex-1 flex-col">

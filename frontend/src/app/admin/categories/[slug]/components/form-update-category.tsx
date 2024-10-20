@@ -41,6 +41,7 @@ export function FormUpdateCategory({
     defaultValues: initialData,
   });
 
+  console.log("initialData", initialData);
   const onSubmit = async (data: TUpdateCategoryRequest) => {
     // console.log(data);
     setIsLoading(true);
@@ -72,9 +73,9 @@ export function FormUpdateCategory({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Tên</FormLabel>
+                  <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Tên..." {...field} />
+                    <Input placeholder="Name..." {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -85,9 +86,9 @@ export function FormUpdateCategory({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Mô Tả</FormLabel>
+                  <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Input placeholder="Mô Tả..." {...field} />
+                    <Input placeholder="Description..." {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -96,7 +97,7 @@ export function FormUpdateCategory({
           </div>
           <Button type="submit" disabled={isLoading}>
             {isLoading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
-            Câp Nhật
+            Update
           </Button>
         </form>
       </div>

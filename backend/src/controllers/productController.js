@@ -30,7 +30,7 @@ class ProductController {
           items: products,
         });
       } else {
-        return res.status(200).json(productsData); // Trả về toàn bộ sản phẩm nếu không có phân trang
+        return res.status(200).json({ items: productsData }); // Trả về toàn bộ sản phẩm nếu không có phân trang
       }
     } catch (error) {
       return res.status(500).json({ message: error.message });

@@ -11,7 +11,6 @@ import { revalidateTag } from "next/cache";
 const getAllCategories = async (params?: any) => {
   return await httpBag.get<TTableResponse<TCategoryResponse>>(`/categories`, {
     params,
-    cache: "no-store",
   });
 };
 

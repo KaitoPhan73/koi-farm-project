@@ -32,7 +32,7 @@ export function RowAction<TData extends TCategoryResponse>({
 }: DataTableRowActionsProps<TData>) {
   const router = useRouter();
   const handleViewDetail = () => {
-    router.push(`/admin/products/${row.original._id}`);
+    router.push(`/admin/categories/${row.original._id}`);
   };
 
   return (

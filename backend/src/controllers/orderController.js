@@ -13,21 +13,29 @@ class OrderController {
 
   async getAll(req, res) {
     try {
-      const orders = await orderService.getOrders();
-      res.status(200).json(orders);
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
-  }
+      const { page, limit } = req.query;
 
-  async getPagination(req, res) {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-    try {
-      const result = await orderService.getPagination(page, limit);
-      res.status(200).json(result);
+      // Use the getAllOrders method from orderService
+      const ordersData = await orderService.getAllOrders(
+        parseInt(page),
+        parseInt(limit)
+      );
+
+      if (page && limit) {
+        const { orders, totalItems, totalPages } = ordersData;
+        return res.status(200).json({
+          page: parseInt(page),
+          limit: parseInt(limit),
+          totalPages,
+          totalItems,
+          items: orders,
+        });
+      } else {
+        // Return all orders if pagination is not provided
+        return res.status(200).json({ items: ordersData });
+      }
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      return res.status(500).json({ message: error.message });
     }
   }
 
