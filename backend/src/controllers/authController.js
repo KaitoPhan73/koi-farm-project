@@ -8,7 +8,12 @@ class AuthController {
 
     try {
       const { token, user } = await authService.login(username, password);
-      res.json({ token, user });
+
+      // Exclude the password from the response
+      const { password: _, ...responseUser } = user.toObject(); // Renaming password to _ to avoid confusion
+
+      // Send the response without the password
+      res.json({ token, user: responseUser });
     } catch (error) {
       res.status(400).json({ message: error.message });
     }

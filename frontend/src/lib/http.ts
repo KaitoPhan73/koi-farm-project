@@ -142,8 +142,8 @@ const createHttpClient = (defaultBaseUrl: string) => {
       if (
         ["api/auth", "/register"].some((item) => item === normalizePath(url))
       ) {
-        localStorage.setItem("accessToken", data.token);
-        const parseData = data.user;
+        localStorage.setItem("accessToken", data.user.token);
+        const parseData = data.user.user;
         console.log("parseData", JSON.stringify(parseData));
         localStorage.setItem("user", JSON.stringify(parseData));
       } else if (url === "/auth/logout") {

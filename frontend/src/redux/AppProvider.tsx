@@ -4,6 +4,7 @@ import store from "./store";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as ToasterSonner } from "@/components/ui/sonner";
+import { AuthProvider } from "@/context/userContext";
 const AppProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <Provider store={store}>
@@ -13,7 +14,10 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
         enableSystem
         disableTransitionOnChange
       >
-        <main>{children}</main>
+        <AuthProvider>
+          <main>{children}</main>
+        </AuthProvider>
+
         <Toaster />
         <ToasterSonner />
       </ThemeProvider>

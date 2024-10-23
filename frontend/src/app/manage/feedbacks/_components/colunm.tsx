@@ -1,3 +1,4 @@
+"use client";
 import { CustomColumnDef } from "@/types/Colunm"; // Adjust the path as necessary
 import { TFeedbackResponse } from "@/schema/feedback.schema"; // Adjust the path as necessary
 import { DataTableColumnHeader } from "../../../../components/table/data-table-column-header"; // Adjust the path as necessary
