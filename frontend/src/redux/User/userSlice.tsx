@@ -1,33 +1,30 @@
 import { isClient } from "@/lib/http";
 import { TAuthResponse } from "@/schema/auth.schema";
+import { TUserResponse } from "@/schema/user.schema";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
-type TUser = Omit<TAuthResponse, "accessToken">;
-
 interface UserState {
-  userServer: TAuthResponse | undefined | null;
-  user: TUser | null;
+  user: TUserResponse | null;
   isAuthenticated: boolean;
 }
 
 const loadState = () => {
   try {
-    const serializedState = localStorage.getItem("cart");
+    const serializedState = localStorage.getItem("user");
     if (serializedState === null) {
       return {
-        products: [],
+        user: {},
       };
     }
     return JSON.parse(serializedState);
   } catch (err) {
     return {
-      products: [],
+      user: {},
     };
   }
 };
 
 const initialState: UserState = {
-  userServer: null,
   user: loadState(),
   isAuthenticated: false,
 };
@@ -36,9 +33,6 @@ const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    setUserServer(state, action: PayloadAction<TAuthResponse | null>) {
-      state.userServer = action.payload;
-    },
     setUser(state, action: PayloadAction<TUser | null>) {
       state.user = action.payload;
       state.isAuthenticated = !!action.payload;
@@ -56,6 +50,5 @@ const userSlice = createSlice({
   },
 });
 
-export const { setUser, loadUserFromStorage, setUserServer } =
-  userSlice.actions;
+export const { setUser, loadUserFromStorage } = userSlice.actions;
 export default userSlice.reducer;

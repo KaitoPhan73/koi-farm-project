@@ -2,8 +2,11 @@ export async function POST(request: Request) {
   const body = await request.json();
   const accessToken = body.user.token as string;
   const expireTime = body.expireTime as number;
-  const user = JSON.stringify(body.user) as string;
 
+  const { address, phone, ...userWithoutAddressAndPhone } = body.user.user;
+  const user = JSON.stringify(userWithoutAddressAndPhone);
+
+  console.log("user", user);
   if (!accessToken) {
     return new Response(
       JSON.stringify({ message: "Không nhận được session token" }),

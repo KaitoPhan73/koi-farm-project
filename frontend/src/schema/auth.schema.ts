@@ -1,57 +1,51 @@
 import z from "zod";
+import { UserSchema } from "./user.schema";
 
+// Login schema for username and password
 export const LoginSchema = z
   .object({
-    emailOrUsername: z.string().min(2, {
-      message: "Tài khoản hoặc Email sai",
+    username: z.string().min(2, {
+      message: "Invalid username.",
     }),
     password: z.string().min(1, {
-      message: "Mật khẩu không được trống.",
+      message: "Password cannot be empty.",
     }),
   })
   .strict();
 
+// Register schema for user registration
 export const RegisterSchema = z
   .object({
     username: z.string().min(4, {
-      message: "Tên đăng nhập phải có ít nhất 2 ký tự.",
+      message: "Username must be at least 4 characters.",
     }),
     password: z.string().min(8, {
-      message: "Mật khẩu ít nhất 8 kí tự.",
+      message: "Password must be at least 8 characters.",
     }),
     email: z.string().email({
-      message: "Email không hợp lệ.",
+      message: "Invalid email address.",
     }),
-    roleName: z.string().min(1, {
-      message: "Vai trò không được trống.",
+    role: z.string().min(1, {
+      message: "Role cannot be empty.",
     }),
-    phoneNumber: z
+    phone: z
       .string()
       .min(10, {
-        message: "Số điện thoại phải có ít nhất 10 ký tự.",
+        message: "Phone number must be at least 10 digits.",
       })
       .regex(/^[0-9]+$/, {
-        message: "Số điện thoại chỉ bao gồm các chữ số.",
+        message: "Phone number must only contain digits.",
       }),
+    address: z.string().optional().nullable(), // Address is optional and can be nullable
   })
   .strict();
 
+// Auth response schema
 export const AuthResponseSchema = z.object({
-  id: z.string().uuid(),
-  username: z.string().min(1, { message: "Tên đăng nhập không được trống." }),
-  email: z.string().email({ message: "Email không hợp lệ." }),
-  fullName: z.string().nullable(),
-  address: z.string().nullable(),
-  roleName: z.string().min(1, { message: "Vai trò không được trống." }),
-  token: z.string().min(1, { message: "Token không được trống." }),
-  refreshToken: z
-    .string()
-    .min(1, { message: "Refresh token không được trống." }),
-  status: z.enum(["ACTIVE", "INACTIVE"]),
+  token: z.string(),
+  user: UserSchema,
 });
 
 export type TRegisterRequest = z.TypeOf<typeof RegisterSchema>;
-
 export type TLoginRequest = z.TypeOf<typeof LoginSchema>;
-
 export type TAuthResponse = z.TypeOf<typeof AuthResponseSchema>;
