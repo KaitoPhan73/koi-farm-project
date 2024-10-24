@@ -1,6 +1,5 @@
 import Colors from "@/constants/Colors";
 import { useTools } from "@/hooks/useTools";
-import { TCategoryResponse } from "@/schema/category.schema";
 import { toolResponse } from "@/schema/tool.schema";
 import { router, useLocalSearchParams } from "expo-router";
 import { styled } from "nativewind";
@@ -12,14 +11,10 @@ const StyledTouchableOpacity = styled(TouchableOpacity);
 const BrandsList = () => {
   const { getCategories } = useTools();
   const gap = 12;
-  const {} = getCategories;
   const outerPadding = 16;
-  const brands = getCategories().data?.items.map((item: TCategoryResponse) => item._id) || []
+  const brands = getCategories().data?.map((item) => item.name) || [];
   brands.unshift("All");
-
-  console.log("🚀 ~ BrandsList ~ (getCategories().data?.items:", (getCategories().data?.items));
-
-
+  console.log(getCategories().data);
   const { brand: selectedBrand, artName } = useLocalSearchParams();
   const artNameQuery = Array.isArray(artName) ? artName[0] : artName;
 

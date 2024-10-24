@@ -7,19 +7,23 @@ import axios, {
 
 // Tạo instance của axios với cấu hình mặc định
 const apiClient: AxiosInstance = axios.create({
-  baseURL: process.env.REACT_APP_API_URL,
+  baseURL: process.env.EXPO_PUBLIC_API_URL,
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
   },
 });
+  console.log("🚀 ~ process.env.EXPO_PUBLIC_API_URL:", process.env.EXPO_PUBLIC_API_URL)
 
+// Interceptor cho request
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     // Bạn có thể thêm token vào headers ở đây
     return config;
   },
   (error) => {
+    // Log lỗi request
+    console.log("Request error:", error);
     return Promise.reject(error);
   }
 );
@@ -30,6 +34,8 @@ apiClient.interceptors.response.use(
     return response;
   },
   (error) => {
+    // Log lỗi response
+    console.log("Response error:", error);
     return Promise.reject(error);
   }
 );
