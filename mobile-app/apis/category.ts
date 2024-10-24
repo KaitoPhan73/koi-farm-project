@@ -10,13 +10,13 @@ import { TTableResponse } from "@/types/table";
 
 const categoryApi = {
   getCategories: async (params?: any) => {
-    console.log("sdsdsdsd");
     const response: ApiResponse<TTableResponse<TCategoryResponse>> =
       await apiClient.get("categories", {
         params,
       });
-    console.log("🚀 ~ getCategoriescxcx: ~ response:", response);
-    return response.data.items;
+    console.log("🚀 ~ getCategories: ~ response:", response);
+
+    return response.data;
   },
 };
 

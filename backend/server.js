@@ -17,11 +17,8 @@ connectDB();
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 app.use('/', router);
 
-// Sử dụng PORT là một số, không bao gồm địa chỉ IP
 const PORT = process.env.PORT || 3000;
-
-// Sử dụng '0.0.0.0' để lắng nghe trên tất cả các địa chỉ mạng
-app.listen(PORT, '0.0.0.0', () => {
+app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
   console.log(
     `Swagger Docs are available at http://localhost:${PORT}/api-docs`
