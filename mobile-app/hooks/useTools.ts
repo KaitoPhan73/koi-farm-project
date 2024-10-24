@@ -1,4 +1,5 @@
 import toolApi from "@/apis";
+import categoryApi from "@/apis/category";
 import { useQuery } from "@tanstack/react-query";
 
 export const useTools = (brand?: string, artName?: string) => {
@@ -19,5 +20,11 @@ export const useTools = (brand?: string, artName?: string) => {
       queryFn: () => toolApi.getBrands(brand),
     });
 
-  return { getTools, getTool, getBrands };
+  const getCategories = () =>
+    useQuery({
+      queryKey: ["categories"],
+      queryFn: () => categoryApi.getCategories(),
+    });
+
+  return { getTools, getCategories, getTool, getBrands };
 };
