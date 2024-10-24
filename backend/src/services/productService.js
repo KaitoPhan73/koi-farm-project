@@ -6,21 +6,30 @@ class ProductService {
     return await product.save();
   }
 
-  async getAllProducts(page, limit) {
+  async getAllProducts(page, limit, category) {
+    const query = {}; // Tạo một truy vấn rỗng
+
+    // Nếu có category, thêm vào truy vấn
+    if (category) {
+      query.category = category;
+    }
+
     if (page && limit) {
-      const skip = (page - 1) * limit; // Calculate the number of items to skip
-      const products = await Product.find()
+      const skip = (page - 1) * limit; // Tính số lượng mục cần bỏ qua
+      const products = await Product.find(query) // Sử dụng truy vấn
         .skip(skip)
         .limit(limit)
         .sort({ createdAt: -1 })
-        .populate('category'); // Populate category information
-      const totalItems = await Product.countDocuments(); // Total number of products
-      const totalPages = Math.ceil(totalItems / limit); // Calculate total pages
+        .populate('category'); // Populcate thông tin danh mục
+      const totalItems = await Product.countDocuments(query); // Tổng số sản phẩm theo truy vấn
+      const totalPages = Math.ceil(totalItems / limit); // Tính tổng số trang
       return { products, totalPages, totalItems };
     }
 
-    // If no pagination is provided, return all products with populated categories
-    return await Product.find().populate('category').sort({ createdAt: -1 });
+    // Nếu không có phân trang, trả về tất cả sản phẩm với thông tin danh mục
+    return await Product.find(query)
+      .populate('category')
+      .sort({ createdAt: -1 });
   }
 
   async getProductById(id) {
