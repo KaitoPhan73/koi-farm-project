@@ -1,6 +1,6 @@
 import React from "react";
 import { ScrollView, View } from "react-native";
-import ArtToolsList from "@/components/art-tools-list";
+import ArtToolsList from "@/components/products-list";
 import BrandsList from "@/components/brands-list";
 import SearchTool from "@/components/search-tool";
 
