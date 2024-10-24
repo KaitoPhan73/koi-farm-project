@@ -79,19 +79,7 @@ const router = express.Router();
  *                 type: string
  *                 enum: [Có sẵn, Đã bán, Đang chờ, Không bán]
  *                 example: "Có sẵn"
- *               isImportedPurebred:
- *                 type: boolean
- *                 description: Liệu cá Koi có phải là giống thuần chủng nhập khẩu không
- *                 example: true
- *               isF1Hybrid:
- *                 type: boolean
- *                 description: Liệu cá Koi có phải là giống F1 lai không
- *                 example: false
- *               isPureVietnamese:
- *                 type: boolean
- *                 description: Liệu cá Koi có phải là giống thuần Việt không
- *                 example: false
- *               categoryId:
+ *               category:
  *                 type: string
  *                 description: ID của danh mục cá Koi
  *                 example: "60d21b4667d0d8992e610c85"
@@ -160,6 +148,12 @@ router.post('/', productController.create);
  *           type: integer
  *           example: 10
  *         description: "Giới hạn số lượng sản phẩm mỗi trang (ví dụ: 10, 20, 50)"
+ *       - in: query
+ *         name: category
+ *         schema:
+ *           type: string
+ *           example: 67135ffb22a6b877d0866c13
+ *         description: "ID của danh mục cá Koi"
  *     responses:
  *       200:
  *         description: Danh sách cá Koi.

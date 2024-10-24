@@ -12,12 +12,13 @@ class ProductController {
 
   async getAll(req, res) {
     try {
-      const { page, limit } = req.query;
+      const { page, limit, category } = req.query;
 
       // Sử dụng phương thức getAllProducts từ productService
       const productsData = await productService.getAllProducts(
         parseInt(page),
-        parseInt(limit)
+        parseInt(limit),
+        category // Thêm category vào đây
       );
 
       if (page && limit) {
@@ -36,6 +37,7 @@ class ProductController {
       return res.status(500).json({ message: error.message });
     }
   }
+
   async getById(req, res) {
     try {
       const product = await productService.getProductById(req.params.id);
