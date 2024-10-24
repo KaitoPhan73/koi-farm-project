@@ -1,7 +1,11 @@
 module.exports = function (api) {
   api.cache(true);
+
+  const presets = ['babel-preset-expo'];
+  const plugins = ['nativewind/babel']; // Nếu bạn đang sử dụng NativeWind với Tailwind CSS
+
   return {
-    presets: ["babel-preset-expo"],
-    plugins: ["nativewind/babel"],
+    presets,
+    plugins,
   };
 };

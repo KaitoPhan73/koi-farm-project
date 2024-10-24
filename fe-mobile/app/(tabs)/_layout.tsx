@@ -7,7 +7,7 @@ import TabBar from "@/components/tab-bar";
 export default function TabLayout() {
   return (
     <Tabs
-      tabBar={(props) => <TabBar {...props} />}
+      // tabBar={(props) => <TabBar {...props} />}
       // screenOptions={{
       //   tabBarStyle: {
       //     backgroundColor: Colors.bgColor,
