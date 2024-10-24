@@ -7,7 +7,7 @@ import axios, {
 
 // Tạo instance của axios với cấu hình mặc định
 const apiClient: AxiosInstance = axios.create({
-  baseURL: "https://660bbdb3ccda4cbc75dd950a.mockapi.io/mock/api/",
+  baseURL: process.env.REACT_APP_API_URL,
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
