@@ -5,29 +5,30 @@ import Colors from "@/constants/Colors";
 import { useFavorites } from "@/hooks/useFavorite";
 import { toolResponse } from "@/schema/tool.schema";
 import Toast from "react-native-toast-message";
+import { TProductResponse } from "@/schema/product.schema";
 
 type Props = {
-  item: toolResponse;
+  item: TProductResponse;
 };
 
 const BtnFavorite = ({ item }: Props) => {
   const { addFavorite, removeFavorite, isFavorite } = useFavorites();
-  const favorited = isFavorite(item.id);
+  const favorited = isFavorite(item._id);
 
   const showToast = () => {
     Toast.show({
       type: !favorited ? "success" : "info",
       text1: !favorited
-        ? `Added ${item.artName} to Favorite`
-        : `Removed ${item.artName} from Favorite`,
+        ? `Added ${item.name} to Favorite`
+        : `Removed ${item.name} from Favorite`,
     });
   };
 
   const handleFavoritePress = () => {
     if (favorited) {
-      removeFavorite(item.id);
+      removeFavorite(item._id);
     } else {
-      addFavorite(item);
+      addFavorite(item._id);
     }
     showToast();
   };

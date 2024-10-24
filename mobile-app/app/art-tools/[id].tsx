@@ -22,9 +22,9 @@ import Toast from "react-native-toast-message";
 const DetailScreen = () => {
   const { id } = useLocalSearchParams();
   const { addFavorite, removeFavorite, isFavorite } = useFavorites();
-  const { getTool } = useTools();
+  const { getProducts } = useTools();
   const toolId = Array.isArray(id) ? id[0] : id;
-  const response = getTool(toolId);
+  const response = getProducts(id);
   const data = response.data;
   const router = useRouter();
 

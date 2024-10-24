@@ -7,13 +7,7 @@ const cors = require('cors');
 
 const app = express();
 
-app.use(
-  cors({
-    origin: 'http://localhost:5000',
-    methods: ['GET', 'POST', 'PATCH', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-  })
-);
+app.use(cors());
 app.use(express.json());
 
 connectDB();

@@ -2,22 +2,22 @@ import toolApi from "@/apis";
 import { useQuery } from "@tanstack/react-query";
 
 export const useTools = (brand?: string, artName?: string) => {
-  const getTools = useQuery({
+  const getProducts = useQuery({
     queryKey: ["tools", brand, artName],
-    queryFn: () => toolApi.getTools(brand, artName),
+    queryFn: () => toolApi.getProducts(brand, artName),
   });
 
-  const getTool = (id: string) =>
+  // const getTool = (id: string) =>
+  //   useQuery({
+  //     queryKey: ["tool", id],
+  //     queryFn: () => toolApi.getTool(id),
+  //   });
+
+  const getCategories = () =>
     useQuery({
-      queryKey: ["tool", id],
-      queryFn: () => toolApi.getTool(id),
+      queryKey: ["categories"],
+      queryFn: () => toolApi.getCategories(),
     });
 
-  const getBrands = () =>
-    useQuery({
-      queryKey: ["brands", brand],
-      queryFn: () => toolApi.getBrands(brand),
-    });
-
-  return { getTools, getTool, getBrands };
+  return { getProducts, getCategories };
 };

@@ -11,7 +11,7 @@ import {
   Pressable,
 } from "react-native";
 import { useTools } from "@/hooks/useTools";
-import { toolResponse } from "@/schema/tool.schema";
+import { TProductResponse } from "@/schema/product.schema";
 import { styled } from "nativewind";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import Colors from "@/constants/Colors";
@@ -38,9 +38,9 @@ const ArtToolsList = () => {
   const { brand, artName } = useLocalSearchParams();
   const brandQuery = Array.isArray(brand) ? brand[0] : brand;
   const artNameQuery = Array.isArray(artName) ? artName[0] : artName;
-  const { getTools } = useTools(brandQuery, artNameQuery);
+  const { getProducts } = useTools(brandQuery, artNameQuery);
   const { width } = useWindowDimensions();
-  const { isLoading, isError, data, error } = getTools;
+  const { isLoading, isError, data, error } = getProducts;
   const router = useRouter();
   const numColumns = 2;
   const gap = 12;
@@ -60,27 +60,23 @@ const ArtToolsList = () => {
   }
 
   if (isError) {
-    if (isError) {
-      return (
-        <StyledView className="flex-1 justify-center items-center bg-gray-100">
-          <StyledText className="text-xl text-red-500">Not Found</StyledText>
-        </StyledView>
-      );
-    } else {
-      console.log("Có lỗi xảy ra khi fetch dữ liệu.", error);
-    }
+    return (
+      <StyledView className="flex-1 justify-center items-center bg-gray-100">
+        <StyledText className="text-xl text-red-500">Not Found</StyledText>
+      </StyledView>
+    );
   }
 
-  const renderItem = ({ item }: { item: toolResponse }) => (
+  const renderItem = ({ item }: { item: TProductResponse }) => (
     <StyledPressable
       className="bg-blue-100 rounded-[20px] overflow-hidden p-2 shadow-md"
       style={{ width: itemWidth }}
-      onPress={() => router.push(`/art-tools/${item.id}`)}
+      onPress={() => router.push(`/art-tools/${item._id}`)}
     >
       <StyledView className="relative">
-        <Badge value={item.limitedTimeDeal} />
+        {/* <Badge value={item.limitedTimeDeal ?? 0} /> */}
         <Image
-          source={{ uri: item.image }}
+          source={{ uri: item.imageUrl }}
           style={{ width: "100%", height: itemWidth }}
           className="object-cover rounded-xl"
         />
@@ -100,10 +96,10 @@ const ArtToolsList = () => {
           numberOfLines={2}
           ellipsizeMode="tail"
         >
-          {item.artName}
+          {item.name}
         </StyledText>
 
-        {item.limitedTimeDeal > 0 ? (
+        {/* {item.limitedTimeDeal ? (
           <StyledView className="flex-row items-center justify-end mt-1">
             <StyledText className="text-sm line-through text-gray-500">
               ${item.price}
@@ -116,7 +112,7 @@ const ArtToolsList = () => {
           <StyledText className="text-md font-semibold mt-1 text-yellow-500 self-end">
             ${item.price}
           </StyledText>
-        )}
+        )} */}
       </StyledView>
     </StyledPressable>
   );
@@ -127,7 +123,7 @@ const ArtToolsList = () => {
         scrollEnabled={false}
         data={data}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item._id}
         numColumns={numColumns}
         contentContainerStyle={{ gap, paddingVertical: outerPadding }}
         columnWrapperStyle={{ gap }}
