@@ -7,13 +7,9 @@ const cors = require('cors');
 
 const app = express();
 
-app.use(
-  cors({
-    origin: 'http://localhost:5000',
-    methods: ['GET', 'POST', 'PATCH', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-  })
-);
+// Sử dụng cors mặc định để cho phép tất cả các origin
+app.use(cors());
+
 app.use(express.json());
 
 connectDB();
@@ -21,8 +17,11 @@ connectDB();
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 app.use('/', router);
 
+// Sử dụng PORT là một số, không bao gồm địa chỉ IP
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+
+// Sử dụng '0.0.0.0' để lắng nghe trên tất cả các địa chỉ mạng
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server is running on port ${PORT}`);
   console.log(
     `Swagger Docs are available at http://localhost:${PORT}/api-docs`

@@ -9,14 +9,12 @@ const StyledText = styled(Text);
 const StyledTouchableOpacity = styled(TouchableOpacity);
 
 const BrandsList = () => {
-  const { getTools } = useTools();
+  const { getCategories } = useTools();
   const gap = 12;
   const outerPadding = 16;
-  const brands = Array.from(
-    new Set(getTools.data?.map((item: toolResponse) => item.brand) || [])
-  );
+  const brands = getCategories().data?.map((item) => item.name) || [];
   brands.unshift("All");
-
+  console.log(getCategories().data);
   const { brand: selectedBrand, artName } = useLocalSearchParams();
   const artNameQuery = Array.isArray(artName) ? artName[0] : artName;
 
