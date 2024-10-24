@@ -12,7 +12,7 @@ const BrandsList = () => {
   const { getCategories } = useTools();
   const gap = 12;
   const outerPadding = 16;
-  const brands = getCategories().data?.map((item) => item.name) || [];
+  const brands = getCategories().data?.items?.map((item) => item.name) || [];
   brands.unshift("All");
   console.log(getCategories().data);
   const { brand: selectedBrand, artName } = useLocalSearchParams();
