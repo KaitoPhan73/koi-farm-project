@@ -11,7 +11,7 @@ export default function HomeScreen() {
             contentContainerStyle={{ paddingBottom: 20 }}
         >
             <View>
-                <Text> this is homepage</Text>
+                <Text> this is profike</Text>
 
             </View>
         </ScrollView>
