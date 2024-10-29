@@ -52,8 +52,18 @@ const HomeScreen: React.FC = () => {
         const checkInDate = startDate ? new Date(startDate) : null;
         const checkOutDate = endDate ? new Date(endDate) : null;
 
+        // Lấy ngày hiện tại
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Đặt giờ, phút, giây về 0 để so sánh chỉ với ngày
+
         // Kiểm tra tính hợp lệ của ngày
         if (checkInDate && !isNaN(checkInDate.getTime()) && checkOutDate && !isNaN(checkOutDate.getTime())) {
+            // Kiểm tra nếu ngày check-in hoặc check-out trước ngày hiện tại
+            if (checkInDate < today || checkOutDate < today) {
+                alert("Vui lòng chọn ngày không trước ngày hiện tại.");
+                return;
+            }
+
             setFormData({
                 ...formData,
                 checkInDate: checkInDate,
@@ -65,6 +75,7 @@ const HomeScreen: React.FC = () => {
 
         setDatePickerVisible(false);
     };
+
 
     const MyTheme = {
         ...DefaultTheme,
@@ -139,7 +150,7 @@ const HomeScreen: React.FC = () => {
                     />
 
                     <TouchableOpacity
-                        className="bg-orange-600 p-3 rounded-lg mt-4 hover:bg-orange-700 transition duration-200"
+                        className="bg-orange-500 p-3 rounded-lg mt-4 hover:bg-orange-600 transition duration-200"
                         onPress={handleSubmit}
                     >
                         <Text className="text-white text-center font-bold">Gửi Đăng Ký</Text>
