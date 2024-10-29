@@ -1,4 +1,4 @@
-const feedbackService = require('../services/feedbackService');
+const feedbackService = require('../services/feedBackService');
 
 class FeedBackController {
   async create(req, res) {
