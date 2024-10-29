@@ -7,17 +7,17 @@ import TabBar from "@/components/tab-bar";
 export default function TabLayout() {
   return (
     <Tabs
-    // tabBar={(props) => <TabBar {...props} />}
-    // screenOptions={{
-    //   tabBarStyle: {
-    //     backgroundColor: Colors.bgColor,
-    //     borderTopWidth: 0,
-    //     padding: 0,
-    //   },
-    //   tabBarShowLabel: false,
-    //   tabBarActiveTintColor: Colors.black,
-    //   tabBarInactiveTintColor: "#999",
-    // }}
+      // tabBar={(props) => <TabBar {...props} />}
+      // screenOptions={{
+      //   tabBarStyle: {
+      //     backgroundColor: Colors.bgColor,
+      //     borderTopWidth: 0,
+      //     padding: 0,
+      //   },
+      //   tabBarShowLabel: false,
+      //   tabBarActiveTintColor: Colors.black,
+      //   tabBarInactiveTintColor: "#999",
+      // }}
     >
       <Tabs.Screen
         name="index"
