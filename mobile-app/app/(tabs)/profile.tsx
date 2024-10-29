@@ -3,11 +3,6 @@ import { ScrollView, View, Text } from "react-native";
 import ArtToolsList from "@/components/products-list";
 import BrandsList from "@/components/brands-list";
 import SearchTool from "@/components/search-tool";
-import { TProductResponse } from "@/schema/product.schema";
-import productAPI from "@/apis/product";
-import { useTools } from "@/hooks/useTools";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import Loading from "@/components/Loading";
 
 export default function HomeScreen() {
     return (
@@ -16,7 +11,7 @@ export default function HomeScreen() {
             contentContainerStyle={{ paddingBottom: 20 }}
         >
             <View>
-                <Text> this is homepage</Text>
+                <Text> this is profike</Text>
 
             </View>
         </ScrollView>

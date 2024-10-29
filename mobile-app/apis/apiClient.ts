@@ -13,7 +13,7 @@ const apiClient: AxiosInstance = axios.create({
     "Content-Type": "application/json",
   },
 });
-  console.log("🚀 ~ process.env.EXPO_PUBLIC_API_URL:", process.env.EXPO_PUBLIC_API_URL)
+console.log("🚀 ~ process.env.EXPO_PUBLIC_API_URL:", process.env.EXPO_PUBLIC_API_URL)
 
 // Interceptor cho request
 apiClient.interceptors.request.use(

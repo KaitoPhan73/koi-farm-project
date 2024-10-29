@@ -45,16 +45,14 @@ const BrandsList = () => {
 
     return (
       <StyledTouchableOpacity
-        className={`shadow-md rounded-md py-2 px-3 flex-1 justify-center items-center ${
-          isSelected ? "bg-primary" : "bg-white"
-        }`}
+        className={`shadow-md rounded-md py-2 px-3 flex-1 justify-center items-center ${isSelected ? "bg-primary" : "bg-white"
+          }`}
         style={{ backgroundColor: isSelected ? Colors.primaryColor : "white" }}
         onPress={() => setSelectedCategory(brand === "All" ? null : brand)}
       >
         <StyledText
-          className={`text-md font-semibold ${
-            isSelected ? "text-white" : "text-black"
-          }`}
+          className={`text-md font-semibold ${isSelected ? "text-white" : "text-black"
+            }`}
         >
           {brand}
         </StyledText>

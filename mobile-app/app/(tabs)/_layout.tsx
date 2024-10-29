@@ -23,7 +23,7 @@ export default function TabLayout() {
         name="index"
         options={{
           headerShown: true,
-          title: "Home",
+          title: "Home Page",
           headerTitleAlign: "center",
           tabBarIcon: ({ color }) => (
             <AntDesign name="home" size={24} color={color} />
@@ -31,13 +31,59 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="favorite"
+        name="product"
         options={{
-          title: "Favorite",
+          headerShown: true,
+          title: "Product",
+          headerTitleAlign: "center",
+          tabBarIcon: ({ color }) => (
+            <AntDesign name="info" size={24} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="deposit"
+        options={{
+          headerShown: true,
+          title: "Deposit",
+          headerTitleAlign: "center",
+          tabBarIcon: ({ color }) => (
+            <AntDesign name="form" size={24} color={color} />
+          ),
+        }}
+      />
+
+
+      <Tabs.Screen
+        name="blog"
+        options={{
+          title: "Blog",
           headerTitleAlign: "center",
           headerShown: true,
           tabBarIcon: ({ color }) => (
-            <MaterialIcons name="favorite-border" size={24} color={color} />
+            <MaterialIcons name="new-label" size={24} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="BlogDetail"
+        options={{
+          title: "Blog Details",
+          headerTitleAlign: "center",
+          headerShown: true,
+          tabBarIcon: ({ color }) => (
+            <MaterialIcons name="new-label" size={24} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          headerShown: true,
+          title: "Profile",
+          headerTitleAlign: "center",
+          tabBarIcon: ({ color }) => (
+            <AntDesign name="profile" size={24} color={color} />
           ),
         }}
       />
