@@ -1,102 +1,74 @@
-
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
-
-
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react';
 import CustomInput from '@/components/CustomInput';
-
-// icons
 import Feather from "react-native-vector-icons/Feather";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import AntDesign from "react-native-vector-icons/AntDesign";
-import { useTheme } from '@react-navigation/native'
+import { useTheme } from '@react-navigation/native';
 import Colors from '@/constants/Colors';
 
 const ProfileScreen = () => {
     const { colors } = useTheme();
+    const [fullName, setFullName] = useState('');
+    const [email, setEmail] = useState('');
+    const [phoneNumber, setPhoneNumber] = useState('');
+    const [password, setPassword] = useState('');
 
     return (
         <ScrollView style={[styles.container, { backgroundColor: colors.background }]} contentContainerStyle={{
             paddingBottom: 2 * 32
         }}>
-            {/* <TouchableOpacity>
-                <Ionicons name={"arrow-back"} color={Colors.iconPrimary} size={24} />
-            </TouchableOpacity> */}
-
-            {/* profile image container */}
             <View style={styles.profileImageContainer}>
                 <Image source={{ uri: "https://antimatter.vn/wp-content/uploads/2022/04/anh-avatar-doi-nguoi-that-sau-lung-ban-nam.jpg" }} style={styles.profileImage} />
-                <TouchableOpacity style={[styles.editIconContainer, {
-                    backgroundColor: Colors.orange,
-                }]}>
+                <TouchableOpacity style={[styles.editIconContainer, { backgroundColor: Colors.orange }]}>
                     <Feather name={"edit-3"} size={24} color={Colors.iconWhite} />
                 </TouchableOpacity>
             </View>
 
-
-            {/* profile details contaienr */}
             <View style={styles.nameRoleContainer}>
-                <Text style={[styles.name, {
-                    color: Colors.textPrimary
-                }]}>User Name</Text>
-                <Text style={[styles.role, {
-                    color: Colors.textSecondary
-                }]}>CUSTOMER</Text>
+                <Text style={[styles.name, { color: Colors.textPrimary }]}>User Name</Text>
+                <Text style={[styles.role, { color: Colors.textSecondary }]}>CUSTOMER</Text>
             </View>
 
-
-            {/* infult fiels container */}
             <View style={styles.inputFieldsContainer}>
-                {/* add all the input fields */}
                 <CustomInput
                     label='Full Name'
                     placeholder='John Doe'
-
+                    value={fullName}
+                    handleChange={setFullName}
                 />
                 <CustomInput
-                    label='Your Email' placeholder='zerodegreecoder@gmail.com'
-                    icon={
-                        <Ionicons name={"mail-outline"} size={24} color={Colors.iconSecondary} style={styles.icon} />
-                    }
-                // value
-                // handleChange
-
+                    label='Your Email'
+                    placeholder='zerodegreecoder@gmail.com'
+                    icon={<Ionicons name={"mail-outline"} size={24} color={Colors.iconSecondary} style={styles.icon} />}
+                    value={email}
+                    handleChange={setEmail}
                 />
-
                 <CustomInput
-                    label='Phone Number' placeholder='+93123135'
-                    icon={
-                        <Feather name={"phone"} size={24} color={Colors.iconSecondary} style={styles.icon} />
-                    }
-
+                    label='Phone Number'
+                    placeholder='+93123135'
+                    icon={<Feather name={"phone"} size={24} color={Colors.iconSecondary} style={styles.icon} />}
+                    value={phoneNumber}
+                    handleChange={setPhoneNumber}
                 />
-
-
                 <CustomInput
                     label='Password'
                     placeholder='*******'
-                    icon={
-                        <AntDesign name={"lock1"} size={24} color={Colors.iconSecondary} style={styles.icon} />
-                    }
+                    icon={<AntDesign name={"lock1"} size={24} color={Colors.iconSecondary} style={styles.icon} />}
                     type='password'
-
+                    value={password}
+                    handleChange={setPassword}
                 />
-
             </View>
 
-            {/* logutbutt */}
-            <TouchableOpacity style={[styles.logoutButton, {
-                borderColor: Colors.orange,
-            }]}>
-                <Text style={[styles.logoutText, {
-                    color: Colors.orange
-                }]}>Update</Text>
+            <TouchableOpacity style={[styles.logoutButton, { borderColor: Colors.orange }]}>
+                <Text style={[styles.logoutText, { color: Colors.orange }]}>Update</Text>
             </TouchableOpacity>
         </ScrollView>
-    )
+    );
 }
 
-export default ProfileScreen
+export default ProfileScreen;
 
 const styles = StyleSheet.create({
     container: {
@@ -111,7 +83,7 @@ const styles = StyleSheet.create({
     profileImage: {
         height: 140,
         width: 140,
-        borderRadius: 70, // Bo tròn 50% để tạo hình tròn
+        borderRadius: 70,
         overflow: "hidden",
     },
     editIconContainer: {
@@ -128,11 +100,9 @@ const styles = StyleSheet.create({
         marginVertical: 8
     },
     name: {
-        // fontFamily: "Poppins-SemiBold",
         fontSize: 20,
     },
     role: {
-        // fontFamily: "Poppins-Regular",
         fontSize: 16,
     },
     inputFieldsContainer: {
@@ -151,7 +121,5 @@ const styles = StyleSheet.create({
     },
     logoutText: {
         fontSize: 20,
-        // fontFamily: "Poppins-Bold",
     }
-
-})
+});

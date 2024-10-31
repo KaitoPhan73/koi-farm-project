@@ -4,10 +4,29 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import Colors from "@/constants/Colors";
 import TabBar from "@/components/tab-bar";
+import { useSession } from '@/utils/ctx';
+import { Text } from 'react-native';
+import { Redirect } from 'expo-router';
+
+
+
 export default function TabLayout() {
+
+  const { session, isLoading } = useSession();
+  // Nếu đang tải dữ liệu phiên, hiển thị thông báo "Loading..."
+  if (isLoading) {
+    return <Text>Loading...</Text>;
+  }
+  // Nếu không có phiên, điều hướng đến trang đăng nhập
+  if (!session) {
+    return <Redirect href={"/sign-in"} />;
+  }
+
+
   return (
     <Tabs
     // tabBar={(props) => <TabBar {...props} />}
+    
     // screenOptions={{
     //   tabBarStyle: {
     //     backgroundColor: Colors.bgColor,
@@ -22,7 +41,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          headerShown: true,
+          
+          headerShown: false,
           title: "Home Page",
           headerTitleAlign: "center",
           tabBarIcon: ({ color }) => (

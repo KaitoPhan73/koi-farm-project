@@ -8,13 +8,16 @@ import { useTheme } from '@react-navigation/native';
 import Colors from '@/constants/Colors';
 
 type CustomInputProps = {
-    label: string,
-    icon?: React.ReactElement,
-    placeholder: string,
-    type?: string
-}
-const CustomInput: React.FC<CustomInputProps> = ({ label, icon, placeholder, type, ...rest }) => {
-    const [secureTextEntery, setSecureTextEntery] = useState(true);
+    label: string;
+    icon?: React.ReactElement;
+    placeholder: string;
+    type?: string;
+    value: string; // Thêm thuộc tính value
+    handleChange: (text: string) => void; // Thêm hàm xử lý thay đổi
+};
+
+const CustomInput: React.FC<CustomInputProps> = ({ label, icon, placeholder, type, value, handleChange }) => {
+    const [secureTextEntry, setSecureTextEntry] = useState(true);
     const { colors } = useTheme();
 
     return (
@@ -25,28 +28,27 @@ const CustomInput: React.FC<CustomInputProps> = ({ label, icon, placeholder, typ
 
             <View style={styles.inputFieldContainer}>
                 {icon}
-                {/* <Ionicons name={"mail-outline"} size={iconSize.md} color={colors.iconSecondary} style={styles.icon} /> */}
                 <TextInput
                     style={[styles.textInput, { color: Colors.textPrimary }]}
                     placeholder={placeholder}
                     placeholderTextColor={Colors.iconSecondary}
-                    secureTextEntry={type === "password" && secureTextEntery}
-
+                    secureTextEntry={type === "password" && secureTextEntry}
+                    value={value} // Sử dụng giá trị từ props
+                    onChangeText={handleChange} // Sử dụng hàm xử lý từ props
                 />
                 {
                     type === "password" && (
-                        <TouchableOpacity onPress={() => setSecureTextEntery(!secureTextEntery)}>
+                        <TouchableOpacity onPress={() => setSecureTextEntry(!secureTextEntry)}>
                             <Feather
-                                name={secureTextEntery ? "eye" : "eye-off"} size={24}
+                                name={secureTextEntry ? "eye" : "eye-off"} size={24}
                                 color={Colors.iconSecondary}
                                 style={styles.icon} />
                         </TouchableOpacity>
                     )
                 }
             </View>
-
         </View>
-    )
+    );
 }
 
 export default CustomInput
