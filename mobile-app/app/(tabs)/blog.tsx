@@ -1,62 +1,45 @@
-// KoiBlogList.tsx
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, StyleSheet, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { StackNavigationProp } from '@react-navigation/stack';
+import { Link, useRouter } from "expo-router";
+import axios from "axios";
 
 interface Blog {
   id: string;
   title: string;
   description: string;
+  imageUrl: string; // Đường dẫn đến hình ảnh
+  author: string; // Tên tác giả
+  publishedDate: string; // Ngày xuất bản
+  tags: string[]; // Danh sách thẻ
 }
 
-// Định nghĩa kiểu cho các tham số của BlogDetail
-type BlogDetailParams = {
-  title: string;
-  description: string;
-};
-
-// Định nghĩa kiểu cho navigation
-type NavigationProps = StackNavigationProp<{
-  blog: undefined;
-  blogDetail: BlogDetailParams;
-}>;
 
 const KoiBlogList: React.FC = () => {
-  const navigation = useNavigation<NavigationProps>();
+  const router = useRouter();
+  const [blogs, setBlogs] = useState<Blog[]>([]);
 
-  const blogs: Blog[] = [
-    {
-      id: '1',
-      title: 'Lịch Sử Cá Koi: Từ Nhật Bản Đến Thế Giới',
-      description: 'Khám phá nguồn gốc và lịch sử phát triển của cá Koi từ Nhật Bản và cách chúng trở thành một biểu tượng toàn cầu.',
-    },
-    {
-      id: '2',
-      title: 'Cách Chăm Sóc Cá Koi Tại Nhà',
-      description: 'Hướng dẫn từng bước để chăm sóc cá Koi, bao gồm chế độ ăn uống, điều kiện nước và sức khỏe của chúng.',
-    },
-    {
-      id: '3',
-      title: 'Các Loại Cá Koi Phổ Biến',
-      description: 'Tìm hiểu về các giống cá Koi phổ biến nhất, đặc điểm và giá trị của từng loại.',
-    },
-    {
-      id: '4',
-      title: 'Cá Koi và Văn Hóa Nhật Bản',
-      description: 'Sự kết nối giữa cá Koi và văn hóa Nhật Bản, bao gồm ý nghĩa phong thủy và nghệ thuật.',
-    },
-    {
-      id: '5',
-      title: 'Cách Thiết Kế Hồ Cá Koi Hoàn Hảo',
-      description: 'Hướng dẫn cách thiết kế hồ cá Koi đẹp và bền vững cho không gian sống của bạn.',
-    },
-  ];
+  // Fetch blogs từ MockAPI khi component mount
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        const response = await axios.get("https://67207d30e7a5792f0531a995.mockapi.io/api/blog/blogs");
+        setBlogs(response.data);
+      } catch (error) {
+        console.error("Error fetching blogs:", error);
+      }
+    };
+
+    fetchBlogs();
+  }, []);
 
   const renderBlogItem = ({ item }: { item: Blog }) => (
+
     <TouchableOpacity
       style={styles.blogItem}
-      onPress={() => navigation.navigate("blogDetail", { title: item.title, description: item.description })}
+      onPress={() =>
+        router.push(`/blog/${item.id}`)
+      }
     >
       <Text style={styles.blogTitle}>{item.title}</Text>
       <Text style={styles.blogDescription}>{item.description}</Text>
@@ -76,27 +59,33 @@ const KoiBlogList: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
+    backgroundColor: '#f0f4f8', // nền sáng hơn
   },
   blogItem: {
     marginBottom: 15,
-    padding: 15,
-    backgroundColor: '#f9f9f9',
-    borderRadius: 8,
+    padding: 20,
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 1,
-    elevation: 2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: '#e0e0e0', // đường viền nhẹ để tạo điểm nhấn
   },
   blogTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 5,
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#333', // màu tối vừa cho tiêu đề
+    marginBottom: 8,
   },
   blogDescription: {
-    fontSize: 14,
-    color: '#555',
+    fontSize: 16,
+    color: '#666', // màu xám nhẹ cho phần mô tả
+    lineHeight: 22,
   },
 });
 
-export default KoiBlogList;
+
+export default KoiBlogList

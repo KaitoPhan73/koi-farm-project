@@ -17,6 +17,7 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { FavoritesProvider } from "@/hooks/useFavorite";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Toast from "react-native-toast-message";
+import { CartProvider } from "@/hooks/useCartActions";
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -39,13 +40,15 @@ export default function RootLayout() {
     <QueryClientProvider client={queryClient}>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <FavoritesProvider>
-          <ThemeProvider
-            value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-          >
-            <Stack>
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            </Stack>
-          </ThemeProvider>
+          <CartProvider>
+            <ThemeProvider
+              value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+            >
+              <Stack>
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              </Stack>
+            </ThemeProvider>
+          </CartProvider>
         </FavoritesProvider>
         <Toast />
       </GestureHandlerRootView>

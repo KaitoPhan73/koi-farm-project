@@ -14,6 +14,11 @@ export const ProductSchema = z.object({
     .min(0, { message: "Age cannot be negative" })
     .max(50, { message: "Age cannot exceed 50 years" }),
 
+  stock: z.coerce
+    .number()
+    .min(0, { message: "Stock cannot be negative" })
+    .max(50, { message: "Stock cannot exceed 50 years" }),
+
   origin: z.string().min(1, { message: "Origin is required" }),
 
   gender: z.enum(["Male", "Female"], {

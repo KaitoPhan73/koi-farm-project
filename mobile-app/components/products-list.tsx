@@ -1,73 +1,44 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React, { useEffect, useState } from "react";
-import { Link } from "expo-router";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Ionicons } from "@expo/vector-icons";
-import Toast from "react-native-toast-message";
-import { TProductResponse } from "@/schema/product.schema";
+import React, { useState } from "react";
+import { useRouter } from "expo-router";
 import Loading from "./Loading";
 import Colors from "@/constants/Colors";
+import { AddToCartParams, useCart } from "@/hooks/useCartActions"; // Import custom hook
+import { TProductResponse } from "@/schema/product.schema";
+import { Ionicons } from "@expo/vector-icons";
 
 type Props = {
-  newsList: TProductResponse[];
+  productList: TProductResponse[];
 };
 
-const NewsList = ({ newsList = [] }: Props) => {
-  const [bookmarkedItems, setBookmarkedItems] = useState<string[]>([]);
+const ProductList = ({ productList = [] }: Props) => {
+  const { cartItems, addToCart, removeFromCart } = useCart(); // Use the custom hook
   const [showAll, setShowAll] = useState(false);
+  const router = useRouter();
 
-  useEffect(() => {
-    const fetchBookmarks = async () => {
-      const token = await AsyncStorage.getItem("bookmark");
-      const bookmarks = token ? JSON.parse(token) : [];
-      setBookmarkedItems(bookmarks);
-    };
-    fetchBookmarks();
-  }, []);
-
-  const saveBookmark = async (id: string) => {
-    const newBookmarks = [...bookmarkedItems, id];
-    await AsyncStorage.setItem("bookmark", JSON.stringify(newBookmarks));
-    setBookmarkedItems(newBookmarks);
-    Toast.show({
-      type: "success",
-      text1: "Art Tool Saved Successfully",
-      position: "top",
-    });
-  };
-
-  const removeBookmark = async (id: string) => {
-    const newBookmarks = bookmarkedItems.filter((item) => item !== id);
-    await AsyncStorage.setItem("bookmark", JSON.stringify(newBookmarks));
-    setBookmarkedItems(newBookmarks);
-    Toast.show({
-      type: "success",
-      text1: "Art Tool Unsaved Successfully.",
-      position: "top",
-    });
-  };
-
-  const displayedNewsList = showAll ? newsList : newsList.slice(0, 5);
+  // Determine which products to display
+  const displayedProductList = showAll ? productList : productList.slice(0, 5);
 
   return (
     <View style={styles.container}>
-      {newsList.length === 0 ? (
+      {productList.length === 0 ? (
         <Loading size="large" />
       ) : (
-        displayedNewsList.map((item) => (
-          <Link href={`/news/${item._id}` as const} asChild key={item._id}>
-            <TouchableOpacity>
-              <NewsItem
-                item={item}
-                isBookmarked={bookmarkedItems.includes(item._id)}
-                saveBookmark={saveBookmark}
-                removeBookmark={removeBookmark}
-              />
-            </TouchableOpacity>
-          </Link>
+        displayedProductList.map((item) => (
+          <TouchableOpacity
+            key={item._id}
+            onPress={() => router.push(`/news/${item._id}`)}
+          >
+            <ProductItem
+              item={item}
+              isInCart={cartItems.some((cartItem) => cartItem._id === item._id)} // Check if the product is in the cart
+              addToCart={addToCart}
+              removeFromCart={removeFromCart}
+            />
+          </TouchableOpacity>
         ))
       )}
-      {newsList.length > 5 && !showAll && (
+      {productList.length > 5 && !showAll && (
         <TouchableOpacity
           onPress={() => setShowAll(true)}
           style={styles.seeMoreButton}
@@ -79,19 +50,35 @@ const NewsList = ({ newsList = [] }: Props) => {
   );
 };
 
-export default NewsList;
-
-const NewsItem = ({
+const ProductItem = ({
   item,
-  isBookmarked,
-  saveBookmark,
-  removeBookmark,
+  isInCart,
+  addToCart,
+  removeFromCart,
 }: {
   item: TProductResponse;
-  isBookmarked: boolean;
-  saveBookmark: (id: string) => Promise<void>;
-  removeBookmark: (id: string) => Promise<void>;
+  isInCart: boolean;
+  addToCart: (item: AddToCartParams) => Promise<void>;
+  removeFromCart: (id: string) => Promise<void>;
 }) => {
+  // Tạo hàm xử lý thêm/xóa sản phẩm
+  const handleCartAction = () => {
+    const params: AddToCartParams = {
+      _id: item._id,
+      name: item.name,
+      price: item.price,
+      imageUrl: item.imageUrl || "",
+      quantity: 1,
+      // Các thuộc tính khác cần thiết nếu cần
+    };
+
+    if (isInCart) {
+      removeFromCart(item._id);
+    } else {
+      addToCart(params);
+    }
+  };
+
   return (
     <View style={styles.itemContainer}>
       <Image source={{ uri: item.imageUrl }} style={styles.itemImg} />
@@ -102,15 +89,11 @@ const NewsItem = ({
         <Text style={styles.itemTitle}>{item.name}</Text>
         <Text style={styles.itemSourceName}>Price: {item.price} VND</Text>
       </View>
-      <TouchableOpacity
-        onPress={() =>
-          isBookmarked ? removeBookmark(item._id) : saveBookmark(item._id)
-        }
-      >
+      <TouchableOpacity onPress={handleCartAction}>
         <Ionicons
-          name={isBookmarked ? "heart" : "heart-outline"}
+          name="bag-add"
           size={22}
-          color={isBookmarked ? "red" : Colors.black}
+          color={isInCart ? "red" : Colors.black}
         />
       </TouchableOpacity>
     </View>
@@ -167,3 +150,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
 });
+
+export default ProductList;

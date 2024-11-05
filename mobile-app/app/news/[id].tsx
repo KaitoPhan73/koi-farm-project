@@ -5,117 +5,148 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Modal,
+  FlatList,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { Link, router, Stack, useLocalSearchParams } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
-import axios from "axios";
+import { AntDesign, Ionicons } from "@expo/vector-icons";
+import { router, Stack, useLocalSearchParams } from "expo-router";
 import Loading from "@/components/Loading";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import Toast from "react-native-toast-message";
-import { TProductResponse } from "@/schema/product.schema";
 import Colors from "@/constants/Colors";
+import productAPI from "@/apis/product";
+import useCartActions from "@/hooks/useCartActions";
+import { TProductResponse } from "@/schema/product.schema";
 
-// Main Component
-const NewsDetails = () => {
+const ProductDetails = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const [news, setNews] = useState<TProductResponse | null>(null);
+  const [product, setProduct] = useState<TProductResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [bookmark, setBookmark] = useState(false);
+  const { cartItems, saveToCart, removeFromCart } = useCartActions();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [isInCart, setIsInCart] = useState(false);
+
+  const openCart = () => setModalVisible(true);
 
   useEffect(() => {
-    fetchNews();
-  }, []);
-
-  useEffect(() => {
-    if (!isLoading && news) checkBookmark(news._id);
-  }, [isLoading, news]);
-
-  const fetchNews = async () => {
-    try {
-      const response = await axios.get(`${process.env.EXPO_PUBLIC_API_URL}/${id}`);
-      if (response.data) {
-        setNews(response.data);
+    const fetchProduct = async () => {
+      try {
+        const response = await productAPI.getProductsById(id);
+        setProduct(response);
+      } catch (error) {
+        console.error("Error fetching product:", error);
+      } finally {
         setIsLoading(false);
       }
-    } catch (err:any) {
-      console.log("Error Message: ", err.message);
+    };
+
+    fetchProduct();
+  }, [id]);
+
+  useEffect(() => {
+    if (product) {
+      setIsInCart(cartItems.some(item => item.id === product._id)); // Check if product is in cart
     }
+  }, [cartItems, product]);
+
+  const toggleCart = async () => {
+    if (isInCart) {
+      const itemToRemove = cartItems.find(item => item.id === product!._id);
+      if (itemToRemove) {
+        await removeFromCart(itemToRemove.id); 
+      }
+    } else {
+      await saveToCart(
+        product!._id,
+        product!.imageUrl || '', 
+        product!.name,
+        product!.price,
+        product!.stock
+      );
+    }
+    setIsInCart(!isInCart);
   };
 
-  const toggleBookmark = async () => {
-    const bookmarks = JSON.parse(await AsyncStorage.getItem("bookmark") || "[]");
-    const updatedBookmarks = bookmark
-      ? bookmarks.filter((item: string) => item !== id)
-      : [...bookmarks, id];
-    await AsyncStorage.setItem("bookmark", JSON.stringify(updatedBookmarks));
-    setBookmark(!bookmark);
-    Toast.show({
-      type: "success",
-      text1: bookmark ? "Removed from Bookmarks" : "Saved to Bookmarks",
-    });
-  };
-
-  const checkBookmark = async (id: string) => {
-    const bookmarks = JSON.parse(await AsyncStorage.getItem("bookmark") || "[]");
-    setBookmark(bookmarks.includes(id));
-  };
-
-  // const calculateAverageRating = () => {
-  //   if (news && news.comments.length) {
-  //     return (news.comments.reduce((acc, { rating }) => acc + rating, 0) / news.comments.length).toFixed(1);
-  //   }
-  //   return "0";
-  // };
-
-  if (isLoading || !news) return <Loading size="large" />;
+  if (isLoading || !product) return <Loading size="large" />;
 
   return (
     <>
-      <Stack.Screen options={{
-        title: "",
-        headerLeft: () => (
-          <TouchableOpacity onPress={() => router.back()}>
-            <Ionicons name="arrow-back" size={22} />
-          </TouchableOpacity>
-        ),
-        headerRight: () => (
-          <TouchableOpacity onPress={toggleBookmark}>
-            <Ionicons
-              name={bookmark ? "heart" : "heart-outline"}
-              size={22}
-              color={bookmark ? "red" : Colors.black}
-            />
-          </TouchableOpacity>
-        )
-      }} />
+      <Stack.Screen
+        options={{
+          headerLeft: () => (
+            <TouchableOpacity onPress={() => router.back()}>
+              <Ionicons name="arrow-back" size={22} />
+            </TouchableOpacity>
+          ),
+          headerRight: () => (
+            <TouchableOpacity onPress={openCart} style={{ marginRight: 15 }}>
+              <AntDesign name="shoppingcart" size={24} color={Colors.black} />
+            </TouchableOpacity>
+          ),
+        }}
+      />
+
       <ScrollView contentContainerStyle={styles.contentContainer}>
-        <Image source={{ uri: news.imageUrl }} style={styles.newsImg} />
-        <Text style={styles.title}>{news.name}</Text>
+        <Image source={{ uri: product.imageUrl }} style={styles.productImg} />
+        <Text style={styles.title}>{product.name}</Text>
         <View style={styles.ratingWrapper}>
           <Ionicons name="star" size={16} color="#FFD700" />
-          {/* <Text style={styles.ratingText}>
-            {calculateAverageRating()} ({news.comments.length} reviews)
-          </Text> */}
         </View>
+
         <View style={styles.details}>
-          <Text style={styles.infoText}>Price: <Text style={styles.bold}>${news.price}</Text></Text>
-          <Text style={styles.infoText}>Brand: <Text style={styles.bold}>{news.category}</Text></Text>
+          <Text style={styles.infoText}>
+            Price: <Text style={styles.bold}>${product.price}</Text>
+          </Text>
+          <Text style={styles.infoText}>
+            Brand:{" "}
+            <Text style={styles.bold}>{product.category?.name || "N/A"}</Text>
+          </Text>
         </View>
-        {/* {news.limitedTimeDeal > 0 && <Text style={styles.highlight}>💰 Save {news.limitedTimeDeal * 100}%</Text>}
-        {news.glassSurface && <Text style={styles.highlight}>✔️ Suitable for glass surfaces</Text>} */}
-        <Text style={styles.description}>Description: {news.dailyFeedAmount}</Text>
-        {/* <Link href={`/news/comment?id=${news._id}`} asChild>
-          <TouchableOpacity style={styles.commentButton}>
-            <Text style={styles.commentButtonText}>View Comments</Text>
-          </TouchableOpacity>
-        </Link> */}
+
+        <Text style={styles.description}>Description: {product.dailyFeedAmount}</Text>
+
+        {/* Add to Cart Button */}
+        <TouchableOpacity style={styles.addToCartButton} onPress={toggleCart}>
+          <Text style={styles.addToCartText}>
+            {isInCart ? "Remove from Cart" : "Add to Cart"}
+          </Text>
+        </TouchableOpacity>
       </ScrollView>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <FlatList
+              data={cartItems}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => (
+                <View style={styles.cartItem}>
+                  <Text style={styles.cartItemText}>{item.name}</Text>
+                  <Text style={styles.cartItemPrice}>{item.price} VND</Text>
+                  <TouchableOpacity onPress={() => removeFromCart(item.id)}>
+                    <AntDesign name="delete" size={24} color="red" />
+                  </TouchableOpacity>
+                </View>
+              )}
+            />
+            <Text style={styles.totalPrice}>
+              Total: {cartItems.reduce((total, item) => total + item.price, 0)} VND
+            </Text>
+            <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.closeButton}>
+              <Text style={styles.closeButtonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </>
   );
 };
 
-export default NewsDetails;
+export default ProductDetails;
 
 // Styles
 const styles = StyleSheet.create({
@@ -124,7 +155,7 @@ const styles = StyleSheet.create({
     paddingBottom: 30,
     backgroundColor: Colors.white,
   },
-  newsImg: {
+  productImg: {
     width: "100%",
     height: 300,
     borderRadius: 10,
@@ -142,11 +173,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 10,
   },
-  ratingText: {
-    marginLeft: 5,
-    fontSize: 14,
-    color: "#555",
-  },
   details: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -159,26 +185,60 @@ const styles = StyleSheet.create({
   bold: {
     fontWeight: "900",
   },
-  highlight: {
-    fontSize: 14,
-    color: "#007BFF",
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
   description: {
     fontSize: 14,
     color: "#555",
     letterSpacing: 0.8,
     lineHeight: 22,
   },
-  commentButton: {
+  addToCartButton: {
     backgroundColor: Colors.black,
     padding: 15,
     borderRadius: 5,
     alignItems: "center",
     marginTop: 20,
   },
-  commentButtonText: {
+  addToCartText: {
+    color: Colors.white,
+    fontWeight: "bold",
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "flex-end",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContent: {
+    width: "100%",
+    padding: 20,
+    backgroundColor: Colors.white,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+  },
+  cartItem: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingVertical: 10,
+  },
+  cartItemText: {
+    fontSize: 16,
+  },
+  cartItemPrice: {
+    fontSize: 16,
+  },
+  totalPrice: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginTop: 10,
+  },
+  closeButton: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: Colors.tint,
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  closeButtonText: {
     color: Colors.white,
     fontWeight: "bold",
   },

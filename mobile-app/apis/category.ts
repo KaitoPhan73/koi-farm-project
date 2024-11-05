@@ -14,7 +14,7 @@ const categoryApi = {
       await apiClient.get("categories", {
         params,
       });
-    console.log("🚀 ~ getCategories: ~ response:", response);
+    // console.log("🚀 ~ getCategories: ~ response:", response);
 
     return response.data;
   },
