@@ -7,7 +7,7 @@ class UserService {
       return await User.find();
     } catch (err) {
       throw new Error('Error fetching users');
-    }
+    } 
   }
 
   async getPagination(page = 1, limit = 10) {
