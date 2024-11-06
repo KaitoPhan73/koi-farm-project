@@ -16,9 +16,6 @@ const apiClient: AxiosInstance = axios.create({
 });
 
 
-
-
-
 // Interceptor cho request
 apiClient.interceptors.request.use(
     (config: InternalAxiosRequestConfig) => {
