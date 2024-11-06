@@ -32,7 +32,7 @@ export default function SignIn() {
         text1: 'Chào mừng bạn đến với Golden Koi',
         text2: 'Golden Koi xin chào!',
         position: 'top',
-        visibilityTime: 2000,
+        visibilityTime: 1000,
         autoHide: true,
         onHide: () => router.replace('/'),
       });
@@ -42,7 +42,7 @@ export default function SignIn() {
         text1: 'Đăng nhập thất bại vui lòng kiểm tra lại thông tin đăng nhập',
         text2: 'Đăng nhập thất bại',
         position: 'top',
-        visibilityTime: 2000,
+        visibilityTime: 1000,
         autoHide: true,
         onHide: () => router.replace('/'),
       });

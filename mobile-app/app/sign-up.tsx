@@ -33,7 +33,7 @@ export default function SignUp() {
         text1: 'Đăng Ký Thành Công',
         text2: 'Bạn đã đăng ký thành công!',
         position: 'top',
-        visibilityTime: 2000,
+        visibilityTime: 1000,
         autoHide: true,
         onHide: () => router.replace('/sign-in'),
       });
@@ -51,7 +51,7 @@ export default function SignUp() {
         text1: 'Đăng Ký Thất bại',
         text2: 'Bạn đã đăng ký thất bại!',
         position: 'top',
-        visibilityTime: 2000,
+        visibilityTime: 1000,
         autoHide: true
       });
     }

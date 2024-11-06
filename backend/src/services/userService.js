@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const bcrypt = require('bcryptjs'); // Make sure to install bcryptjs for hashing the password
 
 class UserService {
 
@@ -38,20 +39,48 @@ class UserService {
 
   async updateUser(id, data) {
     try {
-      const updateData = { ...data };
-      if (data.password) {
-        delete updateData.password; // Handle password update separately if needed
-      }
-
-      const updatedUser = await User.findByIdAndUpdate(id, updateData, { new: true });
-      if (!updatedUser) {
+      // Tìm người dùng trong cơ sở dữ liệu
+      const user = await User.findById(id);
+      if (!user) {
         throw new Error('User not found');
       }
+  
+      // Nếu có mật khẩu mới, băm mật khẩu mới trước khi lưu vào cơ sở dữ liệu
+      if (data.password) {
+        const hashedPassword = await bcrypt.hash(data.password, 10);
+        data.password = hashedPassword;
+      }
+  
+      // Cập nhật thông tin người dùng
+      const updatedUser = await User.findByIdAndUpdate(id, data, { new: true });
+      if (!updatedUser) {
+        throw new Error('Failed to update user');
+      }
+  
       return updatedUser;
     } catch (err) {
-      throw new Error('Error updating user');
+      throw new Error(err.message || 'Error updating user');
     }
   }
+    
+
+// async updateUser(id, data) {
+//   try {
+//     const updateData = { ...data };
+//     if (data.password) {
+//       delete updateData.password; // Handle password update separately if needed
+//     }
+
+//     const updatedUser = await User.findByIdAndUpdate(id, updateData, { new: true });
+//     if (!updatedUser) {
+//       throw new Error('User not found');
+//     }
+//     return updatedUser;
+//   } catch (err) {
+//     throw new Error('Error updating user');
+//   }
+// }
+
 
   async deleteUser(id) {
     try {
