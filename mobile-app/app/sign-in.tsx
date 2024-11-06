@@ -3,10 +3,12 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ImageBackgr
 import { router } from 'expo-router';
 import { useSession } from '@/utils/ctx';
 import { LinearGradient } from 'expo-linear-gradient';
+import { login } from '@/apis/authAPI';
+import Toast from 'react-native-toast-message';
 
 export default function SignIn() {
   const { signIn } = useSession();
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [emailOpacity, setEmailOpacity] = useState(0.5);
   const [passwordOpacity, setPasswordOpacity] = useState(0.5);
@@ -16,13 +18,34 @@ export default function SignIn() {
 
   const handleSignIn = async () => {
     try {
-            // await signIn(email, password); // Giả định signIn nhận email và mật khẩu
+      const response = await login(username, password);
 
-      await signIn(); // Giả định signIn nhận email và mật khẩu
+    
+      signIn({
+        token: response.data.token, 
+        user: response.data.user, 
+      });
+
       // Điều hướng sau khi đăng nhập thành công
-      router.replace('/');
+      Toast.show({
+        type: 'success',
+        text1: 'Chào mừng bạn đến với Golden Koi',
+        text2: 'Golden Koi xin chào!',
+        position: 'top',
+        visibilityTime: 2000,
+        autoHide: true,
+        onHide: () => router.replace('/'),
+      });
     } catch (error) {
-      Alert.alert('Đăng nhập không thành công', 'Vui lòng kiểm tra thông tin đăng nhập của bạn.');
+      Toast.show({
+        type: 'error',
+        text1: 'Đăng nhập thất bại vui lòng kiểm tra lại thông tin đăng nhập',
+        text2: 'Đăng nhập thất bại',
+        position: 'top',
+        visibilityTime: 2000,
+        autoHide: true,
+        onHide: () => router.replace('/'),
+      });
     }
   };
 
@@ -50,9 +73,9 @@ export default function SignIn() {
         <Text style={styles.title}>Đăng Nhập</Text>
         <TextInput
           style={[styles.input, { opacity: emailOpacity, ...styles.inputFocused }]}
-          placeholder="Email"
-          value={email}
-          onChangeText={setEmail}
+          placeholder="UserName"
+          value={username}
+          onChangeText={setUsername}
           keyboardType="email-address"
           autoCapitalize="none"
           autoCorrect={false}
@@ -100,9 +123,6 @@ export default function SignIn() {
         </Animated.View>
         <View style={styles.registerContainer}>
           <Text style={styles.registerText}>Bạn chưa có tài khoản?</Text>
-          {/* <TouchableOpacity onPress={() => {/* Navigate to sign up screen */}
-          {/* <TouchableOpacity onPress={() => {router.push('/sign-up')}}> */}
-
           <TouchableOpacity onPress={() => {router.push('/sign-up')}}>
             <Text style={styles.registerButton}>Đăng ký</Text>
           </TouchableOpacity>
