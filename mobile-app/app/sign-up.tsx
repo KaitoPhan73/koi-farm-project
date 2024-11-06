@@ -1,10 +1,19 @@
 import { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ImageBackground, Animated } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, Animated } from 'react-native';
 import { router } from 'expo-router';
 import { useSession } from '@/utils/ctx';
 import { LinearGradient } from 'expo-linear-gradient';
+import { register } from '@/apis/authAPI';
+import Toast from 'react-native-toast-message';
 
 export default function SignUp() {
+  const [username, setUsername] = useState('');
+  const [usernameOpcaity, setUsernameOpacity] = useState(0.5);
+  const [fullName, setFullName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [phoneOpcaity, setPhoneOpcaity] = useState(0.5);
+  const [address, setAddress] = useState('');
+  const [addressOpcaity, setAddressOpcaity] = useState(0.5);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [emailOpacity, setEmailOpacity] = useState(0.5);
@@ -14,14 +23,37 @@ export default function SignUp() {
   const [passwordFocused, setPasswordFocused] = useState(false);
   const [scaleAnim] = useState(new Animated.Value(1));
   const [name, setName] = useState('');
+  const [errorMessages, setErrorMessages] = useState<string[]>([]);
 
   const handleSignUp = async () => {
     try {
-      // await signUp(name, email, password); // Update to include name
-      // Điều hướng sau khi đăng ký thành công
-      router.replace('/');
+      const response = await register(username, fullName, email, phone, address, password);
+      Toast.show({
+        type: 'success',
+        text1: 'Đăng Ký Thành Công',
+        text2: 'Bạn đã đăng ký thành công!',
+        position: 'top',
+        visibilityTime: 2000,
+        autoHide: true,
+        onHide: () => router.replace('/sign-in'),
+      });
     } catch (error) {
-      Alert.alert('Đăng ký không thành công', 'Vui lòng kiểm tra thông tin đăng ký của bạn.');
+      // Kiểm tra xem lỗi có phản hồi không
+      if (error.response) {
+        const messages = error.response.data.errors.map((err: any) => err.msg); // Lấy thông điệp lỗi từ phản hồi
+        setErrorMessages(messages);
+      } else {
+        // Nếu không có phản hồi, hiển thị thông báo lỗi chung
+        setErrorMessages(['Đã xảy ra lỗi, vui lòng thử lại.']);
+      }
+      Toast.show({
+        type: 'error',
+        text1: 'Đăng Ký Thất bại',
+        text2: 'Bạn đã đăng ký thất bại!',
+        position: 'top',
+        visibilityTime: 2000,
+        autoHide: true
+      });
     }
   };
 
@@ -47,16 +79,43 @@ export default function SignUp() {
     >
       <View style={styles.overlay}>
         <Text style={styles.title}>Đăng Ký</Text>
+        {errorMessages.length > 0 && (
+          <View style={styles.errorContainer}>
+            {errorMessages.map((msg, index) => (
+              <Text key={index} style={styles.errorText}>{msg}</Text>
+            ))}
+          </View>
+        )}
+        <TextInput
+          style={[styles.input, { opacity: usernameOpcaity, ...styles.inputFocused }]}
+          placeholder="Username"
+          value={username}
+          onChangeText={setUsername}
+          autoCapitalize="none"
+          autoCorrect={false}
+          onFocus={() => {
+            setUsernameOpacity(0.8);
+            setEmailFocused(true);
+          }}
+          onBlur={() => {
+            setUsernameOpacity(0.5);
+            setEmailFocused(false);
+          }}
+        />
         <TextInput
           style={[styles.input, { opacity: nameOpacity, ...styles.inputFocused }]}
           placeholder="Họ và Tên"
-          value={name}
-          onChangeText={setName}
+          value={fullName}
+          onChangeText={setFullName}
           autoCapitalize="words"
           autoCorrect={false}
           onFocus={() => {
             setNameOpacity(0.8);
             setEmailFocused(true);
+          }}
+          onBlur={() => {
+            setNameOpacity(0.5);
+            setEmailFocused(false);
           }}
         />
         <TextInput
@@ -77,6 +136,39 @@ export default function SignUp() {
           }}
         />
         <TextInput
+          style={[styles.input, { opacity: phoneOpcaity, ...styles.inputFocused }]}
+          placeholder="Số điện thoại"
+          value={phone}
+          onChangeText={setPhone}
+          keyboardType="phone-pad"
+          autoCapitalize="none"
+          autoCorrect={false}
+          onFocus={() => {
+            setPhoneOpcaity(0.8);
+            setEmailFocused(true);
+          }}
+          onBlur={() => {
+            setPhoneOpcaity(0.5);
+            setEmailFocused(false);
+          }}
+        />
+        <TextInput
+          style={[styles.input, { opacity: addressOpcaity, ...styles.inputFocused }]}
+          placeholder="Địa chỉ"
+          value={address}
+          onChangeText={setAddress}
+          autoCapitalize="words"
+          autoCorrect={false}
+          onFocus={() => {
+            setAddressOpcaity(0.8);
+            setEmailFocused(true);
+          }}
+          onBlur={() => {
+            setAddressOpcaity(0.5);
+            setEmailFocused(false);
+          }}
+        />
+        <TextInput
           style={[styles.input, { opacity: passwordOpacity, ...styles.inputFocused }]}
           placeholder="Mật khẩu"
           value={password}
@@ -91,7 +183,6 @@ export default function SignUp() {
             setPasswordFocused(false);
           }}
         />
-        {/* <Text style={[styles.forgot, styles.forgotRight]}>Quên mật khẩu ?</Text> */}
         <Animated.View style={{ transform: [{ scale: scaleAnim }], width: '100%' }}>
           <TouchableOpacity
             style={styles.buttonContainer}
@@ -111,7 +202,7 @@ export default function SignUp() {
         </Animated.View>
         <View style={styles.registerContainer}>
           <Text style={styles.registerText}>Bạn đã có tài khoản?</Text>
-          <TouchableOpacity onPress={() => {router.push('/sign-in')}}>
+          <TouchableOpacity onPress={() => { router.push('/sign-in') }}>
             <Text style={styles.registerButton}>Đăng Nhập</Text>
           </TouchableOpacity>
         </View>
@@ -209,8 +300,18 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginLeft: 10,
     backgroundColor: '#C50023',
-    paddingHorizontal:15,
-    paddingVertical:3,
-    borderRadius:30
+    paddingHorizontal: 15,
+    paddingVertical: 3,
+    borderRadius: 30
+  },
+  errorContainer: {
+    marginBottom: 15,
+    backgroundColor: '#ffcccc',
+    padding: 10,
+    borderRadius: 5,
+  },
+  errorText: {
+    color: '#d8000c',
+    fontWeight: 'bold',
   },
 });
