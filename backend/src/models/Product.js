@@ -12,7 +12,7 @@ const productSchema = new Schema(
     },
     category: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Categories',
+      ref: 'Categories',  
       required: true,
     },
     age: {

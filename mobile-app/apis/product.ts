@@ -22,6 +22,16 @@ const productAPI = {
 
     return response.data;
   },
+
+  getProductsById: async (
+    id: string
+  ) => {
+    const response: ApiResponse<TProductResponse> = await apiClient.get(
+      `products/${id}`,
+    );
+
+    return response.data;
+  },
   // getTool: async (id: string): Promise<toolResponse> => {
   //   const response: ApiResponse<toolResponse> = await apiClient.get(
   //     `favorite-art-tools/${id}`

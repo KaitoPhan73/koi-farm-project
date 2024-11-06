@@ -14,7 +14,6 @@ class ProductController {
     try {
       const { page, limit, category } = req.query;
 
-      // Sử dụng phương thức getAllProducts từ productService
       const productsData = await productService.getAllProducts(
         parseInt(page),
         parseInt(limit),
@@ -31,7 +30,7 @@ class ProductController {
           items: products,
         });
       } else {
-        return res.status(200).json({ items: productsData }); // Trả về toàn bộ sản phẩm nếu không có phân trang
+        return res.status(200).json({ items: productsData }); 
       }
     } catch (error) {
       return res.status(500).json({ message: error.message });
