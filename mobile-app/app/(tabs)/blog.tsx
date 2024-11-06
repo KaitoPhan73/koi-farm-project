@@ -1,3 +1,4 @@
+// KoiBlogList.tsx
 import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, StyleSheet, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
@@ -88,4 +89,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default KoiBlogList
+export default KoiBlogList;

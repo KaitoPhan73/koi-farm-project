@@ -1,54 +1,65 @@
-// controllers/authController.js
 const authService = require('../services/authService');
+const { validationResult } = require('express-validator');
 
 class AuthController {
   // Hàm xử lý yêu cầu đăng nhập
   async login(req, res) {
+    // check lỗi xác thực
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
     const { username, password } = req.body;
 
     try {
       const { token, user } = await authService.login(username, password);
 
-      // Exclude the password from the response
-      const { password: _, ...responseUser } = user.toObject(); // Renaming password to _ to avoid confusion
+      const { password: _, ...responseUser } = user.toObject();
 
-      // Send the response without the password
       res.json({ token, user: responseUser });
     } catch (error) {
-      res.status(400).json({ message: error.message });
+      console.error('Login error:', error);  // Logging error
+      res.status(500).json({ message: 'Internal Server Error' });
     }
   }
 
-  // Hàm xử lý yêu cầu đăng ký
   async register(req, res) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
     const userData = req.body;
 
     try {
-      // Gọi hàm đăng ký từ authService
       const newUser = await authService.register(userData);
 
-      // Chuyển đổi đối tượng Mongoose sang object JS và loại bỏ trường password và role
       const { password, role, ...responseUser } = newUser.toObject();
 
-      // Gửi phản hồi mà không có password và role
       res.status(201).json(responseUser);
     } catch (error) {
-      res.status(400).json({ message: error.message });
+      console.error('Register error:', error);  // Logging error
+      res.status(500).json({ message: 'Internal Server Error' });
     }
   }
 
-  // Hàm xử lý yêu cầu đặt lại mật khẩu
   async resetPassword(req, res) {
+    // Kiểm tra lỗi xác thực
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
     const { username, newPassword } = req.body;
 
     try {
-      const updatedUser = await authService.resetPassword(
-        username,
-        newPassword
-      );
-      res.json({ message: 'Password reset successfully', user: updatedUser });
+      await authService.resetPassword(username, newPassword);
+
+      res.json({ message: 'Password reset successfully' });
     } catch (error) {
-      res.status(400).json({ message: error.message });
+      console.error('Reset password error:', error);  // Logging error
+      res.status(500).json({ message: 'Internal Server Error' });
     }
   }
 }

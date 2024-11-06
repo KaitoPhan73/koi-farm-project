@@ -1,149 +1,100 @@
-import React, { createContext, useState, useContext, useEffect } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { TProductResponse } from "@/schema/product.schema";
-import Toast from "react-native-toast-message";
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Toast from 'react-native-toast-message';
 
-// Định nghĩa interface CartItem
 interface CartItem {
-  _id: string; // Sử dụng _id thay vì id
+  _id: string;
   name: string;
   price: number;
-  imageUrl: string | undefined; // Thay đổi kiểu thành string | undefined
-  quantity: number; // Thêm trường quantity
+  imageUrl: string | undefined;
+  quantity: number;
 }
 
-// Định nghĩa AddToCartParams
-export interface AddToCartParams {
-  _id: string; // ID của sản phẩm
-  name: string; // Tên sản phẩm
-  price: number; // Giá sản phẩm
-  imageUrl: string | undefined; // Đường dẫn đến hình ảnh sản phẩm
-  quantity: number; // Số lượng sản phẩm
+interface AddToCartParams {
+  _id: string;
+  name: string;
+  price: number;
+  imageUrl: string | undefined;
+  quantity: number;
 }
 
-
-// Định nghĩa CartContextType
 interface CartContextType {
   cartItems: CartItem[];
-  addToCart: (item: AddToCartParams) => Promise<void>; // Sử dụng AddToCartParams
-  removeFromCart: (_id: string) => Promise<void>; // Sử dụng _id
-  clearCart: () => Promise<void>;
-  calculateTotalPrice: () => number;
-  isItemInCart: (_id: string) => boolean; // Sử dụng _id
+  addToCart: (item: AddToCartParams) => Promise<void>;
+  removeFromCart: (id: string) => Promise<void>;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-// Hàm để hiển thị toast thông báo khi xóa giỏ hàng
-const showToastClearCart = () => {
-  Toast.show({
-    type: "info",
-    text1: "Cleared all items from cart",
-  });
-};
+export const CartProvider = ({ children }: { children: ReactNode }) => {
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
-// CartProvider Component
-export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]); // Sử dụng CartItem[]
-
-  // Tải giỏ hàng từ AsyncStorage khi khởi tạo
   useEffect(() => {
-    loadCartItems();
+    const loadCart = async () => {
+      const savedCart = await AsyncStorage.getItem('cart');
+      if (savedCart) {
+        setCartItems(JSON.parse(savedCart));
+      }
+    };
+    loadCart();
   }, []);
 
-  const loadCartItems = async () => {
-    try {
-      const storedCart = await AsyncStorage.getItem("cart");
-      if (storedCart) {
-        setCartItems(JSON.parse(storedCart));
-      }
-    } catch (error) {
-      console.error("Failed to load cart items", error);
-    }
-  };
-
-  const addToCart = async (item: AddToCartParams) => { // Sử dụng AddToCartParams
+  const addToCart = async (item: AddToCartParams) => {
     try {
       const existingItem = cartItems.find((cartItem) => cartItem._id === item._id);
       let updatedCart: CartItem[];
 
       if (existingItem) {
+        // Cập nhật số lượng nếu sản phẩm đã có trong giỏ hàng
         updatedCart = cartItems.map((cartItem) =>
           cartItem._id === item._id
-            ? { ...cartItem, quantity: cartItem.quantity + item.quantity }
+            ? { ...cartItem, quantity: cartItem.quantity + 1 }
             : cartItem
         );
       } else {
+        // Thêm sản phẩm mới với số lượng ban đầu là 1
         updatedCart = [
           ...cartItems,
-          { _id: item._id, name: item.name, price: item.price, imageUrl: item.imageUrl, quantity: item.quantity },
+          { ...item, quantity: 1 },
         ];
       }
 
       setCartItems(updatedCart);
-      await AsyncStorage.setItem("cart", JSON.stringify(updatedCart));
+      await AsyncStorage.setItem('cart', JSON.stringify(updatedCart));
       Toast.show({
-        type: "success",
-        text1: "Item added to cart successfully",
+        type: 'success',
+        text1: 'Added to cart successfully',
       });
     } catch (error) {
-      console.error("Failed to add item to cart", error);
+      console.error('Failed to add item to cart', error);
     }
   };
 
-  const removeFromCart = async (_id: string) => {
+  const removeFromCart = async (id: string) => {
     try {
-      const updatedCart = cartItems.filter((item) => item._id !== _id);
+      const updatedCart = cartItems.filter((item) => item._id !== id);
       setCartItems(updatedCart);
-      await AsyncStorage.setItem("cart", JSON.stringify(updatedCart));
+      await AsyncStorage.setItem('cart', JSON.stringify(updatedCart));
       Toast.show({
-        type: "success",
-        text1: "Item removed from cart successfully",
+        type: 'success',
+        text1: 'Removed from cart',
       });
     } catch (error) {
-      console.error("Failed to remove item from cart", error);
+      console.error('Failed to remove item from cart', error);
     }
   };
-
-  const clearCart = async () => {
-    try {
-      setCartItems([]);
-      await AsyncStorage.removeItem("cart");
-      showToastClearCart();
-    } catch (error) {
-      console.error("Failed to clear cart", error);
-    }
-  };
-
-  const calculateTotalPrice = () => {
-    return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
-  };
-
-  const isItemInCart = (_id: string) => cartItems.some((item) => item._id === _id);
 
   return (
-    <CartContext.Provider
-      value={{
-        cartItems,
-        addToCart,
-        removeFromCart,
-        clearCart,
-        calculateTotalPrice,
-        isItemInCart,
-      }}
-    >
+    <CartContext.Provider value={{ cartItems, addToCart, removeFromCart }}>
       {children}
     </CartContext.Provider>
   );
 };
 
-// Hook để sử dụng CartContext
 export const useCart = () => {
   const context = useContext(CartContext);
-  if (context === undefined) {
-    throw new Error("useCart must be used within a CartProvider");
+  if (!context) {
+    throw new Error('useCart must be used within a CartProvider');
   }
   return context;
 };

@@ -1,52 +1,53 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React, { useState } from "react";
-import { useRouter } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import Loading from "./Loading";
 import Colors from "@/constants/Colors";
-import { AddToCartParams, useCart } from "@/hooks/useCartActions"; // Import custom hook
 import { TProductResponse } from "@/schema/product.schema";
-import { Ionicons } from "@expo/vector-icons";
+import { AntDesign, Ionicons } from "@expo/vector-icons";
+import { useCart } from "@/hooks/useCartActions";
 
 type Props = {
   productList: TProductResponse[];
 };
 
 const ProductList = ({ productList = [] }: Props) => {
-  const { cartItems, addToCart, removeFromCart } = useCart(); // Use the custom hook
+  const { cartItems, addToCart, removeFromCart } = useCart();
   const [showAll, setShowAll] = useState(false);
   const router = useRouter();
 
-  // Determine which products to display
   const displayedProductList = showAll ? productList : productList.slice(0, 5);
 
   return (
-    <View style={styles.container}>
-      {productList.length === 0 ? (
-        <Loading size="large" />
-      ) : (
-        displayedProductList.map((item) => (
+    <>
+      <View style={styles.container}>
+        {productList.length === 0 ? (
+          <Loading size="large" />
+        ) : (
+          displayedProductList.map((item) => (
+            <View key={item._id} style={styles.itemWrapper}>
+              <ProductItem
+                item={item}
+                isInCart={cartItems.some(
+                  (cartItem) => cartItem._id === item._id
+                )}
+                addToCart={addToCart}
+                removeFromCart={removeFromCart}
+                onPress={() => router.push(`/products/${item._id}`)}
+              />
+            </View>
+          ))
+        )}
+        {productList.length > 5 && !showAll && (
           <TouchableOpacity
-            key={item._id}
-            onPress={() => router.push(`/news/${item._id}`)}
+            onPress={() => setShowAll(true)}
+            style={styles.seeMoreButton}
           >
-            <ProductItem
-              item={item}
-              isInCart={cartItems.some((cartItem) => cartItem._id === item._id)} // Check if the product is in the cart
-              addToCart={addToCart}
-              removeFromCart={removeFromCart}
-            />
+            <Text style={styles.seeMoreText}>See More...</Text>
           </TouchableOpacity>
-        ))
-      )}
-      {productList.length > 5 && !showAll && (
-        <TouchableOpacity
-          onPress={() => setShowAll(true)}
-          style={styles.seeMoreButton}
-        >
-          <Text style={styles.seeMoreText}>See More...</Text>
-        </TouchableOpacity>
-      )}
-    </View>
+        )}
+      </View>
+    </>
   );
 };
 
@@ -55,32 +56,30 @@ const ProductItem = ({
   isInCart,
   addToCart,
   removeFromCart,
+  onPress,
 }: {
   item: TProductResponse;
   isInCart: boolean;
-  addToCart: (item: AddToCartParams) => Promise<void>;
+  addToCart: (item: any) => Promise<void>;
   removeFromCart: (id: string) => Promise<void>;
+  onPress: () => void;
 }) => {
-  // Tạo hàm xử lý thêm/xóa sản phẩm
   const handleCartAction = () => {
-    const params: AddToCartParams = {
-      _id: item._id,
-      name: item.name,
-      price: item.price,
-      imageUrl: item.imageUrl || "",
-      quantity: 1,
-      // Các thuộc tính khác cần thiết nếu cần
-    };
-
     if (isInCart) {
       removeFromCart(item._id);
     } else {
-      addToCart(params);
+      addToCart({
+        _id: item._id,
+        name: item.name,
+        price: item.price,
+        imageUrl: item.imageUrl || "",
+        quantity: 1,
+      });
     }
   };
 
   return (
-    <View style={styles.itemContainer}>
+    <TouchableOpacity onPress={onPress} style={styles.itemContainer}>
       <Image source={{ uri: item.imageUrl }} style={styles.itemImg} />
       <View style={styles.itemInfo}>
         <Text style={styles.itemCategory}>
@@ -89,14 +88,14 @@ const ProductItem = ({
         <Text style={styles.itemTitle}>{item.name}</Text>
         <Text style={styles.itemSourceName}>Price: {item.price} VND</Text>
       </View>
-      <TouchableOpacity onPress={handleCartAction}>
+      <TouchableOpacity onPress={handleCartAction} style={styles.cartButton}>
         <Ionicons
-          name="bag-add"
+          name={isInCart ? "cart" : "cart-outline"}
           size={22}
           color={isInCart ? "red" : Colors.black}
         />
       </TouchableOpacity>
-    </View>
+    </TouchableOpacity>
   );
 };
 
@@ -105,22 +104,28 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     marginBottom: 50,
   },
+  itemWrapper: {
+    marginBottom: 20,
+  },
   itemContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 20,
-    flex: 1,
-    gap: 10,
+    padding: 10,
+    backgroundColor: Colors.lightGrey,
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
   },
   itemImg: {
     width: 90,
     height: 100,
-    borderRadius: 20,
+    borderRadius: 10,
     marginRight: 10,
   },
   itemInfo: {
     flex: 1,
-    gap: 10,
     justifyContent: "space-between",
   },
   itemCategory: {
@@ -128,14 +133,16 @@ const styles = StyleSheet.create({
     color: Colors.darkGrey,
   },
   itemTitle: {
-    fontSize: 12,
-    fontWeight: "600",
+    fontSize: 14,
+    fontWeight: "bold",
     color: Colors.black,
   },
   itemSourceName: {
-    fontSize: 10,
-    fontWeight: "400",
+    fontSize: 12,
     color: Colors.tint,
+  },
+  cartButton: {
+    padding: 5,
   },
   seeMoreButton: {
     marginTop: 10,
