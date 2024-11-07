@@ -8,6 +8,7 @@ import { ApiResponse } from "@/types/response";
 import { ProductSchema, TProductResponse } from "@/schema/product.schema";
 import { TCategoryResponse } from "@/schema/category.schema";
 import { TTableResponse } from "@/types/table";
+import { TProductBaseResponse } from "@/schema/productbase.schema";
 
 const productAPI = {
   getProducts: async (
@@ -23,11 +24,34 @@ const productAPI = {
     return response.data;
   },
 
+  getProductBase: async (
+    params?: any
+  ) => {
+    const response: ApiResponse<TTableResponse<TProductBaseResponse>> = await apiClient.get(
+      "/product-bases",
+      {
+        params,
+      }
+    );
+
+    return response.data;
+  },
+
   getProductsById: async (
     id: string
   ) => {
     const response: ApiResponse<TProductResponse> = await apiClient.get(
       `products/${id}`,
+    );
+
+    return response.data;
+  },
+
+  getProductBaseById: async (
+    id: string
+  ) => {
+    const response: ApiResponse<TProductBaseResponse> = await apiClient.get(
+      `product-bases/${id}`,
     );
 
     return response.data;

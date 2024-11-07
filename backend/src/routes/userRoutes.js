@@ -35,16 +35,14 @@ const userController = require('../controllers/userController');
  *       500:
  *         description: Internal server error
  */
-// router.post('/', userController.create);
+router.post('/', userController.create);
 
 /**
  * @swagger
  * /users:
  *   get:
- *     summary: Get users with pagination
- *     tags: [Users]
+ *     tags: [User]
  *     parameters:
- *       - in: query
  *         name: page
  *         schema:
  *           type: integer

@@ -22,6 +22,7 @@ interface CartContextType {
   cartItems: CartItem[];
   addToCart: (item: AddToCartParams) => Promise<void>;
   removeFromCart: (id: string) => Promise<void>;
+  updateCartItemQuantity: (id: string, quantity: number) => Promise<void>; // Add this function
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -84,8 +85,27 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const updateCartItemQuantity = async (id: string, quantity: number) => {
+    try {
+      const updatedCart = cartItems.map((cartItem) =>
+        cartItem._id === id
+          ? { ...cartItem, quantity }
+          : cartItem
+      );
+
+      setCartItems(updatedCart);
+      await AsyncStorage.setItem('cart', JSON.stringify(updatedCart));
+      Toast.show({
+        type: 'success',
+        text1: 'Cart item updated successfully',
+      });
+    } catch (error) {
+      console.error('Failed to update cart item quantity', error);
+    }
+  };
+
   return (
-    <CartContext.Provider value={{ cartItems, addToCart, removeFromCart }}>
+    <CartContext.Provider value={{ cartItems, addToCart, removeFromCart, updateCartItemQuantity }}>
       {children}
     </CartContext.Provider>
   );

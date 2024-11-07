@@ -1,12 +1,11 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
-// Define the Product schema
 const productSchema = new Schema(
   {
     productBase: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Categories',  
+      ref: 'ProductBase', 
       required: true,
     },
     size: {

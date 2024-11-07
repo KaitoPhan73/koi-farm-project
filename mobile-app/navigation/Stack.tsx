@@ -1,6 +1,6 @@
 import { createStackNavigator } from "@react-navigation/stack";  
 import { Tabs } from "expo-router";  
-import DetailScreen from "@/app/art-tools/[id]";  
+import DetailScreen from "@/app/products/[id]";  
 
 const Stack = createStackNavigator();
 
