@@ -5,53 +5,46 @@ import {
 } from "@/schema/tool.schema";
 import apiClient from "./apiClient";
 import { ApiResponse } from "@/types/response";
+import { ProductSchema, TProductResponse } from "@/schema/product.schema";
+import { TCategoryResponse } from "@/schema/category.schema";
+import { TTableResponse } from "@/types/table";
 
 const toolApi = {
-  getTools: async (
-    brand?: string,
-    artName?: string
-  ): Promise<toolResponse[]> => {
-    const response: ApiResponse<toolResponse[]> = await apiClient.get(
-      "favorite-art-tools",
+  getProducts: async (
+    category?: string,
+    name?: string
+  ): Promise<TProductResponse[]> => {
+    const response: ApiResponse<TProductResponse[]> = await apiClient.get(
+      "products",
       {
         params: {
-          brand: brand,
-          artName: artName,
+          category: category,
+          name: name,
         },
       }
     );
 
-    return toolsArraySchema.parse(response.data);
+    return response.data;
   },
-  getTool: async (id: string): Promise<toolResponse> => {
-    const response: ApiResponse<toolResponse> = await apiClient.get(
-      `favorite-art-tools/${id}`
-    );
+  // getTool: async (id: string): Promise<toolResponse> => {
+  //   const response: ApiResponse<toolResponse> = await apiClient.get(
+  //     `favorite-art-tools/${id}`
+  //   );
 
-    return toolSchema.parse(response.data);
-  },
-  getBrands: async (
-    brand?: string
-  ): Promise<{ brand: string; count: number }[]> => {
-    const tools = await toolApi.getTools(brand);
-
-    // Tạo một đối tượng để đếm số lượng cho mỗi thương hiệu
-    const brandCounts: { [key: string]: number } = {};
-
-    tools.forEach((tool) => {
-      const brandName = tool.brand; // Giả sử mỗi tool có thuộc tính brand
-      if (brandCounts[brandName]) {
-        brandCounts[brandName] += 1;
-      } else {
-        brandCounts[brandName] = 1;
+  //   return toolSchema.parse(response.data);
+  // },
+  getCategories: async (
+    params?: any
+  ) => {
+    const response: ApiResponse<TTableResponse<TCategoryResponse>> = await apiClient.get(
+      "categories",
+      {
+        params
       }
-    });
+    );
+    console.log("🚀 ~ response:", response)
 
-    // Chuyển đổi đối tượng thành mảng
-    return Object.entries(brandCounts).map(([brand, count]) => ({
-      brand,
-      count,
-    }));
+    return response.data;
   },
 };
 

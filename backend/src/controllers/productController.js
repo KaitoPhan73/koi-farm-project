@@ -20,12 +20,26 @@ class ProductController {
 
   async getAll(req, res) {
     try {
-      const result = await productService.getAllProducts(req.query);
-      res.status(200).json({
-        success: true,
-        data: result.products,
-        pagination: result.pagination,
-      });
+      const { page, limit, category } = req.query;
+
+      const productsData = await productService.getAllProducts(
+        parseInt(page),
+        parseInt(limit),
+        category // Thêm category vào đây
+      );
+
+      if (page && limit) {
+        const { products, totalItems, totalPages } = productsData;
+        return res.status(200).json({
+          page: parseInt(page),
+          limit: parseInt(limit),
+          totalPages,
+          totalItems,
+          items: products,
+        });
+      } else {
+        return res.status(200).json({ items: productsData });
+      }
     } catch (error) {
       res.status(500).json({
         success: false,
