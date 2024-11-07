@@ -46,7 +46,7 @@ export function FormCreateProduct({ categories }: FormCreateProductProps) {
       age: 0,
       origin: "",
       gender: "Male", // Default value if needed
-      size: 0,
+      size: "S",
       breed: "",
       personality: "",
       dailyFeedAmount: 0,
