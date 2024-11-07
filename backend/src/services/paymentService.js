@@ -14,9 +14,14 @@ exports.createPaymentIntent = async (amount, currency) => {
             amount,
             currency,
             status: paymentIntent.status,
+            clientSecret: paymentIntent.client_secret, 
+
         });
 
-        return payment;
+        return {
+            id: payment._id,
+            clientSecret: paymentIntent.client_secret,
+        };;
     } catch (error) {
         throw new Error(error.message);
     }
