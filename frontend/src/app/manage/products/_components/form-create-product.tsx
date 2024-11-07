@@ -29,6 +29,7 @@ import { useRouter } from "next/navigation";
 import { listStatus } from "./config";
 import { Checkbox } from "@/components/ui/checkbox";
 import { TUserResponse } from "@/schema/user.schema";
+import { HttpError, EntityError } from "@/lib/http";
 
 interface FormCreateProductProps {
   productBases: TProductBaseResponse[];
@@ -52,6 +53,12 @@ export function FormCreateProduct({
       gender: "Male",
       price: 0,
       status: "Available",
+      stock: 0,
+      consignment: {
+        isConsignment: false,
+        supplier: undefined,
+        commission: 0,
+      },
     },
   });
 
@@ -62,15 +69,37 @@ export function FormCreateProduct({
       const response = await createProduct(data);
       if (response.status === 201) {
         toast({
-          title: "Product Created Successfully",
+          title: "Success",
+          description: "Product created successfully",
+          variant: "default",
         });
-        router.push("/admin/products");
+        router.push("/manage/products");
       }
     } catch (error) {
-      toast({
-        title: "Error",
-        description: `Failed to create product: ${error}`,
-      });
+      if (error instanceof HttpError) {
+        if (error instanceof EntityError) {
+          error.errors.forEach((err) => {
+            toast({
+              title: "Validation Error",
+              description: `${err.field}: ${err.message}`,
+              variant: "destructive",
+            });
+          });
+        } else {
+          toast({
+            title: "Error",
+            description: error.payload.message,
+            variant: "destructive",
+          });
+        }
+      } else {
+        toast({
+          title: "Error",
+          description: "An unexpected error occurred",
+          variant: "destructive",
+        });
+      }
+      console.error("Error creating product:", error);
     } finally {
       setIsLoading(false);
     }
