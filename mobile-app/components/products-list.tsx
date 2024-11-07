@@ -1,99 +1,85 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React, { useEffect, useState } from "react";
-import { Link } from "expo-router";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Ionicons } from "@expo/vector-icons";
-import Toast from "react-native-toast-message";
-import { TProductResponse } from "@/schema/product.schema";
+import React, { useState } from "react";
+import { Stack, useRouter } from "expo-router";
 import Loading from "./Loading";
 import Colors from "@/constants/Colors";
+import { TProductResponse } from "@/schema/product.schema";
+import { AntDesign, Ionicons } from "@expo/vector-icons";
+import { useCart } from "@/hooks/useCartActions";
 
 type Props = {
-  newsList: TProductResponse[];
+  productList: TProductResponse[];
 };
 
-const NewsList = ({ newsList = [] }: Props) => {
-  const [bookmarkedItems, setBookmarkedItems] = useState<string[]>([]);
+const ProductList = ({ productList = [] }: Props) => {
+  const { cartItems, addToCart, removeFromCart } = useCart();
   const [showAll, setShowAll] = useState(false);
+  const router = useRouter();
 
-  useEffect(() => {
-    const fetchBookmarks = async () => {
-      const token = await AsyncStorage.getItem("bookmark");
-      const bookmarks = token ? JSON.parse(token) : [];
-      setBookmarkedItems(bookmarks);
-    };
-    fetchBookmarks();
-  }, []);
-
-  const saveBookmark = async (id: string) => {
-    const newBookmarks = [...bookmarkedItems, id];
-    await AsyncStorage.setItem("bookmark", JSON.stringify(newBookmarks));
-    setBookmarkedItems(newBookmarks);
-    Toast.show({
-      type: "success",
-      text1: "Art Tool Saved Successfully",
-      position: "top",
-    });
-  };
-
-  const removeBookmark = async (id: string) => {
-    const newBookmarks = bookmarkedItems.filter((item) => item !== id);
-    await AsyncStorage.setItem("bookmark", JSON.stringify(newBookmarks));
-    setBookmarkedItems(newBookmarks);
-    Toast.show({
-      type: "success",
-      text1: "Art Tool Unsaved Successfully.",
-      position: "top",
-    });
-  };
-
-  const displayedNewsList = showAll ? newsList : newsList.slice(0, 5);
+  const displayedProductList = showAll ? productList : productList.slice(0, 5);
 
   return (
-    <View style={styles.container}>
-      {newsList.length === 0 ? (
-        <Loading size="large" />
-      ) : (
-        displayedNewsList.map((item) => (
-          <Link href={`/news/${item._id}` as const} asChild key={item._id}>
-            <TouchableOpacity>
-              <NewsItem
+    <>
+      <View style={styles.container}>
+        {productList.length === 0 ? (
+          <Loading size="large" />
+        ) : (
+          displayedProductList.map((item) => (
+            <View key={item._id} style={styles.itemWrapper}>
+              <ProductItem
                 item={item}
-                isBookmarked={bookmarkedItems.includes(item._id)}
-                saveBookmark={saveBookmark}
-                removeBookmark={removeBookmark}
+                isInCart={cartItems.some(
+                  (cartItem) => cartItem._id === item._id
+                )}
+                addToCart={addToCart}
+                removeFromCart={removeFromCart}
+                onPress={() => router.push(`/products/${item._id}`)}
               />
-            </TouchableOpacity>
-          </Link>
-        ))
-      )}
-      {newsList.length > 5 && !showAll && (
-        <TouchableOpacity
-          onPress={() => setShowAll(true)}
-          style={styles.seeMoreButton}
-        >
-          <Text style={styles.seeMoreText}>See More...</Text>
-        </TouchableOpacity>
-      )}
-    </View>
+            </View>
+          ))
+        )}
+        {productList.length > 5 && !showAll && (
+          <TouchableOpacity
+            onPress={() => setShowAll(true)}
+            style={styles.seeMoreButton}
+          >
+            <Text style={styles.seeMoreText}>See More...</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+    </>
   );
 };
 
-export default NewsList;
-
-const NewsItem = ({
+const ProductItem = ({
   item,
-  isBookmarked,
-  saveBookmark,
-  removeBookmark,
+  isInCart,
+  addToCart,
+  removeFromCart,
+  onPress,
 }: {
   item: TProductResponse;
-  isBookmarked: boolean;
-  saveBookmark: (id: string) => Promise<void>;
-  removeBookmark: (id: string) => Promise<void>;
+  isInCart: boolean;
+  addToCart: (item: any) => Promise<void>;
+  removeFromCart: (id: string) => Promise<void>;
+  onPress: () => void;
 }) => {
+  const handleCartAction = () => {
+    if (isInCart) {
+      removeFromCart(item._id);
+    } else {
+      addToCart({
+        _id: item._id,
+        name: item.name,
+        price: item.price,
+        imageUrl: item.imageUrl || "",
+        quantity: 1,
+      });
+    }
+  };
+
   return (
-    <View style={styles.itemContainer}>
+    <TouchableOpacity onPress={onPress} style={styles.itemContainer}>
       <Image source={{ uri: item.imageUrl }} style={styles.itemImg} />
       <View style={styles.itemInfo}>
         <Text style={styles.itemCategory}>
@@ -102,18 +88,14 @@ const NewsItem = ({
         <Text style={styles.itemTitle}>{item.name}</Text>
         <Text style={styles.itemSourceName}>Price: {item.price} VND</Text>
       </View>
-      <TouchableOpacity
-        onPress={() =>
-          isBookmarked ? removeBookmark(item._id) : saveBookmark(item._id)
-        }
-      >
+      <TouchableOpacity onPress={handleCartAction} style={styles.cartButton}>
         <Ionicons
-          name={isBookmarked ? "heart" : "heart-outline"}
+          name={isInCart ? "cart" : "cart-outline"}
           size={22}
-          color={isBookmarked ? "red" : Colors.black}
+          color={isInCart ? "red" : Colors.black}
         />
       </TouchableOpacity>
-    </View>
+    </TouchableOpacity>
   );
 };
 
@@ -122,22 +104,28 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     marginBottom: 50,
   },
+  itemWrapper: {
+    marginBottom: 20,
+  },
   itemContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 20,
-    flex: 1,
-    gap: 10,
+    padding: 10,
+    backgroundColor: Colors.lightGrey,
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
   },
   itemImg: {
     width: 90,
     height: 100,
-    borderRadius: 20,
+    borderRadius: 10,
     marginRight: 10,
   },
   itemInfo: {
     flex: 1,
-    gap: 10,
     justifyContent: "space-between",
   },
   itemCategory: {
@@ -145,14 +133,16 @@ const styles = StyleSheet.create({
     color: Colors.darkGrey,
   },
   itemTitle: {
-    fontSize: 12,
-    fontWeight: "600",
+    fontSize: 14,
+    fontWeight: "bold",
     color: Colors.black,
   },
   itemSourceName: {
-    fontSize: 10,
-    fontWeight: "400",
+    fontSize: 12,
     color: Colors.tint,
+  },
+  cartButton: {
+    padding: 5,
   },
   seeMoreButton: {
     marginTop: 10,
@@ -167,3 +157,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
 });
+
+export default ProductList;
