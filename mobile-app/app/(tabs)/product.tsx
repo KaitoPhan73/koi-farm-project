@@ -8,12 +8,13 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
 import Loading from "@/components/Loading";
 import productAPI from "@/apis/product";
+import { TProductBaseResponse } from "@/schema/productbase.schema";
 
 export default function Product() {
   const { category, name } = useLocalSearchParams();
   const router = useRouter();
 
-  const [products, setProducts] = useState<TProductResponse[]>([]);
+  const [products, setProducts] = useState<TProductBaseResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalPages, setTotalPages] = useState(0);
   const limit = 6;
@@ -22,7 +23,7 @@ export default function Product() {
     setLoading(true);
     try {
       const params = { page, limit, category, name };
-      const response = await productAPI.getProducts(params);
+      const response = await productAPI.getProductBase(params);
       setProducts(response.items);
       setTotalPages(response.totalPages);
     } catch (error) {

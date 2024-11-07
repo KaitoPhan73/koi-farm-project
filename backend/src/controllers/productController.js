@@ -18,30 +18,34 @@ class ProductController {
   });
 
   getAll = catchAsync(async (req, res) => {
-    const { page, limit, category } = req.query;
+    try {
+      const { page, limit, categoryId } = req.query;
 
-    const productsData = await productService.getAllProducts(
-      parseInt(page),
-      parseInt(limit),
-      category
-    );
+      const productsData = await productService.getAllProducts(
+        parseInt(page),
+        parseInt(limit),
+        categoryId
+      );
 
-    if (page && limit) {
-      const { products, totalItems, totalPages } = productsData;
+      if (page && limit) {
+        const { products, totalItems, totalPages } = productsData;
+        return res.status(200).json({
+          success: true,
+          page: parseInt(page),
+          limit: parseInt(limit),
+          totalPages,
+          totalItems,
+          items: products,
+        });
+      }
+
       return res.status(200).json({
         success: true,
-        page: parseInt(page),
-        limit: parseInt(limit),
-        totalPages,
-        totalItems,
-        items: products,
+        items: productsData,
       });
+    } catch (error) {
+      throw new ApiError(500, 'Failed to fetch products', error.message);
     }
-
-    return res.status(200).json({
-      success: true,
-      items: productsData,
-    });
   });
 
   getById = catchAsync(async (req, res) => {

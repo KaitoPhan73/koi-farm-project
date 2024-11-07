@@ -9,24 +9,24 @@ import {
   Modal,
   FlatList,
 } from "react-native";
-import { useCart } from "@/hooks/useCartActions"; // Hook cho giỏ hàng
+import { useCart } from "@/hooks/useCartActions"; // Assuming this handles cart logic
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import AntDesign from "react-native-vector-icons/AntDesign";
-import productAPI from "@/apis/product"; // API lấy thông tin sản phẩm
-import Colors from "@/constants/Colors"; // Màu sắc ứng dụng
+import productAPI from "@/apis/product";
+import Colors from "@/constants/Colors";
 
 const ProductDetails = () => {
-  const { id } = useLocalSearchParams<{ id: string }>(); // Lấy id từ params
-  const { addToCart, cartItems, removeFromCart } = useCart(); // Sử dụng hook giỏ hàng
-  const [product, setProduct] = useState<any>(null); // Trạng thái thông tin sản phẩm
-  const [isLoading, setIsLoading] = useState(true); // Trạng thái loading
-  const [modalVisible, setModalVisible] = useState(false); // Trạng thái modal giỏ hàng
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const { addToCart, cartItems, removeFromCart, updateCartItemQuantity } = useCart(); // Assuming the hook manages quantity
+  const [product, setProduct] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await productAPI.getProductsById(id);
+        const response = await productAPI.getProductBaseById(id);
         setProduct(response);
       } catch (error) {
         console.error("Error fetching product:", error);
@@ -34,37 +34,33 @@ const ProductDetails = () => {
         setIsLoading(false);
       }
     };
-
     fetchProduct();
   }, [id]);
 
-  const isInCart = cartItems.some((item) => item._id === id); // Kiểm tra sản phẩm có trong giỏ hàng không
-  const openCart = () => {
-    setModalVisible(true); // Mở modal giỏ hàng
-  };
+  const isInCart = cartItems.some((item) => item._id === id);
 
   const handleAddToCart = async () => {
     if (product) {
       await addToCart({
         _id: product._id,
         name: product.name,
-        price: product.price,
+        price: product.basePrice,
         imageUrl: product.imageUrl,
-        quantity: 1, // Khởi tạo số lượng là 1 khi thêm vào giỏ hàng
+        quantity: 1, // Adding a product with 1 as quantity
       });
     }
   };
 
   const toggleCart = () => {
     if (isInCart) {
-      removeFromCart(product._id); // Xóa sản phẩm khỏi giỏ hàng
+      removeFromCart(product._id);
     } else {
-      handleAddToCart(); // Thêm sản phẩm vào giỏ hàng
+      handleAddToCart();
     }
   };
 
   if (isLoading) {
-    return <Text>Loading...</Text>; // Trạng thái loading
+    return <Text>Loading...</Text>; // Loading indicator while fetching product data
   }
 
   return (
@@ -77,11 +73,11 @@ const ProductDetails = () => {
             </TouchableOpacity>
           ),
           headerRight: () => (
-            <TouchableOpacity onPress={openCart} style={{ marginRight: 15 }}>
+            <TouchableOpacity onPress={() => setModalVisible(true)} style={{ marginRight: 15 }}>
               <AntDesign name="shoppingcart" size={24} color={Colors.black} />
             </TouchableOpacity>
           ),
-          title: "Product Details", // Tiêu đề màn hình
+          title: "Product Details",
         }}
       />
       <ScrollView contentContainerStyle={styles.contentContainer}>
@@ -93,11 +89,10 @@ const ProductDetails = () => {
 
         <View style={styles.details}>
           <Text style={styles.infoText}>
-            Price: <Text style={styles.bold}>${product.price}</Text>
+            Price: <Text style={styles.bold}>${product.basePrice}</Text>
           </Text>
           <Text style={styles.infoText}>
-            Brand:{" "}
-            <Text style={styles.bold}>{product.category?.name || "N/A"}</Text>
+            Brand: <Text style={styles.bold}>{product.category?.name || "N/A"}</Text>
           </Text>
         </View>
 
@@ -111,20 +106,16 @@ const ProductDetails = () => {
           </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          onPress={openCart}
-          style={styles.viewCartButton}
-        >
+        <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.viewCartButton}>
           <Text style={styles.viewCartText}>View Cart</Text>
         </TouchableOpacity>
       </ScrollView>
 
-      {/* Modal giỏ hàng */}
       <Modal
         animationType="slide"
         transparent={true}
         visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)} // Đóng modal
+        onRequestClose={() => setModalVisible(false)}
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
@@ -135,18 +126,29 @@ const ProductDetails = () => {
                 <View style={styles.cartItem}>
                   <Text style={styles.cartItemText}>{item.name}</Text>
                   <Text style={styles.cartItemPrice}>{item.price} VND</Text>
-                  <TouchableOpacity onPress={() => removeFromCart(item._id)}>
-                    <AntDesign name="delete" size={24} color="red" />
-                  </TouchableOpacity>
+                  <View style={styles.cartItemActions}>
+                    <TouchableOpacity
+                      onPress={() => updateCartItemQuantity(item._id, item.quantity + 1)}
+                    >
+                      <Ionicons name="add-circle" size={20} color="green" />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => updateCartItemQuantity(item._id, item.quantity - 1)}
+                    >
+                      <Ionicons name="remove-circle" size={20} color="red" />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => removeFromCart(item._id)}>
+                      <AntDesign name="delete" size={24} color="red" />
+                    </TouchableOpacity>
+                  </View>
                 </View>
               )}
             />
             <Text style={styles.totalPrice}>
-              Total: {cartItems.reduce((total, item) => total + item.price, 0)}{" "}
-              VND
+              Total: {cartItems.reduce((total, item) => total + item.price, 0)} VND
             </Text>
             <TouchableOpacity
-              onPress={() => setModalVisible(false)} // Đóng modal
+              onPress={() => setModalVisible(false)}
               style={styles.closeButton}
             >
               <Text style={styles.closeButtonText}>Close</Text>
@@ -202,6 +204,7 @@ const styles = StyleSheet.create({
   },
   cartItemText: { fontSize: 16 },
   cartItemPrice: { fontSize: 16 },
+  cartItemActions: { flexDirection: "row", alignItems: "center" },
   totalPrice: { fontSize: 18, fontWeight: "bold", marginTop: 10 },
   closeButton: {
     backgroundColor: "red",
