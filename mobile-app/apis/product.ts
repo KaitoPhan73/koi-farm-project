@@ -32,6 +32,17 @@ const productAPI = {
 
     return response.data;
   },
+
+  getProductsByCategory: async (
+    categoryId: string
+  ) => {
+    const response: ApiResponse<TProductResponse> = await apiClient.get(
+      `products/${categoryId}`,
+    );
+
+    return response.data;
+  },
+
   // getTool: async (id: string): Promise<toolResponse> => {
   //   const response: ApiResponse<toolResponse> = await apiClient.get(
   //     `favorite-art-tools/${id}`

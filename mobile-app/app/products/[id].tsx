@@ -111,10 +111,7 @@ const ProductDetails = () => {
           </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          onPress={openCart}
-          style={styles.viewCartButton}
-        >
+        <TouchableOpacity onPress={openCart} style={styles.viewCartButton}>
           <Text style={styles.viewCartText}>View Cart</Text>
         </TouchableOpacity>
       </ScrollView>

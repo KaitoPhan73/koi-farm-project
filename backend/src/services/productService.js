@@ -1,4 +1,5 @@
 const Product = require('../models/Product');
+const Category = require('../models/Category');
 
 class ProductService {
   async createProduct(data) {
@@ -33,7 +34,26 @@ class ProductService {
   }
 
   async getProductById(id) {
-    return await Product.findById(id).populate('category'); // Populate category information
+    return await Product.findById(id).populate('category');
+  }
+
+  async getProductsByCategory(categoryId) {
+    try {
+      if (!mongoose.Types.ObjectId.isValid(categoryId)) {
+        throw new Error('Invalid Category ID');
+      }
+  
+      const category = await Category.findById(categoryId);
+      if (!category) {
+        throw new Error('Category not found');
+      }
+  
+      return await Product.find({ category: categoryId })
+        .populate('category') // Populate để lấy thông tin chi tiết về category
+        .sort({ createdAt: -1 }); // Sắp xếp theo ngày tạo
+    } catch (error) {
+      throw new Error(`Failed to fetch products by category: ${error.message}`);
+    }
   }
 
   async updateProduct(id, data) {

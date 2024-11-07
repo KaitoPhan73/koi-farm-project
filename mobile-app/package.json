@@ -57,7 +57,6 @@
     "react-native-web": "~0.19.10",
     "react-native-web-hover": "^0.2.9",
     "react-water-wave": "^2.0.1",
-
     "v8-android-jit": "^11.1000.4",
     "zod": "^3.23.8"
   },
