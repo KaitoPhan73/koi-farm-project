@@ -3,12 +3,10 @@ import React, { useState } from "react";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Colors from "@/constants/Colors";
 import TabBar from "@/components/tab-bar";
-import { StyleSheet, Text, TouchableOpacity } from "react-native";
-
 import { useSession } from "@/utils/ctx";
 import { StyleSheet, Text, Modal, View, TouchableOpacity } from "react-native";
 import { Redirect } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 
 export default function TabLayout() {
   const { session, isLoading } = useSession();
@@ -60,38 +58,38 @@ export default function TabLayout() {
             ),
           }}
         />
-        
-      <Tabs.Screen
-        name="blog"
-        options={{
-          title: "Blogs",
-          headerTitleAlign: "center",
-          headerShown: true,
-          tabBarIcon: ({ color }) => (
-            <MaterialIcons name="new-label" size={24} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          headerShown: true,
-          title: "Profile",
-          headerTitleAlign: "center",
-          tabBarIcon: ({ color }) => (
-            <AntDesign name="profile" size={24} color={color} />
-          ),
-          headerRight: () => (
-            <TouchableOpacity style={styles.headerLogoutButton}>
-              <AntDesign name="logout" size={20} color="orange" />
-              <Text style={styles.headerLogoutText}>Logout</Text>
-            </TouchableOpacity>
-          ),
-        }}
-      />
-    </Tabs>
-  );
-}
+
+        <Tabs.Screen
+          name="blog"
+          options={{
+            title: "Blogs",
+            headerTitleAlign: "center",
+            headerShown: true,
+            tabBarIcon: ({ color }) => (
+              <MaterialIcons name="new-label" size={24} color={color} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="profile"
+          options={{
+            headerShown: true,
+            title: "Profile",
+            headerTitleAlign: "center",
+            tabBarIcon: ({ color }) => (
+              <AntDesign name="profile" size={24} color={color} />
+            ),
+            headerRight: () => (
+              <TouchableOpacity style={styles.headerLogoutButton}>
+                <AntDesign name="logout" size={20} color="orange" />
+                <Text style={styles.headerLogoutText}>Logout</Text>
+              </TouchableOpacity>
+            ),
+          }}
+        />
+      </Tabs>
+      );
+
 
 
       <Modal
@@ -166,7 +164,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginHorizontal: 10,
   },
-        headerLogoutButton: {
+  headerLogoutButton: {
     flexDirection: "row",
     alignItems: "center",
     marginRight: 16,

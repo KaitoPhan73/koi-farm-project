@@ -35,15 +35,13 @@ const userController = require('../controllers/userController');
  *       500:
  *         description: Internal server error
  */
-// router.post('/', userController.create);
+router.post('/', userController.create);
 
 /**
  * @swagger
  * /users:
  *   get:
-<<<<<<< HEAD
  *     tags: [User]
->>>>>>> 3d33f7f842df5c90dd52bb82b91d0c1a038cd029
  *     parameters:
  *         name: page
  *         schema:
@@ -134,7 +132,7 @@ router.put('/:id', userController.update);
  *         description: The user ID
  *     responses:
  *       200:
- *         description: User deleted successfully
+*         description: User deleted successfully
  *       404:
  *         description: User not found
  *       500:
