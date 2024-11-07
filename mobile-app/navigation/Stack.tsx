@@ -1,6 +1,6 @@
-import DetailScreen from "@/app/art-tools/[id]";
-import { Tabs } from "expo-router";
-
+import { createStackNavigator } from "@react-navigation/stack";  
+import { Tabs } from "expo-router";  
+import DetailScreen from "@/app/art-tools/[id]";  
 
 const Stack = createStackNavigator();
 
@@ -10,9 +10,13 @@ const Stacks = () => {
       <Stack.Screen
         name="Main"
         component={Tabs}
-        options={{ headerShown: false }}
+        options={{ headerShown: false }}  
       />
-      <Stack.Screen name="Detail" component={DetailScreen} />
+      <Stack.Screen
+        name="Detail"
+        component={DetailScreen}
+        options={{ title: 'Detail' }}  
+      />
     </Stack.Navigator>
   );
 };

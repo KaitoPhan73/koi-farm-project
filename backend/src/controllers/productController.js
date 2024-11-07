@@ -4,9 +4,17 @@ class ProductController {
   async create(req, res) {
     try {
       const product = await productService.createProduct(req.body);
-      res.status(201).json(product);
+      res.status(201).json({
+        success: true,
+        message: 'Product created successfully',
+        data: product,
+      });
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      res.status(400).json({
+        success: false,
+        message: 'Failed to create product',
+        error: error.message,
+      });
     }
   }
 
@@ -30,22 +38,30 @@ class ProductController {
           items: products,
         });
       } else {
-        return res.status(200).json({ items: productsData }); 
+        return res.status(200).json({ items: productsData });
       }
     } catch (error) {
-      return res.status(500).json({ message: error.message });
+      res.status(500).json({
+        success: false,
+        message: 'Failed to fetch products',
+        error: error.message,
+      });
     }
   }
 
   async getById(req, res) {
     try {
       const product = await productService.getProductById(req.params.id);
-      res.status(200).json(product);
+      res.status(200).json({
+        success: true,
+        data: product,
+      });
     } catch (error) {
-      if (error.message === 'Product not found') {
-        return res.status(404).json({ message: error.message });
-      }
-      res.status(500).json({ message: error.message });
+      const statusCode = error.message === 'Product not found' ? 404 : 500;
+      res.status(statusCode).json({
+        success: false,
+        message: error.message,
+      });
     }
   }
 
@@ -69,28 +85,54 @@ class ProductController {
 
   async update(req, res) {
     try {
-      const updatedProduct = await productService.updateProduct(
+      const product = await productService.updateProduct(
         req.params.id,
         req.body
       );
-      res.status(200).json(updatedProduct);
+      res.status(200).json({
+        success: true,
+        message: 'Product updated successfully',
+        data: product,
+      });
     } catch (error) {
-      if (error.message === 'Product not found') {
-        return res.status(404).json({ message: error.message });
-      }
-      res.status(500).json({ message: error.message });
+      const statusCode = error.message === 'Product not found' ? 404 : 400;
+      res.status(statusCode).json({
+        success: false,
+        message: error.message,
+      });
     }
   }
 
   async delete(req, res) {
     try {
       await productService.deleteProduct(req.params.id);
-      res.status(200).json({ message: 'Product deleted successfully' });
+      res.status(200).json({
+        success: true,
+        message: 'Product deleted successfully',
+      });
     } catch (error) {
-      if (error.message === 'Product not found') {
-        return res.status(404).json({ message: error.message });
-      }
-      res.status(500).json({ message: error.message });
+      const statusCode = error.message === 'Product not found' ? 404 : 500;
+      res.status(statusCode).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  }
+
+  async search(req, res) {
+    try {
+      const result = await productService.searchProducts(req.query);
+      res.status(200).json({
+        success: true,
+        data: result.products,
+        pagination: result.pagination,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: 'Failed to search products',
+        error: error.message,
+      });
     }
   }
 }

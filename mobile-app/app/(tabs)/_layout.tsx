@@ -2,10 +2,11 @@ import { Stack, Tabs } from "expo-router";
 import React, { useState } from "react";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Colors from "@/constants/Colors";
+import TabBar from "@/components/tab-bar";
 import { useSession } from "@/utils/ctx";
 import { StyleSheet, Text, Modal, View, TouchableOpacity } from "react-native";
 import { Redirect } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import ProductDetails from "../products/[id]";
 
 export default function TabLayout() {
@@ -58,18 +59,18 @@ export default function TabLayout() {
             ),
           }}
         />
+
         <Tabs.Screen
           name="blog"
           options={{
-            headerShown: true,
-            title: "Blog",
+            title: "Blogs",
             headerTitleAlign: "center",
+            headerShown: true,
             tabBarIcon: ({ color }) => (
-              <Ionicons name="newspaper-outline" size={24} color={color} />
+              <MaterialIcons name="new-label" size={24} color={color} />
             ),
           }}
         />
-
         <Tabs.Screen
           name="profile"
           options={{
@@ -77,7 +78,13 @@ export default function TabLayout() {
             title: "Profile",
             headerTitleAlign: "center",
             tabBarIcon: ({ color }) => (
-              <Ionicons name="person-circle-outline" size={24} color={color} />
+              <AntDesign name="profile" size={24} color={color} />
+            ),
+            headerRight: () => (
+              <TouchableOpacity style={styles.headerLogoutButton}>
+                <AntDesign name="logout" size={20} color="orange" />
+                <Text style={styles.headerLogoutText}>Logout</Text>
+              </TouchableOpacity>
             ),
           }}
         />
@@ -154,5 +161,15 @@ const styles = StyleSheet.create({
   cartItemQuantity: {
     fontSize: 16,
     marginHorizontal: 10,
+  },
+  headerLogoutButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginRight: 16,
+  },
+  headerLogoutText: {
+    color: "orange",
+    fontSize: 16,
+    marginLeft: 5,
   },
 });
