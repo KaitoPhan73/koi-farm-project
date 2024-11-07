@@ -11,34 +11,36 @@ const secretKey = process.env.SECRET_KEY;
  * @returns {Function} Middleware function
  */
 const authorize = (roles = []) => {
+  // Chuyển đổi role từ string sang array nếu cần
+  if (typeof roles === 'string') {
+    roles = [roles];
+  }
+
   return async (req, res, next) => {
     try {
       // Kiểm tra header Authorization
       const authHeader = req.headers.authorization;
-      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      if (!authHeader?.startsWith('Bearer ')) {
         return res.status(401).json({
           success: false,
           message: 'Authorization header is required and must be Bearer token',
         });
       }
 
-      // Lấy token
+      // Lấy và verify token
       const token = authHeader.split(' ')[1];
-
-      // Verify token
       const decoded = jwt.verify(token, secretKey);
 
-      // Kiểm tra token hết hạn
-      if (decoded.exp && Date.now() >= decoded.exp * 1000) {
+      // Kiểm tra loại token
+      if (decoded.type === 'refresh') {
         return res.status(401).json({
           success: false,
-          message: 'Token has expired',
+          message: 'Invalid token type',
         });
       }
 
       // Lấy thông tin user từ database
       const user = await User.findById(decoded.userId).select('-password');
-
       if (!user) {
         return res.status(404).json({
           success: false,
@@ -46,15 +48,15 @@ const authorize = (roles = []) => {
         });
       }
 
-      // Kiểm tra user có bị khóa không
-      if (user.status === 'Banned') {
+      // Kiểm tra trạng thái user
+      if (!user.isActive) {
         return res.status(403).json({
           success: false,
-          message: 'Your account has been banned',
+          message: 'Your account is inactive',
         });
       }
 
-      // Kiểm tra vai trò
+      // Kiểm tra vai trò nếu được chỉ định
       if (roles.length && !roles.includes(user.role)) {
         return res.status(403).json({
           success: false,
@@ -66,13 +68,18 @@ const authorize = (roles = []) => {
       req.user = user;
       next();
     } catch (error) {
+      if (error.name === 'TokenExpiredError') {
+        return res.status(401).json({
+          success: false,
+          message: 'Token has expired',
+        });
+      }
       if (error.name === 'JsonWebTokenError') {
         return res.status(401).json({
           success: false,
           message: 'Invalid token',
         });
       }
-
       return res.status(500).json({
         success: false,
         message: 'Internal server error',
@@ -91,8 +98,16 @@ const checkOwnership = (resourceModel, resourceIdParam = 'id') => {
   return async (req, res, next) => {
     try {
       const resourceId = req.params[resourceIdParam];
-      const Model = require(`../models/${resourceModel}`);
 
+      // Kiểm tra định dạng ID
+      if (!resourceId?.match(/^[0-9a-fA-F]{24}$/)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid resource ID format',
+        });
+      }
+
+      const Model = require(`../models/${resourceModel}`);
       const resource = await Model.findById(resourceId);
 
       if (!resource) {
@@ -102,10 +117,10 @@ const checkOwnership = (resourceModel, resourceIdParam = 'id') => {
         });
       }
 
-      // Kiểm tra quyền sở hữu (Manager hoặc chủ sở hữu)
+      // Kiểm tra quyền sở hữu (Admin hoặc chủ sở hữu)
       if (
-        resource.user?.toString() !== req.user._id.toString() &&
-        req.user.role !== 'Manager'
+        resource.userId?.toString() !== req.user._id.toString() &&
+        req.user.role !== 'Admin'
       ) {
         return res.status(403).json({
           success: false,

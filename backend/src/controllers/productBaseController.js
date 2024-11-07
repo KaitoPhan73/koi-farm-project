@@ -121,3 +121,4 @@ class ProductBaseController {
     }
   }
 }
+module.exports = new ProductBaseController();

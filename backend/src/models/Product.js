@@ -6,11 +6,7 @@ const productSchema = new Schema(
   {
     productBase: {
       type: mongoose.Schema.Types.ObjectId,
-<<<<<<< HEAD
       ref: 'ProductBase', // Reference to ProductBase
-=======
-      ref: 'Categories',  
->>>>>>> 3d33f7f842df5c90dd52bb82b91d0c1a038cd029
       required: true,
     },
     size: {
