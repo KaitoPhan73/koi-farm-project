@@ -49,7 +49,7 @@ const ProductDetails = () => {
         _id: product._id,
         name: product.name,
         price: product.price,
-        imageUrl: product.imageUrl,
+        imageUrl: product?.imageUrl,
         quantity: 1, // Khởi tạo số lượng là 1 khi thêm vào giỏ hàng
       });
     }
@@ -85,24 +85,24 @@ const ProductDetails = () => {
         }}
       />
       <ScrollView contentContainerStyle={styles.contentContainer}>
-        <Image source={{ uri: product.imageUrl }} style={styles.productImg} />
-        <Text style={styles.title}>{product.name}</Text>
+        <Image source={{ uri: product?.imageUrl }} style={styles.productImg} />
+        <Text style={styles.title}>{product?.name}</Text>
         <View style={styles.ratingWrapper}>
           <Ionicons name="star" size={16} color="#FFD700" />
         </View>
 
         <View style={styles.details}>
           <Text style={styles.infoText}>
-            Price: <Text style={styles.bold}>${product.price}</Text>
+            Price: <Text style={styles.bold}>${product?.price}</Text>
           </Text>
           <Text style={styles.infoText}>
             Brand:{" "}
-            <Text style={styles.bold}>{product.category?.name || "N/A"}</Text>
+            <Text style={styles.bold}>{product?.category?.name || "N/A"}</Text>
           </Text>
         </View>
 
         <Text style={styles.description}>
-          Description: {product.description || "N/A"}
+          Description: {product?.description || "N/A"}
         </Text>
 
         <TouchableOpacity style={styles.addToCartButton} onPress={toggleCart}>

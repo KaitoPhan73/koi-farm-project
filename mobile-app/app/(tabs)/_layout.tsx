@@ -88,9 +88,6 @@ export default function TabLayout() {
           }}
         />
       </Tabs>
-      );
-
-
 
       <Modal
         animationType="slide"
