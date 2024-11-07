@@ -1,7 +1,9 @@
 "use server";
+import { Button } from "@/components/ui/button";
 import CategoryIndex from "./_components";
 import { categoryColumns } from "./_components/colunm";
 import { getAllCategories } from "@/apis/category";
+import { useRouter } from "next/navigation";
 
 export default async function ProductsPage(props: any) {
   const params = {
@@ -10,7 +12,6 @@ export default async function ProductsPage(props: any) {
   };
 
   const response = await getAllCategories(params);
-  console.log(response.payload.items);
   return (
     <>
       <div className="flex h-full flex-1 flex-col">

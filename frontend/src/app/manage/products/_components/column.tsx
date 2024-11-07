@@ -7,26 +7,41 @@ import { formatPriceVND, formattedDateTime } from "@/lib/formatter";
 
 export const productColumns: CustomColumnDef<TProductResponse>[] = [
   {
-    accessorKey: "name",
+    accessorKey: "productBase.name",
+    id: "productBaseName",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Product Name" />
     ),
     cell: ({ row }) => (
       <div
         className="w-36 truncate cursor-pointer"
-        title={row.getValue("name")}
+        title={row.getValue("productBaseName")}
       >
-        {row.getValue("name")}
+        {row.getValue("productBaseName")}
       </div>
     ),
     enableSorting: false,
     enableColumnFilter: false,
   },
   {
-    accessorKey: "category.name",
+    accessorKey: "productBase.breed",
+    id: "breed",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Breed" />
+    ),
+    cell: ({ row }) => (
+      <div className="w-36 truncate" title={row.getValue("breed")}>
+        {row.getValue("breed") || "N/A"}
+      </div>
+    ),
+    enableSorting: false,
+    enableColumnFilter: false,
+  },
+  {
+    accessorKey: "productBase.category.name",
     id: "categoryName",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Category Name" />
+      <DataTableColumnHeader column={column} title="Category" />
     ),
     cell: ({ row }) => (
       <div className="w-36 truncate" title={row.getValue("categoryName")}>
@@ -46,6 +61,24 @@ export const productColumns: CustomColumnDef<TProductResponse>[] = [
         {row.getValue("age") !== undefined ? row.getValue("age") : "N/A"}
       </div>
     ),
+    enableSorting: false,
+    enableColumnFilter: false,
+  },
+  {
+    accessorKey: "size",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Size (cm)" />
+    ),
+    cell: ({ row }) => <div>{row.getValue("size")} cm</div>,
+    enableSorting: false,
+    enableColumnFilter: false,
+  },
+  {
+    accessorKey: "gender",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Gender" />
+    ),
+    cell: ({ row }) => <div>{row.getValue("gender")}</div>,
     enableSorting: false,
     enableColumnFilter: false,
   },
@@ -76,17 +109,6 @@ export const productColumns: CustomColumnDef<TProductResponse>[] = [
     ),
     cell: ({ row }) => (
       <div>{formattedDateTime(row.getValue("createdAt"))}</div>
-    ),
-    enableSorting: false,
-    enableColumnFilter: false,
-  },
-  {
-    accessorKey: "updatedAt",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Updated At" />
-    ),
-    cell: ({ row }) => (
-      <div>{formattedDateTime(row.getValue("updatedAt"))}</div>
     ),
     enableSorting: false,
     enableColumnFilter: false,
