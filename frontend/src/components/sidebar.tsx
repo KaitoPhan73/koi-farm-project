@@ -33,6 +33,11 @@ const baseSidebarItems: SidebarItems = {
       label: "Product",
     },
     {
+      href: "/manage/product-bases",
+      icon: Package,
+      label: "Product Base",
+    },
+    {
       href: "/manage/feedbacks",
       icon: List,
       label: "Feedback",

@@ -20,27 +20,25 @@ import {
   SelectValue,
   SelectContent,
   SelectItem,
-} from "@/components/ui/select"; // Đảm bảo rằng bạn đã tạo các component Select
+} from "@/components/ui/select";
 import {
   TUpdateProductRequest,
   UpdateProductSchema,
-} from "@/schema/product.schema"; // Đảm bảo rằng bạn đã định nghĩa schema
-import { updateProduct } from "@/apis/product"; // Đảm bảo rằng bạn có API updateProduct
+} from "@/schema/product.schema";
+import { updateProduct } from "@/apis/product";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
 import { listStatus } from "../../_components/config";
-import { TCategoryResponse } from "@/schema/category.schema";
-import { CldUploadWidget } from "next-cloudinary";
-import { DialogImg } from "@/components/dialog-img";
+import { TProductBaseResponse } from "@/schema/product-base.schema";
 
 interface FormUpdateProductProps {
-  initialData: TUpdateProductRequest; // Dữ liệu sản phẩm hiện tại
-  categories: TCategoryResponse[]; // Danh sách category
+  initialData: TUpdateProductRequest;
+  productBases: TProductBaseResponse[];
 }
 
 export function FormUpdateProduct({
   initialData,
-  categories,
+  productBases,
 }: FormUpdateProductProps) {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const { toast } = useToast();
@@ -77,35 +75,22 @@ export function FormUpdateProduct({
           <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mb-2">
             <FormField
               control={form.control}
-              name="name"
+              name="productBase"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Product Name..." {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="category"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Category</FormLabel>
+                  <FormLabel>Product Base</FormLabel>
                   <FormControl>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select Category" />
+                        <SelectValue placeholder="Select Product Base" />
                       </SelectTrigger>
                       <SelectContent>
-                        {categories.map((item, index) => (
-                          <SelectItem key={index} value={item._id}>
-                            {item.name}
+                        {productBases.map((item) => (
+                          <SelectItem key={item._id} value={item._id}>
+                            {item.name} - {item.breed}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -115,6 +100,47 @@ export function FormUpdateProduct({
                 </FormItem>
               )}
             />
+
+            <FormField
+              control={form.control}
+              name="size"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Size</FormLabel>
+                  <FormControl>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select Size" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="S">S</SelectItem>
+                        <SelectItem value="M">M</SelectItem>
+                        <SelectItem value="L">L</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="descriptionSize"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Size Description</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g., '3-6 cm' or '10 cm'" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <FormField
               control={form.control}
               name="age"
@@ -122,25 +148,19 @@ export function FormUpdateProduct({
                 <FormItem>
                   <FormLabel>Age</FormLabel>
                   <FormControl>
-                    <Input type="number" placeholder="Age..." {...field} />
+                    <Input
+                      type="number"
+                      placeholder="Age..."
+                      {...field}
+                      min={0}
+                      max={50}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="origin"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Origin</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Origin..." {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+
             <FormField
               control={form.control}
               name="gender"
@@ -165,127 +185,7 @@ export function FormUpdateProduct({
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="size"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Size (cm)</FormLabel>
-                  <FormControl>
-                    <Input type="number" placeholder="Size..." {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="breed"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Breed</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Breed..." {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="personality"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Personality</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Personality..." {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="dailyFeedAmount"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Daily Feed Amount (grams)</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="Daily Feed Amount..."
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="screeningRate"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Screening Rate (%)</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="Screening Rate..."
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="healthStatus"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Health Status</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Health Status..." {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="imageUrl"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Upload Image</FormLabel>
-                  <FormControl>
-                    <div className="flex items-center space-x-4">
-                      <CldUploadWidget
-                        signatureEndpoint="/api/sign-image"
-                        onSuccess={(result: any) => {
-                          field.onChange(result?.info.url);
-                        }}
-                      >
-                        {({ open }) => (
-                          <Button
-                            type="button"
-                            className="w-1/2"
-                            onClick={() => open()}
-                          >
-                            Choose Image
-                          </Button>
-                        )}
-                      </CldUploadWidget>
-                      {field.value && (
-                        <div className="w-1/2">
-                          <DialogImg imgURL={field.value} />
-                        </div>
-                      )}
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+
             <FormField
               control={form.control}
               name="price"
@@ -293,12 +193,37 @@ export function FormUpdateProduct({
                 <FormItem>
                   <FormLabel>Price</FormLabel>
                   <FormControl>
-                    <Input type="number" placeholder="Price..." {...field} />
+                    <Input
+                      type="number"
+                      placeholder="Price..."
+                      {...field}
+                      min={1}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
+            <FormField
+              control={form.control}
+              name="stock"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Stock</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="Stock quantity..."
+                      {...field}
+                      min={0}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <FormField
               control={form.control}
               name="status"

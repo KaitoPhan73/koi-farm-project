@@ -15,7 +15,7 @@ interface DataTableProps<TData, TValue> {
   };
 }
 
-const ProductIndex = <TData, TValue>({
+const ProductBaseIndex = <TData, TValue>({
   columns,
   payload,
   params,
@@ -27,14 +27,14 @@ const ProductIndex = <TData, TValue>({
         {/* <CardReports data={response.payload} /> */}
 
         <div className="flex items-center justify-between">
-          <p className="text-3xl">Product Management</p>
+          <p className="text-3xl">Product Base Management</p>
 
           <Button
             variant="default"
             className="mb-3"
-            onClick={() => router.push("/manage/products/create")}
+            onClick={() => router.push("/manage/product-bases/create")}
           >
-            Create Product
+            Create Product Base
           </Button>
         </div>
         <DataTable
@@ -50,4 +50,4 @@ const ProductIndex = <TData, TValue>({
   );
 };
 
-export default ProductIndex;
+export default ProductBaseIndex;

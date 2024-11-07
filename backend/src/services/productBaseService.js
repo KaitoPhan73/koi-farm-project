@@ -6,29 +6,63 @@ class ProductBaseService {
     return await productBase.save();
   }
 
-  async getAllProductBases(page, limit, category) {
-    const query = {};
+  async getAllProductBases(filters = {}, options = {}) {
+    try {
+      const query = {};
 
-    if (category) {
-      query.category = category;
-    }
+      // Filter by category
+      if (filters.category) {
+        query.category = filters.category;
+      }
 
-    if (page && limit) {
+      // Filter by price range
+      if (filters.minPrice !== undefined || filters.maxPrice !== undefined) {
+        query.price = {};
+        if (filters.minPrice !== undefined) {
+          query.price.$gte = filters.minPrice;
+        }
+        if (filters.maxPrice !== undefined) {
+          query.price.$lte = filters.maxPrice;
+        }
+      }
+
+      // Filter by status
+      if (filters.status) {
+        query.status = filters.status;
+      }
+
+      // Search by name or description
+      if (filters.search) {
+        query.$or = [
+          { name: { $regex: filters.search, $options: 'i' } },
+          { description: { $regex: filters.search, $options: 'i' } },
+        ];
+      }
+
+      // Pagination options
+      const page = options.page || 1;
+      const limit = options.limit || 10;
       const skip = (page - 1) * limit;
-      const productBases = await ProductBase.find(query)
-        .skip(skip)
-        .limit(limit)
-        .sort({ createdAt: -1 })
-        .populate('category');
 
+      // Get total count for pagination
       const totalItems = await ProductBase.countDocuments(query);
       const totalPages = Math.ceil(totalItems / limit);
-      return { productBases, totalPages, totalItems };
-    }
 
-    return await ProductBase.find(query)
-      .populate('category')
-      .sort({ createdAt: -1 });
+      // Get products with filters, pagination and sorting
+      const productBases = await ProductBase.find(query)
+        .populate('category', 'name') // Populate category if needed
+        .sort(options.sort)
+        .skip(skip)
+        .limit(limit);
+
+      return {
+        productBases,
+        totalItems,
+        totalPages,
+      };
+    } catch (error) {
+      throw new Error(`Error getting product bases: ${error.message}`);
+    }
   }
 
   async getProductBaseById(id) {

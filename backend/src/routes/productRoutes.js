@@ -181,54 +181,6 @@ router.get('/:id', productController.getById);
 
 /**
  * @swagger
- * /products/{categoryId}:
- *   get:
- *     tags: [Product]
- *     summary: Lấy danh sách cá Koi theo danh mục
- *     parameters:
- *       - in: path
- *         name: categoryId
- *         required: true
- *         description: ID của danh mục cá Koi
- *         schema:
- *           type: string
- *           example: "67135ffb22a6b877d0866c13"
- *     responses:
- *       200:
- *         description: Danh sách cá Koi theo danh mục.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 total:
- *                   type: integer
- *                   description: Tổng số cá Koi trong danh mục.
- *                   example: 50
- *                 page:
- *                   type: integer
- *                   description: Số trang hiện tại.
- *                   example: 1
- *                 limit:
- *                   type: integer
- *                   description: Số lượng sản phẩm mỗi trang.
- *                   example: 10
- *                 data:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/Koi'
- *       400:
- *         description: Yêu cầu không hợp lệ. Tham số truy vấn không hợp lệ.
- *       404:
- *         description: Không tìm thấy cá Koi trong danh mục này.
- *       500:
- *         description: Lỗi máy chủ nội bộ.
- */
-router.get('/:categoryId', productController.getProductsByCategory);
-
-
-/**
- * @swagger
  * /products/{id}:
  *   patch:
  *     tags: [Product]

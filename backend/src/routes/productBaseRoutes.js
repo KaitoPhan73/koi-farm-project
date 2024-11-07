@@ -70,7 +70,7 @@ router.post('/', productBaseController.create);
  * /product-bases:
  *   get:
  *     tags: [ProductBase]
- *     summary: Lấy danh sách sản phẩm cơ bản
+ *     summary: Lấy danh sách sản phẩm cơ bản với filter
  *     parameters:
  *       - in: query
  *         name: page
@@ -87,9 +87,65 @@ router.post('/', productBaseController.create);
  *         schema:
  *           type: string
  *         description: ID của danh mục để lọc
+ *       - in: query
+ *         name: minPrice
+ *         schema:
+ *           type: number
+ *         description: Giá tối thiểu
+ *       - in: query
+ *         name: maxPrice
+ *         schema:
+ *           type: number
+ *         description: Giá tối đa
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Tìm kiếm theo tên hoặc mô tả
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *           enum: [name, basePrice, createdAt]
+ *         description: Sắp xếp theo trường
+ *       - in: query
+ *         name: sortOrder
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *         description: Thứ tự sắp xếp
+ *       - in: query
+ *         name: breed
+ *         schema:
+ *           type: string
+ *         description: Lọc theo giống
+ *       - in: query
+ *         name: origin
+ *         schema:
+ *           type: string
+ *         description: Lọc theo xuất xứ
  *     responses:
  *       200:
  *         description: Thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 page:
+ *                   type: integer
+ *                 limit:
+ *                   type: integer
+ *                 totalPages:
+ *                   type: integer
+ *                 totalItems:
+ *                   type: integer
+ *                 items:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/ProductBase'
  *       500:
  *         description: Lỗi server
  */
@@ -108,9 +164,37 @@ router.get('/', productBaseController.getAll);
  *           type: string
  *         required: true
  *         description: Từ khóa tìm kiếm
+ *       - in: query
+ *         name: category
+ *         schema:
+ *           type: string
+ *         description: ID của danh mục để lọc
+ *       - in: query
+ *         name: minPrice
+ *         schema:
+ *           type: number
+ *         description: Giá tối thiểu
+ *       - in: query
+ *         name: maxPrice
+ *         schema:
+ *           type: number
+ *         description: Giá tối đa
  *     responses:
  *       200:
  *         description: Thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 count:
+ *                   type: integer
+ *                 items:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/ProductBase'
  *       400:
  *         description: Thiếu từ khóa tìm kiếm
  */

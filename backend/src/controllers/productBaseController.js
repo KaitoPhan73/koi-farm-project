@@ -1,4 +1,6 @@
 const productBaseService = require('../services/productBaseService');
+const ApiError = require('../utils/ApiError');
+const catchAsync = require('../utils/catchAsync');
 
 class ProductBaseController {
   async create(req, res) {
@@ -18,30 +20,57 @@ class ProductBaseController {
 
   async getAll(req, res) {
     try {
-      const { page, limit, category } = req.query;
+      const {
+        page,
+        limit,
+        category,
+        minPrice,
+        maxPrice,
+        sortBy,
+        sortOrder,
+        search,
+        status,
+      } = req.query;
+
+      const filters = {
+        category,
+        minPrice: minPrice ? Number(minPrice) : undefined,
+        maxPrice: maxPrice ? Number(maxPrice) : undefined,
+        status,
+        search,
+      };
+
+      const options = {
+        page: parseInt(page) || 1,
+        limit: parseInt(limit) || 10,
+        sort: sortBy
+          ? { [sortBy]: sortOrder === 'desc' ? -1 : 1 }
+          : { createdAt: -1 },
+      };
+
       const productsData = await productBaseService.getAllProductBases(
-        parseInt(page),
-        parseInt(limit),
-        category
+        filters,
+        options
       );
 
       if (page && limit) {
         const { productBases, totalItems, totalPages } = productsData;
         return res.status(200).json({
-          page: parseInt(page),
-          limit: parseInt(limit),
+          success: true,
+          page: options.page,
+          limit: options.limit,
           totalPages,
           totalItems,
           items: productBases,
         });
-      } else {
-        return res.status(200).json({ items: productsData });
       }
-    } catch (error) {
-      res.status(500).json({
-        message: 'Failed to fetch ProductBases',
-        error: error.message,
+
+      return res.status(200).json({
+        success: true,
+        items: productsData,
       });
+    } catch (error) {
+      throw new ApiError(500, 'Failed to fetch ProductBases', error.message);
     }
   }
 
