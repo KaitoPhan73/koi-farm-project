@@ -1,15 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
-const authorize = require('../middlewares/authorize');
+const { authorize } = require('../middlewares/authorize');
 const { body } = require('express-validator');
-
-/**
- * @swagger
- * tags:
- *   name: Authentication
- *   description: Authentication routes
- */
 
 /**
  * @swagger
@@ -28,15 +21,6 @@ const { body } = require('express-validator');
  *                 type: string
  *               password:
  *                 type: string
- *     responses:
- *       200:
- *         description: Successful login
- *       401:
- *         description: Unauthorized
- *       422:
- *         description: Unprocessable Entity - Invalid input
- *       500:
- *         description: Internal server error
  */
 router.post(
   '/login',
@@ -52,111 +36,81 @@ router.post(
  * /auth/register:
  *   post:
  *     summary: Register a new user
- *     tags: [Authentication]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               username:
- *                 type: string
- *               fullName:
- *                 type: string
- *               email:
- *                 type: string
- *               phone:
- *                 type: string
- *               address:
- *                 type: string
- *               password:
- *                 type: string
- *     responses:
- *       201:
- *         description: User registered successfully
- *       400:
- *         description: Bad request
- *       422:
- *         description: Unprocessable Entity - Invalid input
- *       500:
- *         description: Internal server error
  */
 router.post(
   '/register',
   [
     body('username').notEmpty().withMessage('Username is required'),
-    body('fullName')
-      .isLength({ min: 3 })
-      .withMessage('Full name must be at least 3 characters long'),
     body('email').isEmail().withMessage('Valid email is required'),
-    body('phone').isMobilePhone().withMessage('Valid phone number is required'),
-    body('address').notEmpty().withMessage('Address is required'),
     body('password')
       .isLength({ min: 6 })
       .withMessage('Password must be at least 6 characters long'),
+    body('fullName')
+      .isLength({ min: 3 })
+      .withMessage('Full name must be at least 3 characters long'),
+    body('phone')
+      .optional()
+      .isMobilePhone()
+      .withMessage('Valid phone number is required'),
+    body('address')
+      .optional()
+      .notEmpty()
+      .withMessage('Address cannot be empty if provided'),
+    body('role')
+      .optional()
+      .isIn(['Customer', 'Admin'])
+      .withMessage('Invalid role specified'),
   ],
   authController.register
 );
 
 /**
  * @swagger
- * /auth/reset-password:
- *   post:
- *     summary: Reset password
- *     tags: [Authentication]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               username:
- *                 type: string
- *               newPassword:
- *                 type: string
- *     responses:
- *       200:
- *         description: Password reset successfully
- *       400:
- *         description: Bad request
- *       401:
- *         description: Unauthorized
- *       422:
- *         description: Unprocessable Entity - Invalid input
- *       500:
- *         description: Internal server error
+ * /auth/profile:
+ *   get:
+ *     summary: Get user profile
+ *     security:
+ *       - bearerAuth: []
  */
-router.post(
-  '/reset-password',
+/*
+router.get('/profile', authorize(), authController.getProfile);
+
+router.put(
+  '/profile',
+  authorize(),
   [
-    body('username').notEmpty().withMessage('Username is required'),
-    body('newPassword')
-      .isLength({ min: 6 })
-      .withMessage('Password must be at least 6 characters long'),
+    body('fullName')
+      .optional()
+      .isLength({ min: 3 })
+      .withMessage('Full name must be at least 3 characters long'),
+    body('email').optional().isEmail().withMessage('Valid email is required'),
+    body('phone')
+      .optional()
+      .isMobilePhone()
+      .withMessage('Valid phone number is required'),
+    body('address')
+      .optional()
+      .notEmpty()
+      .withMessage('Address cannot be empty if provided'),
   ],
-  authController.resetPassword
+  authController.updateProfile
 );
+*/
 
 /**
  * @swagger
- * /auth/customer:
+ * /auth/admin:
  *   get:
- *     summary: Access customer route
- *     tags: [Authentication]
+ *     summary: Admin only route
  *     security:
  *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Welcome Customer or Admin
- *       403:
- *         description: Forbidden
- *       500:
- *         description: Internal server error
  */
-router.get('/customer', authorize(['Customer', 'Admin']), (req, res) => {
-  res.json({ message: 'Welcome Customer or Admin' });
+router.get('/admin', authorize('Admin'), (req, res) => {
+  res.json({
+    success: true,
+    message: 'Welcome Admin',
+    user: req.user,
+  });
 });
 
 module.exports = router;
