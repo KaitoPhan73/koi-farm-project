@@ -1,12 +1,47 @@
 // services/orderItemService.js
 const OrderItem = require('../models/OrderItem');
 const Consignment = require('../models/Consignment');
+const Product = require('../models/Product');
 const mongoose = require('mongoose');
 
 class OrderItemService {
   async createOrderItem(data) {
-    const orderItem = new OrderItem(data);
-    return await orderItem.save();
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+      // Tạo OrderItem
+      const orderItem = new OrderItem(data);
+      await orderItem.save({ session });
+
+      // Cập nhật stock của product
+      const product = await Product.findById(data.product);
+      if (!product) {
+        throw new Error('Product not found');
+      }
+
+      // Kiểm tra đủ stock không
+      if (product.stock?.quantity < data.quantity) {
+        throw new Error('Insufficient stock');
+      }
+
+      // Trừ stock
+      await Product.findByIdAndUpdate(
+        data.product,
+        {
+          $inc: { 'stock.quantity': -data.quantity },
+        },
+        { session, new: true }
+      );
+
+      await session.commitTransaction();
+      return orderItem;
+    } catch (error) {
+      await session.abortTransaction();
+      throw error;
+    } finally {
+      session.endSession();
+    }
   }
 
   async getOrderItems() {
@@ -38,6 +73,16 @@ class OrderItemService {
     session.startTransaction();
 
     try {
+      // Kiểm tra và trừ stock
+      const product = await Product.findById(orderItemData.product);
+      if (!product) {
+        throw new Error('Product not found');
+      }
+
+      if (product.stock?.quantity < orderItemData.quantity) {
+        throw new Error('Insufficient stock');
+      }
+
       // Tạo OrderItem
       const orderItem = new OrderItem({
         ...orderItemData,
@@ -49,7 +94,7 @@ class OrderItemService {
       const consignment = new Consignment({
         ...consignmentData,
         orderItem: orderItem._id,
-        user: orderItem.order.user, // Lấy user từ order
+        user: orderItem.order.user,
         product: orderItem.product,
       });
       await consignment.save({ session });
@@ -57,6 +102,15 @@ class OrderItemService {
       // Cập nhật reference trong OrderItem
       orderItem.consignment = consignment._id;
       await orderItem.save({ session });
+
+      // Trừ stock
+      await Product.findByIdAndUpdate(
+        orderItemData.product,
+        {
+          $inc: { 'stock.quantity': -orderItemData.quantity },
+        },
+        { session, new: true }
+      );
 
       await session.commitTransaction();
       return { orderItem, consignment };

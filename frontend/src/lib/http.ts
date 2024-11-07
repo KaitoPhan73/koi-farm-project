@@ -13,18 +13,24 @@ interface CustomOptions
   params?: Record<string, any>;
 }
 
+interface ApiErrorResponse {
+  success: false;
+  message: string;
+  errors?: Array<{
+    field: string;
+    message: string;
+  }>;
+  status?: string;
+  code?: string;
+}
+
 interface HttpResponse<T> {
   status: number;
   payload: T;
 }
 
-interface HttpErrorPayload {
-  message: string;
-  [key: string]: any;
-}
-
 class HttpError extends Error {
-  constructor(public status: number, public payload: HttpErrorPayload) {
+  constructor(public status: number, public payload: ApiErrorResponse) {
     super(payload.message);
     this.name = "HttpError";
   }
@@ -32,7 +38,11 @@ class HttpError extends Error {
 
 class EntityError extends HttpError {
   constructor(public errors: { field: string; message: string }[]) {
-    super(422, { message: "Validation Error", errors });
+    super(422, {
+      success: false,
+      message: "Validation Error",
+      errors,
+    });
     this.name = "EntityError";
   }
 }
@@ -55,21 +65,18 @@ const createHttpClient = (defaultBaseUrl: string) => {
   ): Promise<HttpResponse<T>> => {
     const baseUrl =
       options?.baseUrl === undefined ? defaultBaseUrl : options.baseUrl;
+    let fullUrl = normalizePath(`${baseUrl}/${url}`);
 
-    let fullUrl = url.startsWith("/")
-      ? `${baseUrl}${url}`
-      : `${baseUrl}/${url}`;
-    console.log("fullUrl", fullUrl);
-    console.log("options", options);
     if (options?.params) {
       const queryString = buildQueryString(options.params);
-      fullUrl = queryString ? `${fullUrl}?${queryString}` : `${fullUrl}`;
+      fullUrl = queryString ? `${fullUrl}?${queryString}` : fullUrl;
     }
+
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
       ...Object.fromEntries(
         Object.entries(options?.headers || {}).filter(
-          ([key, value]) => typeof value === "string"
+          ([_, value]) => typeof value === "string"
         )
       ),
     };
@@ -90,18 +97,70 @@ const createHttpClient = (defaultBaseUrl: string) => {
       next: options?.next,
       cache: options?.cache || (options?.next ? undefined : "no-store"),
     };
-    console.log("config", config);
+
     try {
       const response = await fetch(fullUrl, config);
-      const data = await response.json();
+      let data: any;
+
+      try {
+        data = await response.json();
+      } catch (e) {
+        throw new HttpError(response.status, {
+          success: false,
+          message: "Invalid JSON response from server",
+        });
+      }
 
       if (!response.ok) {
-        if (response.status === 401) {
-          await handleUnauthorized(headers);
-        } else if (response.status === 422) {
-          throw new EntityError(data.errors);
-        } else {
-          throw new HttpError(response.status, data);
+        switch (response.status) {
+          case 400:
+            throw new HttpError(400, {
+              success: false,
+              message: data.message || "Bad Request",
+              errors: data.errors,
+            });
+
+          case 401:
+            await handleUnauthorized(headers);
+            throw new HttpError(401, {
+              success: false,
+              message: data.message || "Unauthorized",
+            });
+
+          case 403:
+            throw new HttpError(403, {
+              success: false,
+              message: data.message || "Forbidden",
+            });
+
+          case 404:
+            throw new HttpError(404, {
+              success: false,
+              message: data.message || "Not Found",
+            });
+
+          case 422:
+            throw new EntityError(
+              data.errors || [
+                {
+                  field: "general",
+                  message: data.message || "Validation Error",
+                },
+              ]
+            );
+
+          case 500:
+            throw new HttpError(500, {
+              success: false,
+              message: data.message || "Internal Server Error",
+            });
+
+          default:
+            throw new HttpError(response.status, {
+              success: false,
+              message: data.message || "Unknown Error",
+              ...data,
+            });
         }
       }
 
@@ -109,7 +168,22 @@ const createHttpClient = (defaultBaseUrl: string) => {
       return { status: response.status, payload: data };
     } catch (error) {
       console.error(`Error in ${method} request to ${fullUrl}:`, error);
-      throw error;
+
+      if (error instanceof HttpError) {
+        throw error;
+      }
+
+      if (error instanceof TypeError && error.message === "Failed to fetch") {
+        throw new HttpError(0, {
+          success: false,
+          message: "Network Error: Unable to connect to server",
+        });
+      }
+
+      throw new HttpError(500, {
+        success: false,
+        message: error instanceof Error ? error.message : "Unknown Error",
+      });
     }
   };
 
@@ -171,3 +245,4 @@ const httpServer = createHttpClient(envConfig.NEXT_PUBLIC_URL);
 const httpBag = createHttpClient(envConfig.NEXT_PUBLIC_BAG_API_ENDPOINT);
 
 export { httpServer, httpBag, HttpError, EntityError };
+export type { ApiErrorResponse };

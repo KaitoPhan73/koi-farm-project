@@ -4,6 +4,10 @@ import { twMerge } from "tailwind-merge";
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
+
 export const normalizePath = (path: string) => {
-  return path.startsWith("/") ? path.slice(1) : path;
+  return path
+    .replace(/\/+$/, "") // Xóa tất cả dấu / ở cuối
+    .replace(/^\/+/, "") // Xóa tất cả dấu / ở đầu
+    .replace(/([^:]\/)\/+/g, "$1"); // Xóa // ở giữa, nhưng giữ lại http://
 };
