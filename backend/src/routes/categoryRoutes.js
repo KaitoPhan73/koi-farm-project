@@ -7,7 +7,24 @@ const router = express.Router();
  * @swagger
  * tags:
  *   name: Category
- *   description: Các API liên quan đến danh mục
+ *   description: Category management endpoints
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Category:
+ *       type: object
+ *       required:
+ *         - name
+ *       properties:
+ *         name:
+ *           type: string
+ *           description: Tên danh mục
+ *         description:
+ *           type: string
+ *           description: Mô tả danh mục
  */
 
 /**
@@ -21,23 +38,12 @@ const router = express.Router();
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - name
- *             properties:
- *               name:
- *                 type: string
- *                 description: Tên danh mục
- *                 example: "Cá Koi"
- *               description:
- *                 type: string
- *                 description: Mô tả danh mục
- *                 example: "Danh mục chứa các sản phẩm cá Koi."
+ *             $ref: '#/components/schemas/Category'
  *     responses:
  *       201:
- *         description: Danh mục đã được tạo thành công.
- *       500:
- *         description: Lỗi máy chủ nội bộ.
+ *         description: Danh mục đã được tạo thành công
+ *       400:
+ *         description: Dữ liệu không hợp lệ
  */
 router.post('/', categoryController.create);
 
@@ -46,56 +52,23 @@ router.post('/', categoryController.create);
  * /categories:
  *   get:
  *     tags: [Category]
- *     summary: Lấy tất cả danh mục (có phân trang)
+ *     summary: Lấy danh sách danh mục
  *     parameters:
  *       - in: query
  *         name: page
  *         schema:
  *           type: integer
  *         description: Số trang
- *         example: 1
  *       - in: query
  *         name: limit
  *         schema:
  *           type: integer
- *         description: Số lượng mục trên mỗi trang
- *         example: 10
+ *         description: Số lượng item trên mỗi trang
  *     responses:
  *       200:
- *         description: Danh sách danh mục theo phân trang.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 page:
- *                   type: integer
- *                   description: Trang hiện tại
- *                 limit:
- *                   type: integer
- *                   description: Số lượng mục trên mỗi trang
- *                 totalPages:
- *                   type: integer
- *                   description: Tổng số trang
- *                 totalItems:
- *                   type: integer
- *                   description: Tổng số danh mục
- *                 items:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       _id:
- *                         type: string
- *                         description: ID của danh mục
- *                       name:
- *                         type: string
- *                         description: Tên danh mục
- *                       description:
- *                         type: string
- *                         description: Mô tả danh mục
+ *         description: Thành công
  *       500:
- *         description: Lỗi máy chủ nội bộ.
+ *         description: Lỗi server
  */
 router.get('/', categoryController.getAll);
 
@@ -104,7 +77,7 @@ router.get('/', categoryController.getAll);
  * /categories/{id}:
  *   get:
  *     tags: [Category]
- *     summary: Lấy danh mục theo ID
+ *     summary: Lấy thông tin danh mục theo ID
  *     parameters:
  *       - in: path
  *         name: id
@@ -114,11 +87,9 @@ router.get('/', categoryController.getAll);
  *           type: string
  *     responses:
  *       200:
- *         description: Danh mục đã tìm thấy.
+ *         description: Thành công
  *       404:
- *         description: Không tìm thấy danh mục.
- *       500:
- *         description: Lỗi máy chủ nội bộ.
+ *         description: Không tìm thấy danh mục
  */
 router.get('/:id', categoryController.getById);
 
@@ -127,21 +98,19 @@ router.get('/:id', categoryController.getById);
  * /categories/name/{name}:
  *   get:
  *     tags: [Category]
- *     summary: Lấy danh mục theo tên
+ *     summary: Lấy thông tin danh mục theo tên
  *     parameters:
  *       - in: path
  *         name: name
  *         required: true
- *         description: Tên của danh mục
+ *         description: Tên danh mục
  *         schema:
  *           type: string
  *     responses:
  *       200:
- *         description: Danh mục đã tìm thấy.
+ *         description: Thành công
  *       404:
- *         description: Không tìm thấy danh mục.
- *       500:
- *         description: Lỗi máy chủ nội bộ.
+ *         description: Không tìm thấy danh mục
  */
 router.get('/name/:name', categoryController.getByName);
 
@@ -150,7 +119,7 @@ router.get('/name/:name', categoryController.getByName);
  * /categories/{id}:
  *   patch:
  *     tags: [Category]
- *     summary: Cập nhật danh mục theo ID
+ *     summary: Cập nhật thông tin danh mục
  *     parameters:
  *       - in: path
  *         name: id
@@ -163,23 +132,12 @@ router.get('/name/:name', categoryController.getByName);
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               name:
- *                 type: string
- *                 description: Tên danh mục
- *                 example: "Cá Koi Nhập Khẩu"
- *               description:
- *                 type: string
- *                 description: Mô tả danh mục
- *                 example: "Danh mục chứa các sản phẩm cá Koi nhập khẩu."
+ *             $ref: '#/components/schemas/Category'
  *     responses:
  *       200:
- *         description: Danh mục đã được cập nhật thành công.
+ *         description: Cập nhật thành công
  *       404:
- *         description: Không tìm thấy danh mục.
- *       500:
- *         description: Lỗi máy chủ nội bộ.
+ *         description: Không tìm thấy danh mục
  */
 router.patch('/:id', categoryController.update);
 
@@ -188,7 +146,7 @@ router.patch('/:id', categoryController.update);
  * /categories/{id}:
  *   delete:
  *     tags: [Category]
- *     summary: Xóa danh mục theo ID
+ *     summary: Xóa danh mục
  *     parameters:
  *       - in: path
  *         name: id
@@ -198,11 +156,9 @@ router.patch('/:id', categoryController.update);
  *           type: string
  *     responses:
  *       200:
- *         description: Danh mục đã bị xóa thành công.
+ *         description: Xóa thành công
  *       404:
- *         description: Không tìm thấy danh mục.
- *       500:
- *         description: Lỗi máy chủ nội bộ.
+ *         description: Không tìm thấy danh mục
  */
 router.delete('/:id', categoryController.delete);
 
