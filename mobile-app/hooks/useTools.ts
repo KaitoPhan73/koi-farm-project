@@ -33,5 +33,11 @@ export const useTools = (params ?: any) => {
       queryFn: () => categoryApi.getCategories(),
     });
 
-  return { getProducts, getCategories};
+    const getProductsByCategory = () =>
+      useQuery({
+        queryKey: ["categories"],
+        queryFn: () => productAPI.getProductsByCategory(),
+      });
+
+  return { getProducts, getCategories, getProductsByCategory};
 };

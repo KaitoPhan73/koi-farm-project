@@ -6,9 +6,10 @@ import Colors from "@/constants/Colors";
 import { TProductResponse } from "@/schema/product.schema";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { useCart } from "@/hooks/useCartActions";
+import { TProductBaseResponse } from "@/schema/productbase.schema";
 
 type Props = {
-  productList: TProductResponse[];
+  productList: TProductBaseResponse[];
 };
 
 const ProductList = ({ productList = [] }: Props) => {
@@ -58,7 +59,7 @@ const ProductItem = ({
   removeFromCart,
   onPress,
 }: {
-  item: TProductResponse;
+  item: TProductBaseResponse;
   isInCart: boolean;
   addToCart: (item: any) => Promise<void>;
   removeFromCart: (id: string) => Promise<void>;

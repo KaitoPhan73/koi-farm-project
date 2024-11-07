@@ -18,6 +18,8 @@ import { FavoritesProvider } from "@/hooks/useFavorite";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Toast from "react-native-toast-message";
 import { CartProvider } from '@/hooks/useCartActions';
+import { StripeProvider } from '@stripe/stripe-react-native';
+
 SplashScreen.preventAutoHideAsync();
 
 export default function Root() {
@@ -42,14 +44,16 @@ export default function Root() {
     <SessionProvider>
       <QueryClientProvider client={queryClient}>
         <GestureHandlerRootView style={{ flex: 1 }}>
-          <CartProvider>
-            <ThemeProvider
-              value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-            >
-              <Slot />
-            </ThemeProvider>
-          </CartProvider>
-          <Toast />
+          <StripeProvider publishableKey="pk_test_51QHsQpH5nEoA5Qza90TFPtCz1mC7GXikWgrK8CSerTDG82fpKf9XXyNNqUbXzO5bYdGxoeNuYLLr7aDTSNhVhV9S00JjrEUaSW">
+            <CartProvider>
+              <ThemeProvider
+                value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+              >
+                <Slot />
+              </ThemeProvider>
+            </CartProvider>
+            <Toast />
+          </StripeProvider>
         </GestureHandlerRootView>
       </QueryClientProvider>
     </SessionProvider>
