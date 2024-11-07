@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { ScrollView, Text, View, TextInput, TouchableOpacity } from "react-native";
+import { ScrollView, Text, View, TextInput, TouchableOpacity, StyleSheet } from "react-native";
 import { styled } from "nativewind";
 import { DatePickerModal, registerTranslation, en } from "react-native-paper-dates";
 import { Provider as PaperProvider, DefaultTheme } from 'react-native-paper';
 import { CalendarDate } from "react-native-paper-dates"; // Import CalendarDate
-import { Picker } from '@react-native-picker/picker';
+import { Picker } from '@react-native-picker/picker'; // Import Picker
 
 // Đăng ký locale
 registerTranslation("en", en);
@@ -13,7 +13,7 @@ type FormData = {
     name: string;
     contact: string;
     koiType: string;
-    selectedTank: string;
+    selectedTank: string; // Thêm trường cho bể cá
     checkInDate: Date | null;
     checkOutDate: Date | null;
     comments: string;
@@ -24,7 +24,7 @@ const HomeScreen: React.FC = () => {
         name: '',
         contact: '',
         koiType: '',
-        selectedTank: '',
+        selectedTank: '', // Khởi tạo trường bể cá
         checkInDate: null,
         checkOutDate: null,
         comments: ''
@@ -52,18 +52,8 @@ const HomeScreen: React.FC = () => {
         const checkInDate = startDate ? new Date(startDate) : null;
         const checkOutDate = endDate ? new Date(endDate) : null;
 
-        // Lấy ngày hiện tại
-        const today = new Date();
-        today.setHours(0, 0, 0, 0); // Đặt giờ, phút, giây về 0 để so sánh chỉ với ngày
-
         // Kiểm tra tính hợp lệ của ngày
         if (checkInDate && !isNaN(checkInDate.getTime()) && checkOutDate && !isNaN(checkOutDate.getTime())) {
-            // Kiểm tra nếu ngày check-in hoặc check-out trước ngày hiện tại
-            if (checkInDate < today || checkOutDate < today) {
-                alert("Vui lòng chọn ngày không trước ngày hiện tại.");
-                return;
-            }
-
             setFormData({
                 ...formData,
                 checkInDate: checkInDate,
@@ -75,7 +65,6 @@ const HomeScreen: React.FC = () => {
 
         setDatePickerVisible(false);
     };
-
 
     const MyTheme = {
         ...DefaultTheme,
@@ -89,51 +78,49 @@ const HomeScreen: React.FC = () => {
     return (
         <PaperProvider theme={MyTheme}>
             <ScrollView
-                className="flex-1 bg-gray-100"
-                contentContainerStyle={{ padding: 20 }}
+                contentContainerStyle={styles.scrollView}
             >
-                <View className="bg-white p-6 rounded-lg shadow-lg">
-                    <Text className="text-center text-2xl font-bold text-orange-600 mb-6">Kí Gửi Cá Koi</Text>
+                <View style={styles.container}>
+                    <Text style={styles.title}>Kí Gửi Cá Koi</Text>
 
                     <TextInput
                         placeholder="Họ và tên"
-                        className="border border-gray-300 p-3 rounded-lg mb-4 focus:border-orange-500 focus:ring focus:ring-orange-200 transition duration-200"
+                        style={styles.input}
                         onChangeText={(text) => handleInputChange('name', text)}
                     />
 
                     <TextInput
                         placeholder="Số điện thoại"
                         keyboardType="phone-pad"
-                        className="border border-gray-300 p-3 rounded-lg mb-4 focus:border-orange-500 focus:ring focus:ring-orange-200 transition duration-200"
+                        style={styles.input}
                         onChangeText={(text) => handleInputChange('contact', text)}
                     />
 
                     <TextInput
                         placeholder="Loại cá Koi"
-                        className="border border-gray-300 p-3 rounded-lg mb-4 focus:border-orange-500 focus:ring focus:ring-orange-200 transition duration-200"
+                        style={styles.input}
                         onChangeText={(text) => handleInputChange('koiType', text)}
                     />
 
                     {/* Phần chọn bể cá */}
-                    <View className="border border-gray-300 mb-4 rounded-lg">
+                    <View style={styles.pickerContainer}>
                         <Picker
                             selectedValue={formData.selectedTank}
                             onValueChange={(itemValue) => handleInputChange('selectedTank', itemValue)}
-                            style={{ height: 50 }}
+                            style={styles.picker}
                         >
                             <Picker.Item label="Chọn bể cá" value="" />
                             <Picker.Item label="Bể A" value="tankA" />
                             <Picker.Item label="Bể B" value="tankB" />
                             <Picker.Item label="Bể C" value="tankC" />
-                            {/* Thêm các tùy chọn bể cá khác nếu cần */}
                         </Picker>
                     </View>
 
                     <TouchableOpacity onPress={openDatePicker}>
-                        <Text className="border border-gray-300 p-3 rounded-lg mb-4 text-center bg-gray-50 hover:bg-gray-200 transition duration-200">
+                        <Text style={styles.dateText}>
                             Ngày Check-in: {formData.checkInDate ? formData.checkInDate.toLocaleDateString() : 'Chưa chọn'}
                         </Text>
-                        <Text className="border border-gray-300 p-3 rounded-lg mb-4 text-center bg-gray-50 hover:bg-gray-200 transition duration-200">
+                        <Text style={styles.dateText}>
                             Ngày Check-out: {formData.checkOutDate ? formData.checkOutDate.toLocaleDateString() : 'Chưa chọn'}
                         </Text>
                     </TouchableOpacity>
@@ -141,19 +128,17 @@ const HomeScreen: React.FC = () => {
                     <TextInput
                         placeholder="Ghi chú thêm"
                         multiline
-                        keyboardType="default"
                         numberOfLines={3}
-                        autoCapitalize="sentences"
-                        textAlignVertical="top"
-                        className="border border-gray-300 p-3 rounded-lg mb-4 focus:border-orange-500 focus:ring focus:ring-orange-200 transition duration-200"
+                        textAlignVertical="top" // Căn chỉnh nội dung ở đầu
+                        style={styles.input}
                         onChangeText={(text) => handleInputChange('comments', text)}
                     />
 
                     <TouchableOpacity
-                        className="bg-orange-500 p-3 rounded-lg mt-4 hover:bg-orange-600 transition duration-200"
+                        style={styles.submitButton}
                         onPress={handleSubmit}
                     >
-                        <Text className="text-white text-center font-bold">Gửi Đăng Ký</Text>
+                        <Text style={styles.submitButtonText}>Gửi Đăng Ký</Text>
                     </TouchableOpacity>
 
                     <DatePickerModal
@@ -171,5 +156,67 @@ const HomeScreen: React.FC = () => {
         </PaperProvider>
     );
 };
+
+const styles = StyleSheet.create({
+    scrollView: {
+        flex: 1,
+        backgroundColor: '#F3F4F6', // Màu xám nhạt
+        padding: 20,
+    },
+    container: {
+        backgroundColor: '#FFFFFF',
+        padding: 24,
+        borderRadius: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
+    title: {
+        textAlign: 'center',
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: '#FFA500', // Màu cam
+        marginBottom: 24,
+    },
+    input: {
+        borderColor: '#D1D5DB', // Màu xám
+        borderWidth: 1,
+        borderRadius: 8,
+        padding: 12,
+        marginBottom: 16,
+        backgroundColor: '#F9FAFB', // Màu xám nhạt
+    },
+    pickerContainer: {
+        borderColor: '#D1D5DB', // Màu xám
+        borderWidth: 1,
+        borderRadius: 8,
+        marginBottom: 16,
+    },
+    picker: {
+        height: 50,
+    },
+    dateText: {
+        borderColor: '#D1D5DB',
+        borderWidth: 1,
+        padding: 12,
+        borderRadius: 8,
+        marginBottom: 16,
+        textAlign: 'center',
+        backgroundColor: '#F9FAFB', // Màu xám nhạt
+    },
+    submitButton: {
+        backgroundColor: '#FFA500', // Màu cam
+        padding: 12,
+        borderRadius: 8,
+        marginTop: 16,
+    },
+    submitButtonText: {
+        color: '#FFFFFF',
+        textAlign: 'center',
+        fontWeight: 'bold',
+    },
+});
 
 export default styled(HomeScreen);

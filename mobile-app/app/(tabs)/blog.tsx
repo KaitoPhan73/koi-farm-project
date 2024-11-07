@@ -1,9 +1,6 @@
-// KoiBlogList.tsx
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, StyleSheet, TouchableOpacity } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { Link, useRouter } from "expo-router";
-import axios from "axios";
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator } from "react-native";
+import { useRouter } from "expo-router";
 
 interface Blog {
   id: string;
@@ -15,19 +12,25 @@ interface Blog {
   tags: string[]; // Danh sách thẻ
 }
 
-
 const KoiBlogList: React.FC = () => {
   const router = useRouter();
   const [blogs, setBlogs] = useState<Blog[]>([]);
+  const [loading, setLoading] = useState<boolean>(true); // Thêm trạng thái loading
 
   // Fetch blogs từ MockAPI khi component mount
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
-        const response = await axios.get("https://67207d30e7a5792f0531a995.mockapi.io/api/blog/blogs");
-        setBlogs(response.data);
+        const response = await fetch("https://67207d30e7a5792f0531a995.mockapi.io/api/blog/blogs");
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const data = await response.json();
+        setBlogs(data);
       } catch (error) {
         console.error("Error fetching blogs:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -35,25 +38,32 @@ const KoiBlogList: React.FC = () => {
   }, []);
 
   const renderBlogItem = ({ item }: { item: Blog }) => (
-
     <TouchableOpacity
       style={styles.blogItem}
-      onPress={() =>
-        router.push(`/blog/${item.id}`)
-      }
+      onPress={() => router.push(`/blog/${item.id}`)}
     >
       <Text style={styles.blogTitle}>{item.title}</Text>
       <Text style={styles.blogDescription}>{item.description}</Text>
     </TouchableOpacity>
   );
 
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#FFA500" />
+      </View>
+    );
+  }
+
   return (
-    <FlatList
-      data={blogs}
-      renderItem={renderBlogItem}
-      keyExtractor={item => item.id}
-      contentContainerStyle={styles.container}
-    />
+    <View>
+      <FlatList
+        data={blogs}
+        renderItem={renderBlogItem}
+        keyExtractor={item => item.id}
+        contentContainerStyle={styles.container}
+      />
+    </View>
   );
 };
 
@@ -86,7 +96,17 @@ const styles = StyleSheet.create({
     color: '#666', // màu xám nhẹ cho phần mô tả
     lineHeight: 22,
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f0f4f8', // Nền giống như phần nội dung
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 18,
+    color: '#333', // Màu cho văn bản loading
+  },
 });
-
 
 export default KoiBlogList;

@@ -4,6 +4,7 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import Colors from "@/constants/Colors";
 import TabBar from "@/components/tab-bar";
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
 export default function TabLayout() {
   return (
     <Tabs
@@ -57,7 +58,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="blog"
         options={{
-          title: "Blog",
+          title: "Blogs",
           headerTitleAlign: "center",
           headerShown: true,
           tabBarIcon: ({ color }) => (
@@ -74,8 +75,30 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => (
             <AntDesign name="profile" size={24} color={color} />
           ),
+          headerRight: () => (
+            <TouchableOpacity style={styles.headerLogoutButton}>
+              <AntDesign name="logout" size={20} color="orange" />
+              <Text style={styles.headerLogoutText}>Logout</Text>
+            </TouchableOpacity>
+          ),
         }}
       />
     </Tabs>
   );
 }
+const styles = StyleSheet.create({
+  // Các style khác...
+
+  headerLogoutButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginRight: 16,
+  },
+  headerLogoutText: {
+    color: "orange",
+    fontSize: 16,
+    marginLeft: 5,
+  },
+
+  // Giữ nguyên các style khác...
+});

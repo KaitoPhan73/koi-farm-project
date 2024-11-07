@@ -90,7 +90,7 @@ const ProfileScreen = () => {
             }]}>
                 <Text style={[styles.logoutText, {
                     color: Colors.orange
-                }]}>Update</Text>
+                }]}>Change Password</Text>
             </TouchableOpacity>
         </ScrollView>
     )
