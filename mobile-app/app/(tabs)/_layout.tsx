@@ -1,4 +1,4 @@
-import { Tabs } from "expo-router";
+import { Stack, Tabs } from "expo-router";
 import React, { useState } from "react";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Colors from "@/constants/Colors";
@@ -7,6 +7,7 @@ import { useSession } from "@/utils/ctx";
 import { StyleSheet, Text, Modal, View, TouchableOpacity } from "react-native";
 import { Redirect } from "expo-router";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import ProductDetails from "../products/[id]";
 
 export default function TabLayout() {
   const { session, isLoading } = useSession();

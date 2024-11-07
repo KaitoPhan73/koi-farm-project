@@ -65,6 +65,24 @@ class ProductController {
     }
   }
 
+  async getProductsByCategory(req, res) {
+    try {
+      const { categoryId } = req.params;
+      if (!mongoose.Types.ObjectId.isValid(categoryId)) {
+        return res.status(400).json({ message: 'Invalid Category ID' });
+      }
+  
+      const products = await productService.getProductsByCategory(categoryId);
+      res.status(200).json(products);
+    } catch (error) {
+      if (error.message === 'Category not found') {
+        return res.status(404).json({ message: error.message });
+      }
+      res.status(500).json({ message: error.message });
+    }
+  }
+  
+
   async update(req, res) {
     try {
       const product = await productService.updateProduct(
