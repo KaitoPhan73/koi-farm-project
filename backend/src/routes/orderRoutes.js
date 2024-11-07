@@ -7,7 +7,39 @@ const orderController = require('../controllers/orderController');
  * @swagger
  * tags:
  *   name: Order
- *   description: Các API liên quan đến đơn hàng
+ *   description: Order management endpoints
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Order:
+ *       type: object
+ *       required:
+ *         - user
+ *         - items
+ *         - totalAmount
+ *       properties:
+ *         user:
+ *           type: string
+ *           description: ID của người dùng
+ *         items:
+ *           type: array
+ *           items:
+ *             type: string
+ *           description: Danh sách ID của các OrderItem
+ *         totalAmount:
+ *           type: number
+ *           description: Tổng số tiền
+ *         status:
+ *           type: string
+ *           enum: [Pending, Processing, Shipped, Completed, Cancelled]
+ *           description: Trạng thái đơn hàng
+ *         orderDate:
+ *           type: string
+ *           format: date-time
+ *           description: Ngày đặt hàng
  */
 
 /**
@@ -15,52 +47,18 @@ const orderController = require('../controllers/orderController');
  * /orders:
  *   post:
  *     tags: [Order]
- *     summary: Tạo một đơn hàng mới
+ *     summary: Tạo đơn hàng mới
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - customer
- *               - items
- *               - totalAmount
- *             properties:
- *               customer:
- *                 type: string
- *                 format: ObjectId
- *                 example: "60d5f483f1b3c45e4a5ed8f7"
- *               items:
- *                 type: array
- *                 items:
- *                   type: string
- *                   format: ObjectId
- *                   example: "60d5f4a2f1b3c45e4a5ed8f8"
- *               totalAmount:
- *                 type: number
- *                 example: 150.75
- *               status:
- *                 type: string
- *                 enum: [Pending, Processing, Shipped, Completed, Cancelled]
- *                 example: "Pending"
+ *             $ref: '#/components/schemas/Order'
  *     responses:
  *       201:
- *         description: Đơn hàng đã được tạo thành công.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Order created successfully."
- *                 data:
- *                   $ref: '#/components/schemas/Order'
+ *         description: Đơn hàng đã được tạo thành công
  *       400:
- *         description: Dữ liệu không hợp lệ.
- *       500:
- *         description: Lỗi máy chủ nội bộ.
+ *         description: Dữ liệu không hợp lệ
  */
 router.post('/', orderController.create);
 
@@ -69,45 +67,28 @@ router.post('/', orderController.create);
  * /orders:
  *   get:
  *     tags: [Order]
- *     summary: Lấy danh sách tất cả đơn hàng
+ *     summary: Lấy danh sách đơn hàng
  *     parameters:
  *       - in: query
  *         name: page
  *         schema:
  *           type: integer
- *           example: 1
- *         description: >
- *           Số trang cho phân trang (ví dụ: 1, 2, 3)
+ *         description: Số trang
  *       - in: query
  *         name: limit
  *         schema:
  *           type: integer
- *           example: 10
- *         description: >
- *           Giới hạn số lượng đơn hàng mỗi trang (ví dụ: 10, 20, 50)
+ *         description: Số lượng item trên mỗi trang
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *         description: Trạng thái đơn hàng
  *     responses:
  *       200:
- *         description: Danh sách đơn hàng.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 total:
- *                   type: integer
- *                   example: 100
- *                 page:
- *                   type: integer
- *                   example: 1
- *                 limit:
- *                   type: integer
- *                   example: 10
- *                 data:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/Order'
+ *         description: Thành công
  *       500:
- *         description: Lỗi máy chủ nội bộ.
+ *         description: Lỗi server
  */
 router.get('/', orderController.getAll);
 
@@ -116,7 +97,7 @@ router.get('/', orderController.getAll);
  * /orders/{id}:
  *   get:
  *     tags: [Order]
- *     summary: Lấy thông tin một đơn hàng theo ID
+ *     summary: Lấy thông tin đơn hàng theo ID
  *     parameters:
  *       - in: path
  *         name: id
@@ -126,15 +107,9 @@ router.get('/', orderController.getAll);
  *           type: string
  *     responses:
  *       200:
- *         description: Đơn hàng đã tìm thấy.
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Order'
+ *         description: Thành công
  *       404:
- *         description: Đơn hàng không tìm thấy.
- *       500:
- *         description: Lỗi máy chủ nội bộ.
+ *         description: Không tìm thấy đơn hàng
  */
 router.get('/:id', orderController.getById);
 
@@ -143,7 +118,7 @@ router.get('/:id', orderController.getById);
  * /orders/{id}:
  *   patch:
  *     tags: [Order]
- *     summary: Cập nhật thông tin một đơn hàng theo ID
+ *     summary: Cập nhật thông tin đơn hàng
  *     parameters:
  *       - in: path
  *         name: id
@@ -156,34 +131,12 @@ router.get('/:id', orderController.getById);
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               customer:
- *                 type: string
- *                 format: ObjectId
- *                 example: "60d5f483f1b3c45e4a5ed8f7"
- *               items:
- *                 type: array
- *                 items:
- *                   type: string
- *                   format: ObjectId
- *                   example: "60d5f4a2f1b3c45e4a5ed8f8"
- *               totalAmount:
- *                 type: number
- *                 example: 150.75
- *               status:
- *                 type: string
- *                 enum: [Pending, Processing, Shipped, Completed, Cancelled]
- *                 example: "Processing"
+ *             $ref: '#/components/schemas/Order'
  *     responses:
  *       200:
- *         description: Đơn hàng đã được cập nhật thành công.
- *       400:
- *         description: Dữ liệu không hợp lệ.
+ *         description: Cập nhật thành công
  *       404:
- *         description: Đơn hàng không tìm thấy.
- *       500:
- *         description: Lỗi máy chủ nội bộ.
+ *         description: Không tìm thấy đơn hàng
  */
 router.patch('/:id', orderController.update);
 
@@ -192,7 +145,7 @@ router.patch('/:id', orderController.update);
  * /orders/{id}:
  *   delete:
  *     tags: [Order]
- *     summary: Xóa một đơn hàng theo ID
+ *     summary: Xóa đơn hàng
  *     parameters:
  *       - in: path
  *         name: id
@@ -201,12 +154,10 @@ router.patch('/:id', orderController.update);
  *         schema:
  *           type: string
  *     responses:
- *       204:
- *         description: Đơn hàng đã được xóa.
+ *       200:
+ *         description: Xóa thành công
  *       404:
- *         description: Đơn hàng không tìm thấy.
- *       500:
- *         description: Lỗi máy chủ nội bộ.
+ *         description: Không tìm thấy đơn hàng
  */
 router.delete('/:id', orderController.delete);
 

@@ -38,10 +38,14 @@ const { body } = require('express-validator');
  *       500:
  *         description: Internal server error
  */
-router.post('/login', [
-  body('username').notEmpty().withMessage('Username is required'),
-  body('password').notEmpty().withMessage('Password is required')
-], authController.login);
+router.post(
+  '/login',
+  [
+    body('username').notEmpty().withMessage('Username is required'),
+    body('password').notEmpty().withMessage('Password is required'),
+  ],
+  authController.login
+);
 
 /**
  * @swagger
@@ -78,14 +82,22 @@ router.post('/login', [
  *       500:
  *         description: Internal server error
  */
-router.post('/register', [
-  body('username').notEmpty().withMessage('Username is required'),
-  body('fullName').isLength({ min: 3 }).withMessage('Full name must be at least 3 characters long'),
-  body('email').isEmail().withMessage('Valid email is required'),
-  body('phone').isMobilePhone().withMessage('Valid phone number is required'),
-  body('address').notEmpty().withMessage('Address is required'),
-  body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long')
-], authController.register);
+router.post(
+  '/register',
+  [
+    body('username').notEmpty().withMessage('Username is required'),
+    body('fullName')
+      .isLength({ min: 3 })
+      .withMessage('Full name must be at least 3 characters long'),
+    body('email').isEmail().withMessage('Valid email is required'),
+    body('phone').isMobilePhone().withMessage('Valid phone number is required'),
+    body('address').notEmpty().withMessage('Address is required'),
+    body('password')
+      .isLength({ min: 6 })
+      .withMessage('Password must be at least 6 characters long'),
+  ],
+  authController.register
+);
 
 /**
  * @swagger
@@ -116,10 +128,16 @@ router.post('/register', [
  *       500:
  *         description: Internal server error
  */
-router.post('/reset-password', [
-  body('username').notEmpty().withMessage('Username is required'),
-  body('newPassword').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long')
-], authController.resetPassword);
+router.post(
+  '/reset-password',
+  [
+    body('username').notEmpty().withMessage('Username is required'),
+    body('newPassword')
+      .isLength({ min: 6 })
+      .withMessage('Password must be at least 6 characters long'),
+  ],
+  authController.resetPassword
+);
 
 /**
  * @swagger

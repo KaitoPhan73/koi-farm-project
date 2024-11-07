@@ -1,13 +1,44 @@
 const express = require('express');
-const feedBackController = require('../controllers/feedBackController');
-
 const router = express.Router();
+const feedbackController = require('../controllers/feedbackController');
 
 /**
  * @swagger
  * tags:
  *   name: Feedback
- *   description: Các API liên quan đến phản hồi
+ *   description: Feedback management endpoints
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Feedback:
+ *       type: object
+ *       required:
+ *         - user
+ *         - product
+ *         - rating
+ *         - comment
+ *       properties:
+ *         user:
+ *           type: string
+ *           description: ID của người dùng
+ *         product:
+ *           type: string
+ *           description: ID của sản phẩm
+ *         rating:
+ *           type: number
+ *           minimum: 1
+ *           maximum: 5
+ *           description: Đánh giá (1-5 sao)
+ *         comment:
+ *           type: string
+ *           description: Nội dung đánh giá
+ *         status:
+ *           type: string
+ *           enum: [Pending, Approved, Rejected]
+ *           description: Trạng thái của đánh giá
  */
 
 /**
@@ -15,90 +46,88 @@ const router = express.Router();
  * /feedbacks:
  *   post:
  *     tags: [Feedback]
- *     summary: Tạo phản hồi mới
+ *     summary: Tạo một đánh giá mới
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - customer
- *               - koi
- *               - rating
- *             properties:
- *               customer:
- *                 type: string
- *                 description: ID của khách hàng
- *                 example: "615e63d9c8e7b63bb8c00001"
- *               koi:
- *                 type: string
- *                 description: ID của sản phẩm cá Koi
- *                 example: "615e63d9c8e7b63bb8c00002"
- *               rating:
- *                 type: number
- *                 description: Đánh giá từ 1 đến 5
- *                 example: 5
- *               comment:
- *                 type: string
- *                 description: Nhận xét của khách hàng
- *                 example: "Cá rất khỏe mạnh và đẹp."
+ *             $ref: '#/components/schemas/Feedback'
  *     responses:
  *       201:
- *         description: Phản hồi đã được tạo thành công.
- *       500:
- *         description: Lỗi máy chủ nội bộ.
+ *         description: Đánh giá đã được tạo thành công
+ *       400:
+ *         description: Dữ liệu không hợp lệ
  */
-router.post('/', feedBackController.create);
+router.post('/', feedbackController.create);
 
 /**
  * @swagger
  * /feedbacks:
  *   get:
  *     tags: [Feedback]
- *     summary: Lấy tất cả phản hồi
+ *     summary: Lấy danh sách đánh giá
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *         description: Số trang
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *         description: Số lượng item trên mỗi trang
+ *       - in: query
+ *         name: product
+ *         schema:
+ *           type: string
+ *         description: Lọc theo sản phẩm
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *         description: Lọc theo trạng thái
  *     responses:
  *       200:
- *         description: Danh sách phản hồi.
+ *         description: Thành công
  *       500:
- *         description: Lỗi máy chủ nội bộ.
+ *         description: Lỗi server
  */
-router.get('/', feedBackController.getAll);
+router.get('/', feedbackController.getAll);
 
 /**
  * @swagger
  * /feedbacks/{id}:
  *   get:
  *     tags: [Feedback]
- *     summary: Lấy phản hồi theo ID
+ *     summary: Lấy thông tin đánh giá theo ID
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: ID của phản hồi
+ *         description: ID của đánh giá
  *         schema:
  *           type: string
  *     responses:
  *       200:
- *         description: Phản hồi đã tìm thấy.
+ *         description: Thành công
  *       404:
- *         description: Không tìm thấy phản hồi.
- *       500:
- *         description: Lỗi máy chủ nội bộ.
+ *         description: Không tìm thấy đánh giá
  */
-router.get('/:id', feedBackController.getById);
+router.get('/:id', feedbackController.getById);
 
 /**
  * @swagger
  * /feedbacks/{id}:
- *   patch:
+ *   put:
  *     tags: [Feedback]
- *     summary: Cập nhật phản hồi theo ID
+ *     summary: Cập nhật thông tin đánh giá
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: ID của phản hồi
+ *         description: ID của đánh giá
  *         schema:
  *           type: string
  *     requestBody:
@@ -106,47 +135,34 @@ router.get('/:id', feedBackController.getById);
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               rating:
- *                 type: number
- *                 description: Đánh giá từ 1 đến 5
- *                 example: 4
- *               comment:
- *                 type: string
- *                 description: Nhận xét của khách hàng
- *                 example: "Cá rất đẹp."
+ *             $ref: '#/components/schemas/Feedback'
  *     responses:
  *       200:
- *         description: Phản hồi đã được cập nhật thành công.
+ *         description: Cập nhật thành công
  *       404:
- *         description: Không tìm thấy phản hồi.
- *       500:
- *         description: Lỗi máy chủ nội bộ.
+ *         description: Không tìm thấy đánh giá
  */
-router.patch('/:id', feedBackController.update);
+router.put('/:id', feedbackController.update);
 
 /**
  * @swagger
  * /feedbacks/{id}:
  *   delete:
  *     tags: [Feedback]
- *     summary: Xóa phản hồi theo ID
+ *     summary: Xóa đánh giá
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: ID của phản hồi
+ *         description: ID của đánh giá
  *         schema:
  *           type: string
  *     responses:
  *       200:
- *         description: Phản hồi đã bị xóa thành công.
+ *         description: Xóa thành công
  *       404:
- *         description: Không tìm thấy phản hồi.
- *       500:
- *         description: Lỗi máy chủ nội bộ.
+ *         description: Không tìm thấy đánh giá
  */
-router.delete('/:id', feedBackController.delete);
+router.delete('/:id', feedbackController.delete);
 
 module.exports = router;

@@ -68,6 +68,30 @@ class OrderItemController {
       res.status(500).json({ message: error.message });
     }
   }
+
+  async createWithConsignment(req, res) {
+    try {
+      const { orderItem: orderItemData, consignment: consignmentData } =
+        req.body;
+
+      const result = await orderItemService.createWithConsignment(
+        orderItemData,
+        consignmentData
+      );
+
+      res.status(201).json({
+        success: true,
+        message: 'OrderItem with consignment created successfully',
+        data: result,
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: 'Failed to create OrderItem with consignment',
+        error: error.message,
+      });
+    }
+  }
 }
 
 module.exports = new OrderItemController();
