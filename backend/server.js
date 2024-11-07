@@ -7,7 +7,6 @@ const cors = require('cors');
 
 const app = express();
 
-// Sử dụng cors mặc định để cho phép tất cả các origin
 app.use(cors());
 
 app.use(express.json());
