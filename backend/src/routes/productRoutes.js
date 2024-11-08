@@ -16,18 +16,32 @@ const productController = require('../controllers/productController');
  *     Product:
  *       type: object
  *       required:
- *         - productBase
+ *         - name
+ *         - category
  *         - size
  *         - age
  *         - gender
  *         - price
  *       properties:
- *         productBase:
+ *         name:
  *           type: string
- *           description: ID của ProductBase
+ *           description: Tên sản phẩm
+ *         category:
+ *           type: string
+ *           description: ID của danh mục
+ *         breed:
+ *           type: string
+ *           description: Giống cá
+ *         origin:
+ *           type: string
+ *           description: Xuất xứ
  *         size:
- *           type: number
- *           description: Kích thước của cá (cm)
+ *           type: string
+ *           enum: [S, M, L]
+ *           description: Kích thước
+ *         descriptionSize:
+ *           type: string
+ *           description: Mô tả kích thước
  *         age:
  *           type: number
  *           description: Tuổi của cá
@@ -38,9 +52,15 @@ const productController = require('../controllers/productController');
  *         price:
  *           type: number
  *           description: Giá bán
- *         available:
- *           type: boolean
- *           description: Trạng thái có sẵn
+ *         stock:
+ *           type: number
+ *           description: Số lượng trong kho
+ *         personality:
+ *           type: string
+ *           description: Đặc điểm tính cách
+ *         imageUrl:
+ *           type: string
+ *           description: URL hình ảnh
  *         status:
  *           type: string
  *           enum: [Available, Sold, Pending, Not for Sale]
@@ -90,6 +110,11 @@ router.post('/', productController.create);
  *           type: string
  *         description: ID của danh mục để lọc
  *       - in: query
+ *         name: categoryId
+ *         schema:
+ *           type: string
+ *         description: ID của danh mục để lọc (alias for category)
+ *       - in: query
  *         name: minPrice
  *         schema:
  *           type: number
@@ -103,16 +128,19 @@ router.post('/', productController.create);
  *         name: gender
  *         schema:
  *           type: string
+ *           enum: [Male, Female]
  *         description: Giới tính của cá
  *       - in: query
  *         name: status
  *         schema:
  *           type: string
+ *           enum: [Available, Sold, Pending, Not for Sale]
  *         description: Trạng thái sản phẩm
  *       - in: query
  *         name: sortBy
  *         schema:
  *           type: string
+ *           enum: [price, age, createdAt, name]
  *         description: Trường để sắp xếp
  *       - in: query
  *         name: order
@@ -120,9 +148,34 @@ router.post('/', productController.create);
  *           type: string
  *           enum: [asc, desc]
  *         description: Thứ tự sắp xếp
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Tìm kiếm theo tên hoặc mô tả
  *     responses:
  *       200:
  *         description: Thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 items:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       data:
+ *                         type: array
+ *                         items:
+ *                           $ref: '#/components/schemas/Product'
+ *                       totalItems:
+ *                         type: number
+ *                       totalPages:
+ *                         type: number
  *       500:
  *         description: Lỗi server
  */

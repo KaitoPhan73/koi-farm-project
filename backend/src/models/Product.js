@@ -3,10 +3,22 @@ const { Schema } = mongoose;
 
 const productSchema = new Schema(
   {
-    productBase: {
+    name: {
+      type: String,
+      required: [true, 'Name is required'],
+      trim: true,
+    },
+    category: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'ProductBase',
-      required: true,
+      ref: 'Category',
+    },
+    breed: {
+      type: String,
+      required: [true, 'Breed is required'],
+    },
+    origin: {
+      type: String,
+      required: [true, 'Origin is required'],
     },
     size: {
       type: String,
@@ -52,6 +64,14 @@ const productSchema = new Schema(
       required: true,
       min: 0,
       default: 0,
+    },
+    personality: {
+      type: String,
+      trim: true,
+    },
+    imageUrl: {
+      type: String,
+      trim: true,
     },
     consignment: {
       isConsignment: {

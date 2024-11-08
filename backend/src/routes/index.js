@@ -8,7 +8,6 @@ const orderItemRoutes = require('./orderItemRoutes');
 const feedBackRoutes = require('./feedbackRoutes');
 const categoryRoutes = require('./categoryRoutes');
 const authRoutes = require('./authRoutes');
-const productBaseRoutes = require('./productBaseRoutes');
 const stripePaymentRoutes = require('./paymentRoutes');
 const zaloPayRoutes = require('./zaloPayRoutes');
 
@@ -22,7 +21,6 @@ router.use('/orders', orderRoutes);
 router.use('/categories', categoryRoutes);
 router.use('/order-items', orderItemRoutes);
 router.use('/auth', authRoutes);
-router.use('/product-bases', productBaseRoutes);
 router.use('/stripe', stripePaymentRoutes);
 router.use('/zalo-pay', zaloPayRoutes);
 
