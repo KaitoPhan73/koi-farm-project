@@ -52,7 +52,7 @@ class ProductService {
         const skip = (Number(page) - 1) * Number(limit);
         const [products, totalItems] = await Promise.all([
           Product.find(filter)
-            .populate('category', 'name')
+            .populate('category')
             .sort(sortOptions)
             .skip(skip)
             .limit(Number(limit))
