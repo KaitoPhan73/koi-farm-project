@@ -1,8 +1,16 @@
 import React, { useState } from "react";
-import { TouchableOpacity, Text, StyleSheet, Linking } from "react-native";
+import {
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  Linking,
+  Alert,
+} from "react-native";
 import axios from "axios";
 import Colors from "@/constants/Colors";
 import apiClient from "@/apis/apiClient";
+import { useSession } from "@/utils/ctx"; // Import useSession
+import { router } from "expo-router";
 
 interface PaymentProps {
   totalAmount: number;
@@ -17,6 +25,8 @@ interface PaymentProps {
 
 const PaymentScreen: React.FC<PaymentProps> = ({ totalAmount, cartItems }) => {
   const [loading, setLoading] = useState(false);
+  const { session } = useSession(); // Lấy session từ context
+  const sessionData = session ? JSON.parse(session) : null;
 
   const createOrderItem = async (item: any) => {
     const orderItemData = {
@@ -35,9 +45,14 @@ const PaymentScreen: React.FC<PaymentProps> = ({ totalAmount, cartItems }) => {
   };
 
   const handleZaloPay = async () => {
+    if (!session) {
+      Alert.alert("Error", "Please login to continue");
+      router.push("/sign-in");
+      return;
+    }
+
     try {
       setLoading(true);
-      const userId = "672da99cf5b1006f814e643b";
 
       // Tạo tất cả orderItems cùng lúc
       const orderItemPromises = cartItems.map((item) => createOrderItem(item));
@@ -45,9 +60,9 @@ const PaymentScreen: React.FC<PaymentProps> = ({ totalAmount, cartItems }) => {
 
       console.log("All order items created:", createdOrderItems);
 
-      // Tạo order với các orderItems đã tạo
+      // Tạo order với các orderItems đã tạo và userId từ session
       const orderData = {
-        userId,
+        userId: sessionData?.user?._id,
         items: createdOrderItems,
         totalAmount,
         status: "Pending",
@@ -81,39 +96,42 @@ const PaymentScreen: React.FC<PaymentProps> = ({ totalAmount, cartItems }) => {
       if (axios.isAxiosError(error)) {
         console.error("API Error:", error.response?.data);
       }
+      Alert.alert("Error", "Có lỗi xảy ra, vui lòng thử lại sau");
     } finally {
       setLoading(false);
     }
   };
+  d;
 
   return (
     <TouchableOpacity
       onPress={handleZaloPay}
-      style={[styles.zaloPayButton, loading && styles.disabledButton]}
-      disabled={loading}
+      style={[styles.paymentButton, loading && styles.disabledButton]}
+      disabled={loading || !session}
     >
       <Text style={styles.buttonText}>
-        {loading ? "Processing..." : "Continue and Pay"}
+        {loading ? "Đang xử lý..." : "Tiếp Tục và Thanh Toán"}
       </Text>
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
-  zaloPayButton: {
-    backgroundColor: Colors.tint,
-    paddingVertical: 12,
-    alignItems: "center",
+  paymentButton: {
+    backgroundColor: Colors.primaryColor,
+    padding: 15,
     borderRadius: 8,
-    marginTop: 20,
+    alignItems: "center",
+    marginHorizontal: 20,
+    marginVertical: 10,
   },
   disabledButton: {
-    opacity: 0.7,
+    opacity: 0.5,
   },
   buttonText: {
     color: "white",
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: "bold",
   },
 });
 
