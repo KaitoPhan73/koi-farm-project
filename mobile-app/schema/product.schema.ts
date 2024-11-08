@@ -9,65 +9,67 @@ export const ProductSchema = z.object({
 
   category: z.string().min(1, { message: "Category ID is required" }),
 
+  breed: z.string().min(1, { message: "Breed is required" }),
+
+  origin: z.string().min(1, { message: "Origin is required" }),
+
+  size: z.enum(["S", "M", "L"], {
+    message: "Size must be S, M, or L",
+  }),
+
+  descriptionSize: z
+    .string()
+    .min(1, { message: "Description size is required" })
+    .regex(/^\d+(-\d+)?\s*cm$/, {
+      message: "Description size must be in format '3-6 cm' or '10 cm'",
+    }),
+
   age: z.coerce
     .number()
     .min(0, { message: "Age cannot be negative" })
     .max(50, { message: "Age cannot exceed 50 years" }),
 
-  stock: z.coerce
-    .number()
-    .min(0, { message: "Stock cannot be negative" })
-    .max(50, { message: "Stock cannot exceed 50 years" }),
-
-  origin: z.string().min(1, { message: "Origin is required" }),
-
   gender: z.enum(["Male", "Female"], {
     message: "Gender must be either Male or Female",
   }),
 
-  size: z.coerce
+  price: z.coerce
     .number()
-    .min(10, { message: "Size must be at least 10 cm" })
-    .max(100, { message: "Size cannot exceed 100 cm" }),
+    .min(1, { message: "Price must be at least 1" }),
 
-  breed: z.string().min(1, { message: "Breed is required" }),
+  stock: z.coerce
+    .number()
+    .min(0, { message: "Stock cannot be negative" }),
 
   personality: z
     .string()
-    .max(100, {
-      message: "Personality description cannot exceed 100 characters",
-    })
+    .max(100, { message: "Personality cannot exceed 100 characters" })
     .optional(),
-
-  dailyFeedAmount: z.coerce
-    .number()
-    .min(1, { message: "Daily feed amount must be at least 1 gram" })
-    .max(500, { message: "Daily feed amount cannot exceed 500 grams" })
-    .optional(),
-
-  screeningRate: z.coerce
-    .number()
-    .min(0, { message: "Screening rate must be at least 0%" })
-    .max(100, { message: "Screening rate cannot exceed 100%" })
-    .optional(),
-
-  healthStatus: z.string().min(1, { message: "Health status is required" }),
 
   imageUrl: z
     .string()
     .regex(/^(https?:\/\/.*\.(?:png|jpg|jpeg|gif))$/, {
-      message:
-        "Please enter a valid image URL (must end with .png, .jpg, .jpeg, .gif)",
+      message: "Please enter a valid image URL (must end with .png, .jpg, .jpeg, .gif)",
     })
     .optional(),
 
-  price: z.coerce.number().min(1, { message: "Price must be at least 1" }),
+  consignment: z
+    .object({
+      isConsignment: z.boolean().default(false),
+      supplier: z.string().optional(), // Assuming ObjectId will be sent as string
+      commission: z.coerce
+        .number()
+        .min(0, { message: "Commission must be at least 0%" })
+        .max(100, { message: "Commission cannot exceed 100%" })
+        .optional(),
+    })
+    .optional(),
 
   status: z
     .enum(["Available", "Sold", "Pending", "Not for Sale"], {
       message: "Status must be Available, Sold, Pending, or Not for Sale",
     })
-    .optional(),
+    .default("Available"),
 });
 
 export type TProductRequest = z.TypeOf<typeof ProductSchema>;
