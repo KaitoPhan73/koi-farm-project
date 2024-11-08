@@ -52,10 +52,7 @@ class ProductController {
       throw new ApiError(404, 'Product not found');
     }
 
-    res.status(200).json({
-      success: true,
-      data: product,
-    });
+    res.status(200).json(product);
   });
 
   update = catchAsync(async (req, res) => {
@@ -65,11 +62,7 @@ class ProductController {
       throw new ApiError(404, 'Product not found');
     }
 
-    res.status(200).json({
-      success: true,
-      message: 'Product updated successfully',
-      data: product,
-    });
+    res.status(200).json(product);
   });
 
   delete = catchAsync(async (req, res) => {
@@ -88,11 +81,7 @@ class ProductController {
   search = catchAsync(async (req, res) => {
     const result = await productService.searchProducts(req.query);
 
-    res.status(200).json({
-      success: true,
-      data: result.products,
-      pagination: result.pagination,
-    });
+    res.status(200).json(result.products);
   });
 }
 

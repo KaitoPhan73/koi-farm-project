@@ -3,9 +3,9 @@ import categoryApi from "@/apis/category";
 import productAPI from "@/apis/product";
 import { useQuery } from "@tanstack/react-query";
 
-export const useTools = (params ?: any) => {
+export const useTools = (params?: any) => {
   const getProducts = useQuery({
-    queryKey: ["products",params],
+    queryKey: ["products", params],
     queryFn: () => productAPI.getProducts(params),
   });
 
@@ -33,11 +33,11 @@ export const useTools = (params ?: any) => {
       queryFn: () => categoryApi.getCategories(),
     });
 
-    const getProductsByCategory = () =>
-      useQuery({
-        queryKey: ["categories"],
-        queryFn: () => productAPI.getProductsByCategory(),
-      });
+  const getProductsByCategory = () =>
+    useQuery({
+      queryKey: ["categories"],
+      queryFn: () => productAPI.getProductsByCategory(),
+    });
 
-  return { getProducts, getCategories, getProductsByCategory};
+  return { getProducts, getCategories, getProductsByCategory };
 };
