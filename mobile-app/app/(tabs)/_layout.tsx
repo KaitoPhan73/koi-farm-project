@@ -82,6 +82,17 @@ export default function TabLayout() {
             )
           }}
         />
+        <Tabs.Screen
+          name="OrderScreen"
+          options={{
+            headerShown: true,
+            title: "Order",
+            headerTitleAlign: "center",
+            tabBarIcon: ({ color }) => (
+              <AntDesign name="profile" size={24} color={color} />
+            )
+          }}
+        />
       </Tabs>
 
       <Modal

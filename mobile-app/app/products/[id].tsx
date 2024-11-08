@@ -200,6 +200,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 20,
   },
+  emptyCartText:{}
 });
 
 export default ProductDetails;
