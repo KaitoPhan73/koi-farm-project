@@ -14,7 +14,7 @@ const createOrder = async (userId, items, totalAmount) => {
     await order.save();
     return order;
   } catch (error) {
-    throw new Error('Error creating order');
+    throw new Error(`Error creating orderddsds: ${error.message}`);
   }
 };
 
@@ -31,7 +31,9 @@ const getAllOrders = async () => {
 // Lấy thông tin đơn hàng theo ID
 const getOrderById = async (orderId) => {
   try {
-    const order = await Order.findById(orderId).populate('user').populate('items');
+    const order = await Order.findById(orderId)
+      .populate('user')
+      .populate('items');
     if (!order) {
       throw new Error('Order not found');
     }
@@ -44,7 +46,13 @@ const getOrderById = async (orderId) => {
 // Cập nhật trạng thái đơn hàng
 const updateOrderStatus = async (orderId, status) => {
   try {
-    const validStatuses = ['Pending', 'Processing', 'Shipped', 'Completed', 'Cancelled'];
+    const validStatuses = [
+      'Pending',
+      'Processing',
+      'Shipped',
+      'Completed',
+      'Cancelled',
+    ];
     if (!validStatuses.includes(status)) {
       throw new Error('Invalid status');
     }

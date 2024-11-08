@@ -41,7 +41,7 @@ router.post('/', userController.create);
  * @swagger
  * /users:
  *   get:
- *     summary: Get a list of users
+ *     summary: Get all users
  *     tags: [Users]
  *     parameters:
  *       - in: query

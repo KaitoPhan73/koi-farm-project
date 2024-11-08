@@ -5,7 +5,7 @@ const orderItemController = require('../controllers/orderItemController');
 
 /**
  * @swagger
- * /api/order-items:
+ * /order-items:
  *   post:
  *     summary: Create a new order item
  *     tags: [OrderItems]
@@ -41,7 +41,7 @@ router.post('/', orderItemController.createOrderItem);
 
 /**
  * @swagger
- * /api/order-items:
+ * /order-items:
  *   get:
  *     summary: Get all order items
  *     tags: [OrderItems]
@@ -68,7 +68,7 @@ router.get('/', orderItemController.getAllOrderItems);
 
 /**
  * @swagger
- * /api/order-items/{orderItemId}:
+ * /order-items/{orderItemId}:
  *   get:
  *     summary: Get an order item by ID
  *     tags: [OrderItems]
@@ -91,7 +91,7 @@ router.get('/:orderItemId', orderItemController.getOrderItemById);
 
 /**
  * @swagger
- * /api/order-items/{orderItemId}:
+ * /order-items/{orderItemId}:
  *   put:
  *     summary: Update an order item
  *     tags: [OrderItems]
@@ -129,7 +129,7 @@ router.put('/:orderItemId', orderItemController.updateOrderItem);
 
 /**
  * @swagger
- * /api/order-items/{orderItemId}:
+ * /order-items/{orderItemId}:
  *   delete:
  *     summary: Delete an order item
  *     tags: [OrderItems]
