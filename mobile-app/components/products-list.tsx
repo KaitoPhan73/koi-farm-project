@@ -8,6 +8,7 @@ import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { useCart } from "@/hooks/useCartActions";
 import { TProductBaseResponse } from "@/schema/productbase.schema";
 import { green } from "react-native-reanimated/lib/typescript/reanimated2/Colors";
+import { formatCurrency } from "@/utils/formatter";
 
 type Props = {
   productList: TProductResponse[];
@@ -88,7 +89,9 @@ const ProductItem = ({
           {item.category?.name || "Unknown Category"}
         </Text>
         <Text style={styles.itemTitle}>{item.name}</Text>
-        <Text style={styles.itemSourceName}>Price: {item.price} VND</Text>
+        <View style={styles.priceContainer}>
+          <Text style={styles.price}>{formatCurrency(item.price)}</Text>
+        </View>
         <Text style={styles.itemOrigin}>Origin: {item.origin} </Text>
       </View>
       <TouchableOpacity onPress={handleCartAction} style={styles.cartButton}>
@@ -162,6 +165,13 @@ const styles = StyleSheet.create({
     color: Colors.white,
     fontWeight: "bold",
     fontSize: 14,
+  },
+  priceContainer: {
+    marginBottom: 5,
+  },
+  price: {
+    fontSize: 16,
+    color: Colors.black,
   },
 });
 

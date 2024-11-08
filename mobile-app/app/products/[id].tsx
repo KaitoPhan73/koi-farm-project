@@ -15,6 +15,7 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 import productAPI from "@/apis/product";
 import Colors from "@/constants/Colors";
 import CartModal from "@/components/cart-modal";
+import { formatCurrency } from "@/utils/formatter";
 
 const ProductDetails = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -126,11 +127,11 @@ const ProductDetails = () => {
             Gender: <Text style={styles.bold}>{product?.gender}</Text>
           </Text>
           <Text style={styles.infoText}>
-            Personality:{" "}
-            <Text style={styles.bold}>{product?.personality}</Text>
+            Personality: <Text style={styles.bold}>{product?.personality}</Text>
           </Text>
           <Text style={styles.infoText}>
-            Price: <Text style={styles.bold}>{product?.price} VND</Text>
+            Price:{" "}
+            <Text style={styles.bold}>{formatCurrency(product?.price)}</Text>
           </Text>
           <Text style={styles.infoText}>
             Stock: <Text style={styles.bold}>{product?.stock} available</Text>
@@ -201,6 +202,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 20,
   },
+  emptyCartText:{}
 });
 
 export default ProductDetails;

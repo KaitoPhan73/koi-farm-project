@@ -2,77 +2,80 @@ const Product = require('../models/Product');
 const Category = require('../models/Category');
 
 class ProductService {
-  async createProduct(data) {
-    const product = new Product(data);
-    return await product.save();
-  }
-
   async getAllProducts(query = {}) {
-    const {
-      page,
-      limit = 10,
-      category,
-      categoryId,
-      minPrice,
-      maxPrice,
-      gender,
-      status,
-      sortBy = 'createdAt',
-      order = 'desc',
-      search,
-    } = query;
-
-    const filter = {};
-
-    // Build filters
-    if (categoryId || category) {
-      filter.category = categoryId || category;
-    }
-    if (gender) filter.gender = gender;
-    if (status) filter.status = status;
-    if (minPrice || maxPrice) {
-      filter.price = {};
-      if (minPrice) filter.price.$gte = Number(minPrice);
-      if (maxPrice) filter.price.$lte = Number(maxPrice);
-    }
-    if (search) {
-      filter.$or = [
-        { name: { $regex: search, $options: 'i' } },
-        { breed: { $regex: search, $options: 'i' } },
-        { origin: { $regex: search, $options: 'i' } },
-      ];
-    }
-
-    const sortOptions = {};
-    sortOptions[sortBy] = order === 'desc' ? -1 : 1;
-
     try {
-      // Nếu có page -> thêm skip/limit
-      if (page) {
-        const skip = (Number(page) - 1) * Number(limit);
-        const [products, totalItems] = await Promise.all([
-          Product.find(filter)
-            .populate('category')
-            .sort(sortOptions)
-            .skip(skip)
-            .limit(Number(limit))
-            .lean(),
-          Product.countDocuments(filter),
-        ]);
+      const {
+        page = 1,
+        limit = 10,
+        category,
+        minPrice,
+        maxPrice,
+        gender,
+        status,
+        size,
+        origin,
+        breed,
+        sortBy = 'createdAt',
+        order = 'desc',
+        search,
+      } = query;
 
-        return {
-          products,
-          totalPages: Math.ceil(totalItems / Number(limit)),
-        };
+      const filter = {};
+
+      // Build filters
+      if (category) {
+        filter.category = category;
+      }
+      if (gender) filter.gender = gender;
+      if (status) filter.status = status;
+      if (size) filter.size = size;
+      if (origin) filter.origin = { $regex: origin.trim(), $options: 'i' };
+      if (breed) filter.breed = { $regex: breed.trim(), $options: 'i' };
+
+      // Price range
+      if (minPrice || maxPrice) {
+        filter.price = {};
+        if (minPrice) filter.price.$gte = Number(minPrice);
+        if (maxPrice) filter.price.$lte = Number(maxPrice);
       }
 
-      // Nếu không có page -> trả về tất cả
-      const products = await Product.find(filter)
-        .populate('category', 'name')
-        .sort(sortOptions)
-        .lean();
+      // Search across multiple fields
+      if (search) {
+        const searchTerm = search.trim().replace(/[^a-zA-Z0-9\s]/g, '');
+        filter.$or = [
+          { name: { $regex: searchTerm, $options: 'i' } },
+          { breed: { $regex: searchTerm, $options: 'i' } },
+          { origin: { $regex: searchTerm, $options: 'i' } },
+        ];
+      }
 
-      return { products };
+      // Sort options
+      const allowedSortFields = ['createdAt', 'price', 'name', 'stock'];
+      const sortOptions = {};
+      if (allowedSortFields.includes(sortBy)) {
+        sortOptions[sortBy] = order === 'desc' ? -1 : 1;
+      } else {
+        sortOptions.createdAt = -1; // Default sort
+      }
+
+      const skip = (Number(page) - 1) * Number(limit);
+
+      // Execute query with pagination
+      const [products, totalItems] = await Promise.all([
+        Product.find(filter)
+          .populate('category', 'name description')
+          .sort(sortOptions)
+          .skip(skip)
+          .limit(Number(limit))
+          .lean(),
+        Product.countDocuments(filter),
+      ]);
+
+      // Trả về đúng format mà controller cần
+      return {
+        products,
+        totalPages: Math.ceil(totalItems / Number(limit)),
+      };
     } catch (error) {
       throw new Error(`Error fetching products: ${error.message}`);
     }
@@ -81,11 +84,14 @@ class ProductService {
   async getProductById(id) {
     try {
       const product = await Product.findById(id)
-        .populate('category', 'name')
+        .populate('category', 'name description')
         .lean();
 
       if (!product) {
-        throw new Error('Product not found');
+        return {
+          success: false,
+          message: 'Product not found',
+        };
       }
 
       return product;
@@ -94,18 +100,42 @@ class ProductService {
     }
   }
 
+  async createProduct(data) {
+    try {
+      const product = new Product(data);
+      await product.save();
+
+      const newProduct = await Product.findById(product._id)
+        .populate('category', 'name description')
+        .lean();
+
+      return {
+        success: true,
+        data: newProduct,
+      };
+    } catch (error) {
+      throw new Error(`Error creating product: ${error.message}`);
+    }
+  }
+
   async updateProduct(id, data) {
     try {
       const product = await Product.findByIdAndUpdate(id, data, {
         new: true,
         runValidators: true,
-      }).populate('category', 'name');
+      }).populate('category', 'name description');
 
       if (!product) {
-        throw new Error('Product not found');
+        return {
+          success: false,
+          message: 'Product not found',
+        };
       }
 
-      return product;
+      return {
+        success: true,
+        data: product,
+      };
     } catch (error) {
       throw new Error(`Error updating product: ${error.message}`);
     }
@@ -116,62 +146,18 @@ class ProductService {
       const product = await Product.findByIdAndDelete(id);
 
       if (!product) {
-        throw new Error('Product not found');
+        return {
+          success: false,
+          message: 'Product not found',
+        };
       }
-
-      return product;
-    } catch (error) {
-      throw new Error(`Error deleting product: ${error.message}`);
-    }
-  }
-
-  async searchProducts(searchQuery) {
-    const { term, page = 1, limit = 10, ...filters } = searchQuery;
-
-    try {
-      const query = {};
-
-      // Add text search if term exists
-      if (term) {
-        query.$or = [
-          { name: { $regex: term, $options: 'i' } },
-          { breed: { $regex: term, $options: 'i' } },
-          { origin: { $regex: term, $options: 'i' } },
-        ];
-      }
-
-      // Add other filters
-      Object.keys(filters).forEach((key) => {
-        if (filters[key]) {
-          if (key === 'category' || key === 'categoryId') {
-            query.category = filters[key];
-          } else {
-            query[key] = filters[key];
-          }
-        }
-      });
-
-      const skip = (Number(page) - 1) * Number(limit);
-
-      const products = await Product.find(query)
-        .populate('category', 'name')
-        .skip(skip)
-        .limit(Number(limit))
-        .lean();
-
-      const totalItems = await Product.countDocuments(query);
-      const totalPages = Math.ceil(totalItems / Number(limit));
 
       return {
-        products,
-        totalItems,
-        totalPages,
-        currentPage: Number(page),
-        hasNext: page < totalPages,
-        hasPrev: page > 1,
+        success: true,
+        message: 'Product deleted successfully',
       };
     } catch (error) {
-      throw new Error(`Error searching products: ${error.message}`);
+      throw new Error(`Error deleting product: ${error.message}`);
     }
   }
 }
