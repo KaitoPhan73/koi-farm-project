@@ -32,7 +32,7 @@ const ProductIndex = <TData, TValue>({
           <Button
             variant="default"
             className="mb-3"
-            onClick={() => router.push("/admin/products/create")}
+            onClick={() => router.push("/manage/products/create")}
           >
             Create Product
           </Button>

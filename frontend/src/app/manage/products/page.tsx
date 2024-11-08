@@ -1,7 +1,7 @@
 "use server";
 import { getAllProducts } from "@/apis/product";
 import ProductIndex from "./_components";
-import { productColumns } from "./_components/colunm";
+import { productColumns } from "./_components/column";
 
 export default async function ProductsPage(props: any) {
   const params = {

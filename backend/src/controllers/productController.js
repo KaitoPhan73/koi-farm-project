@@ -1,140 +1,99 @@
 const productService = require('../services/productService');
+const ApiError = require('../utils/ApiError');
+const catchAsync = require('../utils/catchAsync');
 
 class ProductController {
-  async create(req, res) {
-    try {
-      const product = await productService.createProduct(req.body);
-      res.status(201).json({
-        success: true,
-        message: 'Product created successfully',
-        data: product,
-      });
-    } catch (error) {
-      res.status(400).json({
-        success: false,
-        message: 'Failed to create product',
-        error: error.message,
-      });
+  create = catchAsync(async (req, res) => {
+    const product = await productService.createProduct(req.body);
+
+    if (!product) {
+      throw new ApiError(400, 'Failed to create product');
     }
-  }
 
-  async getAll(req, res) {
+    res.status(201).json({
+      success: true,
+      message: 'Product created successfully',
+      data: product,
+    });
+  });
+
+  getAll = catchAsync(async (req, res) => {
     try {
-      const { page, limit, category } = req.query;
+      const { page, limit } = req.query;
+      const result = await productService.getAllProducts(req.query);
 
-      const productsData = await productService.getAllProducts(
-        parseInt(page),
-        parseInt(limit),
-        category // Thêm category vào đây
-      );
-
-      if (page && limit) {
-        const { products, totalItems, totalPages } = productsData;
+      if (page || limit) {
         return res.status(200).json({
-          page: parseInt(page),
-          limit: parseInt(limit),
-          totalPages,
-          totalItems,
-          items: products,
+          success: true,
+          items: result.products,
+          totalPages: result.totalPages,
+          page: Number(page) || 1,
+          limit: Number(limit) || 10,
         });
-      } else {
-        return res.status(200).json({ items: productsData });
       }
-    } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: 'Failed to fetch products',
-        error: error.message,
-      });
-    }
-  }
 
-  async getById(req, res) {
-    try {
-      const product = await productService.getProductById(req.params.id);
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
-        data: product,
+        items: result.products,
       });
     } catch (error) {
-      const statusCode = error.message === 'Product not found' ? 404 : 500;
-      res.status(statusCode).json({
+      return res.status(500).json({
         success: false,
-        message: error.message,
+        message: error.message || 'Failed to fetch products',
+        items: [],
       });
     }
-  }
+  });
 
-  async getProductsByCategory(req, res) {
-    try {
-      const { categoryId } = req.params;
-      if (!mongoose.Types.ObjectId.isValid(categoryId)) {
-        return res.status(400).json({ message: 'Invalid Category ID' });
-      }
-  
-      const products = await productService.getProductsByCategory(categoryId);
-      res.status(200).json(products);
-    } catch (error) {
-      if (error.message === 'Category not found') {
-        return res.status(404).json({ message: error.message });
-      }
-      res.status(500).json({ message: error.message });
-    }
-  }
-  
+  getById = catchAsync(async (req, res) => {
+    const product = await productService.getProductById(req.params.id);
 
-  async update(req, res) {
-    try {
-      const product = await productService.updateProduct(
-        req.params.id,
-        req.body
-      );
-      res.status(200).json({
-        success: true,
-        message: 'Product updated successfully',
-        data: product,
-      });
-    } catch (error) {
-      const statusCode = error.message === 'Product not found' ? 404 : 400;
-      res.status(statusCode).json({
-        success: false,
-        message: error.message,
-      });
+    if (!product) {
+      throw new ApiError(404, 'Product not found');
     }
-  }
 
-  async delete(req, res) {
-    try {
-      await productService.deleteProduct(req.params.id);
-      res.status(200).json({
-        success: true,
-        message: 'Product deleted successfully',
-      });
-    } catch (error) {
-      const statusCode = error.message === 'Product not found' ? 404 : 500;
-      res.status(statusCode).json({
-        success: false,
-        message: error.message,
-      });
-    }
-  }
+    res.status(200).json({
+      success: true,
+      data: product,
+    });
+  });
 
-  async search(req, res) {
-    try {
-      const result = await productService.searchProducts(req.query);
-      res.status(200).json({
-        success: true,
-        data: result.products,
-        pagination: result.pagination,
-      });
-    } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: 'Failed to search products',
-        error: error.message,
-      });
+  update = catchAsync(async (req, res) => {
+    const product = await productService.updateProduct(req.params.id, req.body);
+
+    if (!product) {
+      throw new ApiError(404, 'Product not found');
     }
-  }
+
+    res.status(200).json({
+      success: true,
+      message: 'Product updated successfully',
+      data: product,
+    });
+  });
+
+  delete = catchAsync(async (req, res) => {
+    const result = await productService.deleteProduct(req.params.id);
+
+    if (!result) {
+      throw new ApiError(404, 'Product not found');
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Product deleted successfully',
+    });
+  });
+
+  search = catchAsync(async (req, res) => {
+    const result = await productService.searchProducts(req.query);
+
+    res.status(200).json({
+      success: true,
+      data: result.products,
+      pagination: result.pagination,
+    });
+  });
 }
 
 module.exports = new ProductController();

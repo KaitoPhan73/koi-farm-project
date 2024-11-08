@@ -21,20 +21,27 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { TProductRequest, ProductSchema } from "@/schema/product.schema"; // Make sure you define a schema for creating a product
-import { createProduct } from "@/apis/product"; // Ensure you have an API function for creating a product
+import { TProductRequest, ProductSchema } from "@/schema/product.schema";
+import { TCategoryResponse } from "@/schema/category.schema";
+import { createProduct } from "@/apis/product";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
 import { listStatus } from "./config";
-import { TCategoryResponse } from "@/schema/category.schema";
+import { Checkbox } from "@/components/ui/checkbox";
+import { TUserResponse } from "@/schema/user.schema";
+import { HttpError, EntityError } from "@/lib/http";
 import { CldUploadWidget } from "next-cloudinary";
 import { DialogImg } from "@/components/dialog-img";
 
 interface FormCreateProductProps {
-  categories: TCategoryResponse[]; // Category list for selection
+  categories: TCategoryResponse[];
+  suppliers?: TUserResponse[];
 }
 
-export function FormCreateProduct({ categories }: FormCreateProductProps) {
+export function FormCreateProduct({
+  categories,
+  suppliers,
+}: FormCreateProductProps) {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const { toast } = useToast();
   const router = useRouter();
@@ -43,36 +50,63 @@ export function FormCreateProduct({ categories }: FormCreateProductProps) {
     defaultValues: {
       name: "",
       category: "",
-      age: 0,
-      origin: "",
-      gender: "Male", // Default value if needed
-      size: 0,
       breed: "",
-      personality: "",
-      dailyFeedAmount: 0,
-      screeningRate: 0,
-      healthStatus: "",
-      imageUrl: "",
+      origin: "",
+      size: "M",
+      descriptionSize: "",
+      age: 0,
+      gender: "Male",
       price: 0,
-      status: "Available", // Default value if needed
+      stock: 0,
+      personality: "",
+      imageUrl: "",
+      status: "Available",
+      consignment: {
+        isConsignment: false,
+        supplier: undefined,
+        commission: 0,
+      },
     },
   });
 
   const onSubmit = async (data: TProductRequest) => {
     setIsLoading(true);
     try {
-      const response = await createProduct(data); // Call the create API
+      console.log("Submit data:", data);
+      const response = await createProduct(data);
       if (response.status === 201) {
         toast({
-          title: "Product Created Successfully",
+          title: "Success",
+          description: "Product created successfully",
+          variant: "default",
         });
-        router.push("/admin/products");
+        router.push("/manage/products");
       }
     } catch (error) {
-      toast({
-        title: "Error",
-        description: `Failed to create product: ${error}`,
-      });
+      if (error instanceof HttpError) {
+        if (error instanceof EntityError) {
+          error.errors.forEach((err) => {
+            toast({
+              title: "Validation Error",
+              description: `${err.field}: ${err.message}`,
+              variant: "destructive",
+            });
+          });
+        } else {
+          toast({
+            title: "Error",
+            description: error.payload.message,
+            variant: "destructive",
+          });
+        }
+      } else {
+        toast({
+          title: "Error",
+          description: "An unexpected error occurred",
+          variant: "destructive",
+        });
+      }
+      console.error("Error creating product:", error);
     } finally {
       setIsLoading(false);
     }
@@ -96,6 +130,7 @@ export function FormCreateProduct({ categories }: FormCreateProductProps) {
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="category"
@@ -111,8 +146,8 @@ export function FormCreateProduct({ categories }: FormCreateProductProps) {
                         <SelectValue placeholder="Select Category" />
                       </SelectTrigger>
                       <SelectContent>
-                        {categories.map((item, index) => (
-                          <SelectItem key={index} value={item._id}>
+                        {categories.map((item) => (
+                          <SelectItem key={item._id} value={item._id}>
                             {item.name}
                           </SelectItem>
                         ))}
@@ -123,69 +158,7 @@ export function FormCreateProduct({ categories }: FormCreateProductProps) {
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="age"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Age</FormLabel>
-                  <FormControl>
-                    <Input type="number" placeholder="Age..." {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="origin"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Origin</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Origin..." {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="gender"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Gender</FormLabel>
-                  <FormControl>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select Gender" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Male">Male</SelectItem>
-                        <SelectItem value="Female">Female</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="size"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Size (cm)</FormLabel>
-                  <FormControl>
-                    <Input type="number" placeholder="Size..." {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+
             <FormField
               control={form.control}
               name="breed"
@@ -199,6 +172,21 @@ export function FormCreateProduct({ categories }: FormCreateProductProps) {
                 </FormItem>
               )}
             />
+
+            <FormField
+              control={form.control}
+              name="origin"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Origin</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Origin..." {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <FormField
               control={form.control}
               name="personality"
@@ -212,53 +200,7 @@ export function FormCreateProduct({ categories }: FormCreateProductProps) {
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="dailyFeedAmount"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Daily Feed Amount (grams)</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="Daily Feed Amount..."
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="screeningRate"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Screening Rate (%)</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="Screening Rate..."
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="healthStatus"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Health Status</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Health Status..." {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+
             <FormField
               control={form.control}
               name="imageUrl"
@@ -294,6 +236,92 @@ export function FormCreateProduct({ categories }: FormCreateProductProps) {
                 </FormItem>
               )}
             />
+
+            <FormField
+              control={form.control}
+              name="size"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Size</FormLabel>
+                  <FormControl>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select Size" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="S">S</SelectItem>
+                        <SelectItem value="M">M</SelectItem>
+                        <SelectItem value="L">L</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="descriptionSize"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Size Description</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g., '3-6 cm' or '10 cm'" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="age"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Age</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="Age..."
+                      {...field}
+                      min={0}
+                      max={50}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="gender"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Gender</FormLabel>
+                  <FormControl>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select Gender" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Male">Male</SelectItem>
+                        <SelectItem value="Female">Female</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <FormField
               control={form.control}
               name="price"
@@ -301,12 +329,37 @@ export function FormCreateProduct({ categories }: FormCreateProductProps) {
                 <FormItem>
                   <FormLabel>Price</FormLabel>
                   <FormControl>
-                    <Input type="number" placeholder="Price..." {...field} />
+                    <Input
+                      type="number"
+                      placeholder="Price..."
+                      {...field}
+                      min={1}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
+            <FormField
+              control={form.control}
+              name="stock"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Stock</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="Stock quantity..."
+                      {...field}
+                      min={0}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <FormField
               control={form.control}
               name="status"
@@ -334,6 +387,79 @@ export function FormCreateProduct({ categories }: FormCreateProductProps) {
                 </FormItem>
               )}
             />
+
+            <FormField
+              control={form.control}
+              name="consignment.isConsignment"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>Is Consignment</FormLabel>
+                  </div>
+                </FormItem>
+              )}
+            />
+
+            {form.watch("consignment.isConsignment") && suppliers && (
+              <>
+                <FormField
+                  control={form.control}
+                  name="consignment.supplier"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Supplier</FormLabel>
+                      <FormControl>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select Supplier" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {suppliers.map((supplier) => (
+                              <SelectItem
+                                key={supplier._id ?? ""}
+                                value={supplier._id ?? ""}
+                              >
+                                {supplier.fullName}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="consignment.commission"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Commission (%)</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          placeholder="Commission percentage..."
+                          {...field}
+                          min={0}
+                          max={100}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </>
+            )}
           </div>
 
           <Button type="submit" disabled={isLoading}>
