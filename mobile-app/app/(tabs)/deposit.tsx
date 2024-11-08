@@ -12,7 +12,9 @@ import {
   Provider as PaperProvider,
   DefaultTheme,
   Button,
+  RadioButton,
 } from "react-native-paper";
+import axios from "axios";
 
 // Cải thiện theme và giao diện
 const MyTheme = {
@@ -32,6 +34,8 @@ type FormData = {
   comments: string;
   address: string;
   email: string;
+  selectedType?: string;
+  selectedMethod?: string;
 };
 
 const HomeScreen: React.FC = () => {
@@ -46,14 +50,37 @@ const HomeScreen: React.FC = () => {
 
   const [selectedType, setSelectedType] = useState<string>("");
   const [isTypeSelected, setIsTypeSelected] = useState<boolean>(false);
+  const [selectedMethod, setSelectedMethod] = useState<string>("");
 
   const handleInputChange = (key: keyof FormData, value: string) => {
     setFormData({ ...formData, [key]: value });
   };
 
-  const handleSubmit = () => {
-    console.log("Submitted Data:", formData);
-    alert("Đăng ký đã được gửi!");
+  const handleSubmit = async () => {
+    if (!selectedType || (selectedType === "type2" && !selectedMethod)) {
+      alert("Vui lòng chọn đầy đủ thông tin về loại và hình thức kí gửi.");
+      return;
+    }
+
+    try {
+      const fullData = {
+        ...formData,
+        koiType: selectedType,
+        ...(selectedType === "type2" && { selectedMethod }),
+      };
+
+      console.log(fullData); // Kiểm tra dữ liệu đầy đủ
+
+      const response = await axios.post(
+        `${process.env.EXPO_PUBLIC_API_URL}consignments`,
+        fullData
+      );
+
+      alert("Đăng ký đã được gửi thành công!");
+    } catch (error) {
+      console.error("Lỗi khi gửi dữ liệu:", error);
+      alert("Đã xảy ra lỗi khi gửi đăng ký. Vui lòng thử lại!");
+    }
   };
 
   return (
@@ -72,20 +99,24 @@ const HomeScreen: React.FC = () => {
           />
 
           <TextInput
-            placeholder="Số điện thoại"
-            keyboardType="phone-pad"
-            style={styles.input}
-            onChangeText={(text) => handleInputChange("contact", text)}
-          />
-          <TextInput
             placeholder="Email"
             keyboardType="email-address"
             style={styles.input}
-            onChangeText={(text) => handleInputChange("email", text)}
+            autoCapitalize="none"
+            onChangeText={(text) => handleInputChange("email", text.trim())}
           />
+
           <TextInput
-            placeholder="Address"
-            keyboardType="email-address"
+            placeholder="Số điện thoại"
+            keyboardType="number-pad"
+            style={styles.input}
+            onChangeText={(text) =>
+              handleInputChange("contact", text.replace(/[^0-9]/g, ""))
+            }
+          />
+
+          <TextInput
+            placeholder="Địa chỉ"
             style={styles.input}
             onChangeText={(text) => handleInputChange("address", text)}
           />
@@ -108,12 +139,49 @@ const HomeScreen: React.FC = () => {
             </Picker>
           </View>
 
+          {isTypeSelected && selectedType === "type2" && (
+            <>
+              <Text style={styles.pickerLabel}>Chọn hình thức kí gửi</Text>
+              <View style={styles.radioGroup}>
+                <View style={styles.radioItem}>
+                  <RadioButton
+                    value="offline"
+                    status={
+                      selectedMethod === "offline" ? "checked" : "unchecked"
+                    }
+                    onPress={() => setSelectedMethod("offline")}
+                  />
+                  <Text>Offline (Khách nuôi thông thường)</Text>
+                </View>
+                <View style={styles.radioItem}>
+                  <RadioButton
+                    value="online"
+                    status={
+                      selectedMethod === "online" ? "checked" : "unchecked"
+                    }
+                    onPress={() => setSelectedMethod("online")}
+                  />
+                  <Text>Online (Khách nuôi để kinh doanh)</Text>
+                </View>
+              </View>
+            </>
+          )}
+
           {isTypeSelected && (
             <Text style={styles.selectedTypeText}>
               Bạn đã chọn:{" "}
               {selectedType === "type1"
                 ? "Thực hiện chăm sóc"
                 : "Thực hiện gửi cho trang trại bán"}
+              {selectedType === "type2" && selectedMethod && (
+                <Text>
+                  {" "}
+                  - Hình thức:{" "}
+                  {selectedMethod === "offline"
+                    ? "Offline (Khách nuôi thông thường)"
+                    : "Online (Khách nuôi để kinh doanh)"}
+                </Text>
+              )}
             </Text>
           )}
 
@@ -198,6 +266,14 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 8,
     alignItems: "center",
+  },
+  radioGroup: {
+    marginBottom: 16,
+  },
+  radioItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12,
   },
 });
 
