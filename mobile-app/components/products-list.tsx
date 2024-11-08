@@ -110,7 +110,8 @@ const ProductItem = ({
 const styles = StyleSheet.create({
   container: {
     marginHorizontal: 20,
-    marginBottom: 50,
+    marginBottom: 20,
+    marginTop: 10,
   },
   itemWrapper: {
     marginBottom: 20,
