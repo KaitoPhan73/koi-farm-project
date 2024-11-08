@@ -10,27 +10,24 @@ class OrderItemService {
     session.startTransaction();
 
     try {
-      // Tạo OrderItem
-      const orderItem = new OrderItem(data);
-      await orderItem.save({ session });
-
-      // Cập nhật stock của product
+      // Kiểm tra product và stock
       const product = await Product.findById(data.product);
       if (!product) {
         throw new Error('Product not found');
       }
 
-      // Kiểm tra đủ stock không
-      if (product.stock?.quantity < data.quantity) {
+      if (product.stock < data.quantity) {
         throw new Error('Insufficient stock');
       }
 
-      // Trừ stock
+      // Tạo OrderItem
+      const orderItem = new OrderItem(data);
+      await orderItem.save({ session });
+
+      // Cập nhật stock của product
       await Product.findByIdAndUpdate(
         data.product,
-        {
-          $inc: { 'stock.quantity': -data.quantity },
-        },
+        { $inc: { stock: -data.quantity } }, // Giảm stock dựa theo quantity
         { session, new: true }
       );
 
