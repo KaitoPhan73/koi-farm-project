@@ -143,6 +143,7 @@ const ProductDetails = () => {
           >
             <Text style={styles.viewCartText}>View Cart</Text>
           </TouchableOpacity>
+        </View>
       </ScrollView>
 
       <Modal
@@ -212,7 +213,7 @@ const ProductDetails = () => {
                 </TouchableOpacity>
               </>
             ) : (
-              <Text style={styles.emptyCartText}>Your cart is empty.</Text>
+              <Text style={styles.paymentButtonText}>Your cart is empty.</Text>
             )}
             <TouchableOpacity
               onPress={() => setModalVisible(false)}

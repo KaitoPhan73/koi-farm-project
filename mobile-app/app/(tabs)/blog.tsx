@@ -43,7 +43,13 @@ const KoiBlogList: React.FC = () => {
       onPress={() => router.push(`/blog/${item.id}`)}
     >
       <Text style={styles.blogTitle}>{item.title}</Text>
-      <Text style={styles.blogDescription}>{item.description}</Text>
+      <Text
+        style={styles.blogDescription}
+        numberOfLines={2}
+        ellipsizeMode="tail"
+      >
+        {item.description}
+      </Text>
     </TouchableOpacity>
   );
 
