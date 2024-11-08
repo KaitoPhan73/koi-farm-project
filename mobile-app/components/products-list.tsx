@@ -25,7 +25,9 @@ const ProductList = ({ productList = [] }: Props) => {
     <>
       <View style={styles.container}>
         {productList.length === 0 ? (
-          <Loading size="large" />
+          <View style={styles.notFoundContainer}>
+            <Text style={styles.notFoundText}>Not Found</Text>
+          </View>
         ) : (
           displayedProductList.map((item) => (
             <View key={item._id} style={styles.itemWrapper}>
@@ -172,6 +174,16 @@ const styles = StyleSheet.create({
   price: {
     fontSize: 16,
     color: Colors.black,
+  },
+  notFoundContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 20,
+  },
+  notFoundText: {
+    fontSize: 18,
+    color: Colors.darkGrey,
+    fontWeight: "bold",
   },
 });
 
