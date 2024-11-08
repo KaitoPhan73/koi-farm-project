@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { ScrollView } from "react-native";
 import ProductList from "@/components/products-list";
-import BrandsList from "@/components/brands-list";
 import SearchTool from "@/components/search-tool";
 import { TProductResponse } from "@/schema/product.schema";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -9,11 +8,12 @@ import { useFocusEffect } from "@react-navigation/native";
 import Loading from "@/components/Loading";
 import productAPI from "@/apis/product";
 import { TProductBaseResponse } from "@/schema/productbase.schema";
+import CategoryList from "@/components/category-list";
 
 export default function Product() {
-  const { category, name } = useLocalSearchParams();
+  const { category, search } = useLocalSearchParams();
   const router = useRouter();
-
+  console.log("🚀 ~ Product ~ category:", category);
   const [products, setProducts] = useState<TProductResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalPages, setTotalPages] = useState(0);
@@ -22,7 +22,14 @@ export default function Product() {
   const fetchProducts = async (page: number = 1) => {
     setLoading(true);
     try {
-      const params = { page, limit, category, name };
+      const params: any = {
+        page,
+        limit,
+      };
+
+      if (category) params.category = category;
+      if (search) params.search = search;
+
       const response = await productAPI.getProducts(params);
       setProducts(response.items);
       setTotalPages(response.totalPages);
@@ -33,10 +40,10 @@ export default function Product() {
     }
   };
 
-  // Fetch products when category or name changes
+  // Fetch products when category or search changes
   useEffect(() => {
     fetchProducts();
-  }, [category, name]);
+  }, [category, search]);
 
   // Fetch products again when the screen is focused
   useFocusEffect(
@@ -48,7 +55,7 @@ export default function Product() {
   return (
     <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
       <SearchTool />
-      <BrandsList />
+      <CategoryList />
       {loading ? (
         <Loading size="large" />
       ) : (
