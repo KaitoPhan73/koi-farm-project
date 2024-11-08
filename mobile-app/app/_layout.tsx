@@ -1,5 +1,5 @@
-import { Slot } from 'expo-router';
-import { SessionProvider } from '@/utils/ctx'; 
+import { Slot, Stack } from 'expo-router';
+import { SessionProvider } from '@/utils/ctx';
 import {
   DarkTheme,
   DefaultTheme,
@@ -49,7 +49,9 @@ export default function Root() {
               <ThemeProvider
                 value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
               >
-                <Slot />
+                <Stack>
+                  <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                </Stack>
               </ThemeProvider>
             </CartProvider>
             <Toast />

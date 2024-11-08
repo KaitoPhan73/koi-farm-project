@@ -66,7 +66,10 @@ const ProductDetails = () => {
   return (
     <>
       <Stack.Screen
+
         options={{
+          headerTransparent: true,
+          headerTitle: "",
           headerLeft: () => (
             <TouchableOpacity onPress={() => router.back()}>
               <Ionicons name="arrow-back" size={22} />
@@ -77,40 +80,41 @@ const ProductDetails = () => {
               <AntDesign name="shoppingcart" size={24} color={Colors.black} />
             </TouchableOpacity>
           ),
-          title: "Product Details",
+
         }}
       />
-      <ScrollView contentContainerStyle={styles.contentContainer}>
+      <ScrollView>
         <Image source={{ uri: product?.imageUrl }} style={styles.productImg} />
-        <Text style={styles.title}>{product?.name}</Text>
-        <View style={styles.ratingWrapper}>
-          <Ionicons name="star" size={16} color="#FFD700" />
+        <View style={styles.contentContainer}>
+          <Text style={styles.title}>{product?.name}</Text>
+          <View style={styles.ratingWrapper}>
+            <Ionicons name="star" size={16} color="#FFD700" />
+          </View>
+
+          <View style={styles.details}>
+            <Text style={styles.infoText}>
+              Price: <Text style={styles.bold}>{product.basePrice} VND</Text>
+            </Text>
+            <Text style={styles.infoText}>
+              Brand: <Text style={styles.bold}>{product.category?.name || "N/A"}</Text>
+            </Text>
+          </View>
+
+          <Text style={styles.description}>
+            Description: {product?.description || "N/A"}
+          </Text>
+
+          <TouchableOpacity style={styles.addToCartButton} onPress={toggleCart}>
+            <Text style={styles.addToCartText}>
+              {isInCart ? "Remove from Cart" : "Add to Cart"}
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.viewCartButton}>
+            <Text style={styles.viewCartText}>View Cart</Text>
+          </TouchableOpacity>
         </View>
-
-        <View style={styles.details}>
-          <Text style={styles.infoText}>
-            Price: <Text style={styles.bold}>${product.basePrice}</Text>
-          </Text>
-          <Text style={styles.infoText}>
-            Brand: <Text style={styles.bold}>{product.category?.name || "N/A"}</Text>
-          </Text>
-        </View>
-
-        <Text style={styles.description}>
-          Description: {product?.description || "N/A"}
-        </Text>
-
-        <TouchableOpacity style={styles.addToCartButton} onPress={toggleCart}>
-          <Text style={styles.addToCartText}>
-            {isInCart ? "Remove from Cart" : "Add to Cart"}
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.viewCartButton}>
-          <Text style={styles.viewCartText}>View Cart</Text>
-        </TouchableOpacity>
-      </ScrollView>
-
+      </ScrollView >
       <Modal
         animationType="slide"
         transparent={true}
@@ -161,59 +165,129 @@ const ProductDetails = () => {
 };
 
 const styles = StyleSheet.create({
-  contentContainer: { padding: 16 },
-  productImg: { width: "100%", height: 200, marginBottom: 16 },
-  title: { fontSize: 24, fontWeight: "bold" },
-  ratingWrapper: { flexDirection: "row", marginVertical: 8 },
-  details: { marginVertical: 8 },
-  infoText: { fontSize: 16 },
-  bold: { fontWeight: "bold" },
-  description: { marginVertical: 8 },
-  addToCartButton: {
-    backgroundColor: "blue",
-    padding: 12,
-    alignItems: "center",
-    borderRadius: 8,
+  contentContainer: {
+    paddingHorizontal: 16,
+    backgroundColor: '#f9f9f9',
   },
-  addToCartText: { color: "white", fontSize: 16 },
-  viewCartButton: {
-    backgroundColor: "green",
-    padding: 12,
+  productImg: {
+    width: "100%",
+    height: 250,
+    marginBottom: 16,
+    borderRadius: 12,
+    resizeMode: "cover",
+  },
+  title: {
+    fontSize: 26,
+    fontWeight: "bold",
+    color: "#333",
+  },
+  ratingWrapper: {
+    flexDirection: "row",
+    marginVertical: 8
+  },
+  details: {
+    marginVertical: 8,
+    paddingBottom: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee"
+  },
+  infoText: {
+    fontSize: 16,
+    color: "#555"
+  },
+  bold: {
+    fontWeight: "bold",
+    color: "#333"
+  },
+  description: {
+    marginVertical: 12,
+    color: "#666",
+    fontSize: 14,
+  },
+  addToCartButton: {
+    backgroundColor: "#1e90ff",  // Blue color
+    paddingVertical: 12,
+    paddingHorizontal: 16,
     alignItems: "center",
     borderRadius: 8,
     marginTop: 20,
   },
-  viewCartText: { color: "white", fontSize: 16 },
+  addToCartText: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "bold"
+  },
+  viewCartButton: {
+    backgroundColor: "#32cd32",  // Green color
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    alignItems: "center",
+    borderRadius: 8,
+    marginTop: 20,
+  },
+  viewCartText: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "bold"
+  },
   modalContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.5)",
+    backgroundColor: "rgba(0,0,0,0.7)",
   },
   modalContent: {
-    backgroundColor: "white",
+    backgroundColor: "#fff",
     padding: 20,
-    borderRadius: 10,
-    width: "80%",
+    borderRadius: 12,
+    width: "85%",
+    maxHeight: "80%",
+    elevation: 5,  // Add shadow effect for Android
+    shadowColor: "#000",  // iOS shadow
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
   },
   cartItem: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: 10,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
   },
-  cartItemText: { fontSize: 16 },
-  cartItemPrice: { fontSize: 16 },
-  cartItemActions: { flexDirection: "row", alignItems: "center" },
-  totalPrice: { fontSize: 18, fontWeight: "bold", marginTop: 10 },
-  closeButton: {
-    backgroundColor: "red",
-    padding: 10,
-    alignItems: "center",
-    borderRadius: 5,
+  cartItemText: {
+    fontSize: 16,
+    color: "#333",
+    width: "50%",
+  },
+  cartItemPrice: {
+    fontSize: 16,
+    color: "#333",
+    width: "30%",
+    textAlign: "center"
+  },
+  cartItemActions: {
+    flexDirection: "row",
+    alignItems: "center"
+  },
+  totalPrice: {
+    fontSize: 18,
+    fontWeight: "bold",
     marginTop: 10,
+    color: "#333",
   },
-  closeButtonText: { color: "white", fontSize: 16 },
+  closeButton: {
+    backgroundColor: "#ff6347",  // Red color
+    padding: 12,
+    alignItems: "center",
+    borderRadius: 8,
+    marginTop: 12,
+  },
+  closeButtonText: {
+    color: "white",
+    fontSize: 16
+  },
 });
 
 export default ProductDetails;
