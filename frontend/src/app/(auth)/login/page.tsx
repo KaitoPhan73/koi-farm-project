@@ -22,18 +22,12 @@ export default function AuthenticationPage() {
           )}
         >
           <ModeToggle />
-          <Link
-            href="/register"
-            className={cn(buttonVariants({ variant: "ghost" }))}
-          >
-            Đăng ký
-          </Link>
         </div>
 
         <div className="relative hidden h-full flex-col bg-muted p-10 text-white dark:border-r lg:flex">
           <div className="absolute inset-0">
             <Image
-              src="/images/auth.jpg"
+              src="/images/koi.jpg"
               alt="Image"
               layout="fill"
               objectFit="cover"
@@ -44,22 +38,8 @@ export default function AuthenticationPage() {
         <div className="p-8">
           <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
             <div className="flex flex-col space-y-2 items-center">
-              <div>
-                <Image
-                  priority
-                  src="/svgs/kalban-logo.svg"
-                  height={96}
-                  width={96}
-                  alt="Kalban-logo"
-                />
-              </div>
-
-              <h1 className="text-2xl font-semibold tracking-tight">
-                Đăng nhập
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                Chào mừng bạn trở lại
-              </p>
+              <h1 className="text-2xl font-semibold tracking-tight">Login</h1>
+              <p className="text-sm text-muted-foreground">Welcome back</p>
             </div>
             <UserAuthForm />
           </div>

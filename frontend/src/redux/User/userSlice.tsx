@@ -33,7 +33,7 @@ const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    setUser(state, action: PayloadAction<TUser | null>) {
+    setUser(state, action: PayloadAction<TUserResponse | null>) {
       state.user = action.payload;
       state.isAuthenticated = !!action.payload;
       if (typeof window !== "undefined") {

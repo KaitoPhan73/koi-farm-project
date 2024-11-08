@@ -81,7 +81,10 @@ export const productColumns: CustomColumnDef<TProductResponse>[] = [
       <DataTableColumnHeader column={column} title="Size" />
     ),
     cell: ({ row }) => (
-      <div>
+      <div
+        className="w-36 truncate"
+        title={`${row.getValue("size")} (${row.original.descriptionSize})`}
+      >
         {row.getValue("size")} ({row.original.descriptionSize})
       </div>
     ),

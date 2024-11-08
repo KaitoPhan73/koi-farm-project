@@ -21,11 +21,14 @@ import { useRouter } from "next/navigation";
 import { LoginSchema, TLoginRequest } from "@/schema/auth.schema";
 import { checkLogin } from "@/apis/auth";
 import authClient from "@/apis/client/auth";
+import { useDispatch } from "react-redux";
+import { setUser } from "@/redux/User/userSlice";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const dispatch = useDispatch();
   const router = useRouter();
   const { toast } = useToast();
   const form = useForm<TLoginRequest>({
@@ -46,7 +49,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
           user: response.payload,
           expireTime: 999999999,
         });
-
+        dispatch(setUser(response.payload.user));
         // Check user role and redirect accordingly
         const userRole = response.payload.user.role;
 
