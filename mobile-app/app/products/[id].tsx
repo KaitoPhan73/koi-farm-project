@@ -66,16 +66,16 @@ const ProductDetails = () => {
   };
 
   // Inside ProductDetails
-const navigateToCheckout = () => {
-  const totalPrice = cartItems.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0
-  );
-  router.push({
-    pathname: "/products/checkout", // Route to the checkout page
-    params: { totalPrice }, // Passing the total price as a parameter
-  });
-};
+  const navigateToCheckout = () => {
+    const totalPrice = cartItems.reduce(
+      (total, item) => total + item.price * item.quantity,
+      0
+    );
+    router.push({
+      pathname: "/products/checkout", // Route to the checkout page
+      params: { totalPrice }, // Passing the total price as a parameter
+    });
+  };
 
 
   if (isLoading) {
@@ -89,7 +89,10 @@ const navigateToCheckout = () => {
   return (
     <>
       <Stack.Screen
+
         options={{
+          headerTransparent: true,
+          headerTitle: "",
           headerLeft: () => (
             <TouchableOpacity onPress={() => router.back()}>
               <Ionicons name="arrow-back" size={22} />
@@ -103,42 +106,43 @@ const navigateToCheckout = () => {
               <AntDesign name="shoppingcart" size={24} color={Colors.black} />
             </TouchableOpacity>
           ),
-          title: "Product Details",
+
         }}
       />
-      <ScrollView contentContainerStyle={styles.contentContainer}>
-        <Image source={{ uri: product.imageUrl }} style={styles.productImg} />
-        <Text style={styles.title}>{product.name}</Text>
-        <View style={styles.ratingWrapper}>
-          <Ionicons name="star" size={16} color="#FFD700" />
-        </View>
+      <ScrollView>
+        <Image source={{ uri: product?.imageUrl }} style={styles.productImg} />
+        <View style={styles.contentContainer}>
+          <Text style={styles.title}>{product?.name}</Text>
+          <View style={styles.ratingWrapper}>
+            <Ionicons name="star" size={16} color="#FFD700" />
+          </View>
 
-        <View style={styles.details}>
-          <Text style={styles.infoText}>
-            Price: <Text style={styles.bold}>${product.basePrice}</Text>
+          <View style={styles.details}>
+            <Text style={styles.infoText}>
+              Price: <Text style={styles.bold}>${product.basePrice}</Text>
+            </Text>
+            <Text style={styles.infoText}>
+              Brand:{" "}
+              <Text style={styles.bold}>{product.category?.name || "N/A"}</Text>
+            </Text>
+          </View>
+
+          <Text style={styles.description}>
+            Description: {product?.description || "N/A"}
           </Text>
-          <Text style={styles.infoText}>
-            Brand:{" "}
-            <Text style={styles.bold}>{product.category?.name || "N/A"}</Text>
-          </Text>
-        </View>
 
-        <Text style={styles.description}>
-          Description: {product.description || "N/A"}
-        </Text>
+          <TouchableOpacity style={styles.addToCartButton} onPress={toggleCart}>
+            <Text style={styles.addToCartText}>
+              {isInCart ? "Remove from Cart" : "Add to Cart"}
+            </Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity style={styles.addToCartButton} onPress={toggleCart}>
-          <Text style={styles.addToCartText}>
-            {isInCart ? "Remove from Cart" : "Add to Cart"}
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={() => setModalVisible(true)}
-          style={styles.viewCartButton}
-        >
-          <Text style={styles.viewCartText}>View Cart</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => setModalVisible(true)}
+            style={styles.viewCartButton}
+          >
+            <Text style={styles.viewCartText}>View Cart</Text>
+          </TouchableOpacity>
       </ScrollView>
 
       <Modal
@@ -224,24 +228,62 @@ const navigateToCheckout = () => {
 };
 
 const styles = StyleSheet.create({
-  contentContainer: { padding: 16 },
-  productImg: { width: "100%", height: 200, marginBottom: 16 },
-  title: { fontSize: 24, fontWeight: "bold" },
-  ratingWrapper: { flexDirection: "row", marginVertical: 8 },
-  details: { marginVertical: 8 },
-  infoText: { fontSize: 16 },
-  bold: { fontWeight: "bold" },
-  description: { marginVertical: 8 },
+  contentContainer: {
+    paddingHorizontal: 16,
+    backgroundColor: '#f9f9f9',
+  },
+  productImg: {
+    width: "100%",
+    height: 250,
+    marginBottom: 16,
+    borderRadius: 12,
+    resizeMode: "cover",
+  },
+  title: {
+    fontSize: 26,
+    fontWeight: "bold",
+    color: "#333",
+  },
+  ratingWrapper: {
+    flexDirection: "row",
+    marginVertical: 8
+  },
+  details: {
+    marginVertical: 8,
+    paddingBottom: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee"
+  },
+  infoText: {
+    fontSize: 16,
+    color: "#555"
+  },
+  bold: {
+    fontWeight: "bold",
+    color: "#333"
+  },
+  description: {
+    marginVertical: 12,
+    color: "#666",
+    fontSize: 14,
+  },
   addToCartButton: {
-    backgroundColor: "blue",
-    padding: 12,
+    backgroundColor: "#1e90ff",  // Blue color
+    paddingVertical: 12,
+    paddingHorizontal: 16,
     alignItems: "center",
     borderRadius: 8,
+    marginTop: 20,
   },
-  addToCartText: { color: "white", fontSize: 16 },
+  addToCartText: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "bold"
+  },
   viewCartButton: {
-    backgroundColor: "green",
-    padding: 12,
+    backgroundColor: "#32cd32",  // Green color
+    paddingVertical: 12,
+    paddingHorizontal: 16,
     alignItems: "center",
     borderRadius: 8,
     marginTop: 20,
@@ -260,19 +302,27 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.5)",
+    backgroundColor: "rgba(0,0,0,0.7)",
   },
   modalContent: {
-    backgroundColor: "white",
+    backgroundColor: "#fff",
     padding: 20,
-    borderRadius: 10,
-    width: "80%",
+    borderRadius: 12,
+    width: "85%",
+    maxHeight: "80%",
+    elevation: 5,  // Add shadow effect for Android
+    shadowColor: "#000",  // iOS shadow
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
   },
   cartItem: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: 10,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
   },
   cartItemImage: {
     width: 50,

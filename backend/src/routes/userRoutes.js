@@ -132,7 +132,7 @@ router.put('/:id', userController.update);
  *         description: The user ID
  *     responses:
  *       200:
- *         description: User deleted successfully
+*         description: User deleted successfully
  *       404:
  *         description: User not found
  *       500:
