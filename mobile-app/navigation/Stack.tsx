@@ -1,6 +1,6 @@
-import { createStackNavigator } from "@react-navigation/stack";  
-import { Tabs } from "expo-router";  
-import DetailScreen from "@/app/products/[id]";  
+import { createStackNavigator } from "@react-navigation/stack";
+import { Tabs } from "expo-router";
+import DetailScreen from "@/app/products/[id]";
 import { NavigationContainer } from "@react-navigation/native";
 import ProductDetails from "@/app/products/[id]";
 import Checkout from "@/app/products/checkout";
@@ -19,3 +19,4 @@ const Stacks = () => {
 };
 
 export default Stacks;
+

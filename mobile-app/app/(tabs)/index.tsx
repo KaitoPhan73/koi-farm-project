@@ -21,7 +21,7 @@ export default function HomeScreen() {
     const [products, setProducts] = useState<TProductResponse[]>([]);
 
     const [loading, setLoading] = useState(true);
-    
+
     const [totalPages, setTotalPages] = useState(0);
     const limit = 6;
     const { category, name } = useLocalSearchParams()
@@ -113,7 +113,6 @@ export default function HomeScreen() {
                         </View>
                     ))}
                 </View>
-
                 {/* Nút xem thêm */}
                 <TouchableOpacity
                     onPress={() => {
@@ -143,7 +142,7 @@ export default function HomeScreen() {
                     </View>
                 </View>
             </ImageBackground>
-        </ScrollView>
+        </ScrollView >
     );
 }
 
@@ -254,9 +253,9 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         fontSize: 20,
         fontWeight: 'bold',
-        padding:10,
- 
-    
+        padding: 10,
+
+
     },
     productImage: {
         width: '100%',
@@ -282,7 +281,7 @@ const styles = StyleSheet.create({
         marginTop: 20,
         backgroundColor: 'rgba(255, 255, 255, 0.9)',
         borderRadius: 10,
-        marginBottom:90
+        marginBottom: 90
     },
     serviceTitle: {
         marginTop: 20,
@@ -296,7 +295,7 @@ const styles = StyleSheet.create({
     },
     serviceCard: {
         width: '100%',
-        height:'auto',
+        height: 'auto',
         marginRight: 10,
         alignItems: 'center',
     },
@@ -309,21 +308,21 @@ const styles = StyleSheet.create({
     ScontentContainer: {
         position: 'absolute',
         bottom: 30,
-        left:10,
+        left: 10,
         // marginTop:-150,
         alignSelf: 'flex-start',
         marginLeft: 10
     },
     ScontentTitle: {
-        color:'white',
+        color: 'white',
         fontSize: 25,
         fontWeight: 'bold',
-        marginBottom:2
+        marginBottom: 2
     },
     Scontent: {
-        marginTop:10,
-        color:'white',
+        marginTop: 10,
+        color: 'white',
         width: 286,
-        fontSize:16
+        fontSize: 16
     }
 });

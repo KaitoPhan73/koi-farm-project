@@ -57,13 +57,15 @@ const BlogDetail: React.FC = () => {
         <>
             <Stack.Screen
                 options={{
+                    headerShown: true,
                     headerLeft: () => (
                         <TouchableOpacity onPress={() => router.back()}>
-                            <Ionicons name="arrow-back" size={22} />
+                            <Ionicons name="arrow-back" size={22} color="white" />
                         </TouchableOpacity>
                     ),
 
-                    title: "",
+                    headerTransparent: true,
+                    headerTitle: "",
                 }}
             />
 
@@ -94,17 +96,22 @@ const BlogDetail: React.FC = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 5,
+        paddingBottom: 20,
         backgroundColor: "#fff",
     },
     title: {
-        fontSize: 24,
+        fontSize: 28,
         fontWeight: "bold",
-        marginBottom: 10,
+        marginBottom: 15,
+        textAlign: 'center',
     },
     description: {
-        fontSize: 16,
-        lineHeight: 22,
+        fontSize: 18,
+        lineHeight: 26,
+        marginBottom: 15,
+        marginLeft: 15,
+        marginRight: 15,
+        textAlign: 'justify',
     },
     error: {
         color: 'red',
@@ -113,32 +120,37 @@ const styles = StyleSheet.create({
     },
     blogImage: {
         width: "100%",
-        height: 200,
-        borderRadius: 12,
-        marginBottom: 10,
+        height: 250,
+        marginBottom: 20,
     },
     blogAuthor: {
-        fontSize: 14,
+        fontSize: 16,
         color: '#555',
-        marginBottom: 5,
+        marginBottom: 8,
+        textAlign: 'center',
     },
     blogDate: {
-        fontSize: 12,
+        fontSize: 14,
         color: '#999',
-        marginBottom: 10,
+        marginBottom: 15,
+        textAlign: 'center',
     },
     tagsContainer: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-        marginBottom: 10,
+        marginTop: 15,
+        justifyContent: 'center',
     },
     tag: {
         backgroundColor: '#e0e0e0',
         borderRadius: 15,
-        padding: 5,
-        marginRight: 5,
-        fontSize: 12,
+        paddingVertical: 5,
+        paddingHorizontal: 10,
+        marginRight: 8,
+        marginBottom: 8,
+        fontSize: 14,
     },
 });
+
 
 export default BlogDetail;

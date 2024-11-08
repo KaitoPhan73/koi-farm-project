@@ -7,9 +7,10 @@ import { TProductResponse } from "@/schema/product.schema";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { useCart } from "@/hooks/useCartActions";
 import { TProductBaseResponse } from "@/schema/productbase.schema";
+import { green } from "react-native-reanimated/lib/typescript/reanimated2/Colors";
 
 type Props = {
-  productList: TProductBaseResponse[];
+  productList: TProductResponse[];
 };
 
 const ProductList = ({ productList = [] }: Props) => {
@@ -59,7 +60,7 @@ const ProductItem = ({
   removeFromCart,
   onPress,
 }: {
-  item: TProductBaseResponse;
+  item: TProductResponse;
   isInCart: boolean;
   addToCart: (item: any) => Promise<void>;
   removeFromCart: (id: string) => Promise<void>;
@@ -88,6 +89,7 @@ const ProductItem = ({
         </Text>
         <Text style={styles.itemTitle}>{item.name}</Text>
         <Text style={styles.itemSourceName}>Price: {item.price} VND</Text>
+        <Text style={styles.itemOrigin}>Origin: {item.origin} </Text>
       </View>
       <TouchableOpacity onPress={handleCartAction} style={styles.cartButton}>
         <Ionicons
@@ -110,9 +112,9 @@ const styles = StyleSheet.create({
   },
   itemContainer: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-start",
     padding: 10,
-    backgroundColor: Colors.lightGrey,
+    backgroundColor: Colors.white,
     borderRadius: 10,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
@@ -130,17 +132,21 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   itemCategory: {
-    fontSize: 12,
+    fontSize: 16,
     color: Colors.darkGrey,
   },
   itemTitle: {
-    fontSize: 14,
+    fontSize: 18,
     fontWeight: "bold",
     color: Colors.black,
   },
   itemSourceName: {
-    fontSize: 12,
-    color: Colors.tint,
+    fontSize: 16,
+    color: "green",
+  },
+  itemOrigin: {
+    fontSize: 16,
+    color: Colors.black,
   },
   cartButton: {
     padding: 5,

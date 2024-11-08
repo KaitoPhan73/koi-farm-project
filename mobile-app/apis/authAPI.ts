@@ -8,7 +8,7 @@ import axios, {
 
 // Tạo instance của axios với cấu hình mặc định
 const apiClient: AxiosInstance = axios.create({
-    baseURL: process.env.EXPO_PUBLIC_API_URL || "http://192.168.0.4:5000/", // Sử dụng biến môi trường
+    baseURL: process.env.EXPO_PUBLIC_API_URL || "http://10.10.10.230:5000/", // Sử dụng biến môi trường
     timeout: 10000,
     headers: {
         "Content-Type": "application/json",
@@ -53,16 +53,16 @@ apiClient.interceptors.response.use(
 
 // Hàm đăng nhập
 export const login = async (username: string, password: string): Promise<AxiosResponse> => {
-    const requestBody = { username, password }; 
+    const requestBody = { username, password };
 
-    console.log("Login request body:", requestBody); 
+    console.log("Login request body:", requestBody);
     const response = await apiClient.post('auth/login', requestBody);
     return response;
 };
 
 // Hàm đăng ký
 export const register = async (username: string, fullName: string, email: string, phone: string, address: string, password: string): Promise<AxiosResponse> => {
-    const requestBody = { username, fullName, email, phone, address, password }; 
+    const requestBody = { username, fullName, email, phone, address, password };
 
     const response = await apiClient.post('auth/register', requestBody);
     return response;
