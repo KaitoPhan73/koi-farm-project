@@ -17,8 +17,8 @@ import { TProductResponse } from "@/schema/product.schema";
 import productAPI from "@/apis/product";
 import { formatCurrency } from "@/utils/formatter";
 
-import imageTP from "../../assets/images/chamsoc.jpg";
-import nenbien from "../../assets/images/nenbien.jpg";
+import imageTP from "@/assets/images/chamsoc.jpg";
+import nenbien from "@/assets/images/nenbien.jpg";
 
 SplashScreen.preventAutoHideAsync();
 
