@@ -29,16 +29,19 @@ import { updateProduct } from "@/apis/product";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
 import { listStatus } from "../../_components/config";
-import { TProductBaseResponse } from "@/schema/product-base.schema";
+import { TCategoryResponse } from "@/schema/category.schema";
+import { CldUploadWidget } from "next-cloudinary";
+import { DialogImg } from "@/components/dialog-img";
+import { EntityError, HttpError } from "@/lib/http";
 
 interface FormUpdateProductProps {
   initialData: TUpdateProductRequest;
-  productBases: TProductBaseResponse[];
+  categories: TCategoryResponse[];
 }
 
 export function FormUpdateProduct({
   initialData,
-  productBases,
+  categories,
 }: FormUpdateProductProps) {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const { toast } = useToast();
@@ -54,15 +57,37 @@ export function FormUpdateProduct({
       const response = await updateProduct(data._id, data);
       if (response.status === 200) {
         toast({
-          title: "Product Updated Successfully",
+          title: "Success",
+          description: "Product updated successfully",
+          variant: "default",
         });
         router.refresh();
       }
     } catch (error) {
-      toast({
-        title: "Error",
-        description: `Failed to update product: ${error}`,
-      });
+      if (error instanceof HttpError) {
+        if (error instanceof EntityError) {
+          error.errors.forEach((err) => {
+            toast({
+              title: "Validation Error",
+              description: `${err.field}: ${err.message}`,
+              variant: "destructive",
+            });
+          });
+        } else {
+          toast({
+            title: "Error",
+            description: error.payload.message,
+            variant: "destructive",
+          });
+        }
+      } else {
+        toast({
+          title: "Error",
+          description: "An unexpected error occurred",
+          variant: "destructive",
+        });
+      }
+      console.error("Error updating product:", error);
     } finally {
       setIsLoading(false);
     }
@@ -75,26 +100,68 @@ export function FormUpdateProduct({
           <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mb-2">
             <FormField
               control={form.control}
-              name="productBase"
+              name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Product Base</FormLabel>
+                  <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Product Name..." {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="category"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Category</FormLabel>
                   <FormControl>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select Product Base" />
+                        <SelectValue placeholder="Select Category" />
                       </SelectTrigger>
                       <SelectContent>
-                        {productBases.map((item) => (
+                        {categories.map((item) => (
                           <SelectItem key={item._id} value={item._id}>
-                            {item.name} - {item.breed}
+                            {item.name}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="breed"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Breed</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Breed..." {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="origin"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Origin</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Origin..." {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -246,6 +313,56 @@ export function FormUpdateProduct({
                         ))}
                       </SelectContent>
                     </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="personality"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Personality</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Personality..." {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="imageUrl"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Upload Image</FormLabel>
+                  <FormControl>
+                    <div className="flex items-center space-x-4">
+                      <CldUploadWidget
+                        signatureEndpoint="/api/sign-image"
+                        onSuccess={(result: any) => {
+                          field.onChange(result?.info.url);
+                        }}
+                      >
+                        {({ open }) => (
+                          <Button
+                            type="button"
+                            className="w-1/2"
+                            onClick={() => open()}
+                          >
+                            Choose Image
+                          </Button>
+                        )}
+                      </CldUploadWidget>
+                      {field.value && (
+                        <div className="w-1/2">
+                          <DialogImg imgURL={field.value} />
+                        </div>
+                      )}
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>

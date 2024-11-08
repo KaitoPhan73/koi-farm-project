@@ -1,6 +1,6 @@
 import z from "zod";
-import { TProductBaseResponse } from "./product-base.schema";
 import { TUserResponse } from "./user.schema";
+import { TCategoryResponse } from "./category.schema";
 
 const ConsignmentSchema = z.object({
   isConsignment: z.boolean().default(false),
@@ -13,7 +13,13 @@ const ConsignmentSchema = z.object({
 });
 
 export const ProductSchema = z.object({
-  productBase: z.string().min(1, { message: "Product Base ID is required" }),
+  name: z.string().min(1, { message: "Name is required" }).trim(),
+
+  category: z.string().min(1, { message: "Category is required" }),
+
+  breed: z.string().min(1, { message: "Breed is required" }),
+
+  origin: z.string().min(1, { message: "Origin is required" }),
 
   size: z.enum(["S", "M", "L"], {
     message: "Size must be S, M, or L",
@@ -21,10 +27,10 @@ export const ProductSchema = z.object({
 
   descriptionSize: z
     .string()
-    .min(1, { message: "Description size is required" }),
-  // .regex(/^\d+(-\d+)?\s*cm$/, {
-  //   message: "Size description should be like '3-6 cm' or '10 cm'",
-  // }),
+    .min(1, { message: "Description size is required" })
+    .regex(/^\d+(-\d+)?\s*cm$/, {
+      message: "Size description should be like '3-6 cm' or '10 cm'",
+    }),
 
   age: z.coerce
     .number()
@@ -37,6 +43,15 @@ export const ProductSchema = z.object({
 
   price: z.coerce.number().min(1, { message: "Price must be at least 1" }),
 
+  stock: z.coerce
+    .number()
+    .min(0, { message: "Stock cannot be negative" })
+    .default(0),
+
+  personality: z.string().trim().optional(),
+
+  imageUrl: z.string().trim().optional(),
+
   consignment: ConsignmentSchema.optional(),
 
   status: z
@@ -44,20 +59,19 @@ export const ProductSchema = z.object({
       message: "Status must be Available, Sold, Pending, or Not for Sale",
     })
     .default("Available"),
-
-  stock: z.coerce
-    .number()
-    .min(0, { message: "Stock cannot be negative" })
-    .default(0),
 });
 
 // Schema for updating Product
 export const UpdateProductSchema = z.object({
   _id: z.string().min(1, { message: "Product ID is required" }),
-  productBase: z
-    .string()
-    .min(1, { message: "Product Base ID is required" })
-    .optional(),
+
+  name: z.string().min(1, { message: "Name is required" }).trim().optional(),
+
+  category: z.string().min(1, { message: "Category is required" }).optional(),
+
+  breed: z.string().min(1, { message: "Breed is required" }).optional(),
+
+  origin: z.string().min(1, { message: "Origin is required" }).optional(),
 
   size: z
     .enum(["S", "M", "L"], {
@@ -90,23 +104,29 @@ export const UpdateProductSchema = z.object({
     .min(1, { message: "Price must be at least 1" })
     .optional(),
 
+  stock: z.coerce
+    .number()
+    .min(0, { message: "Stock cannot be negative" })
+    .optional(),
+
+  personality: z.string().trim().optional(),
+
+  imageUrl: z.string().trim().optional(),
+
+  consignment: ConsignmentSchema.optional(),
+
   status: z
     .enum(["Available", "Sold", "Pending", "Not for Sale"], {
       message: "Status must be Available, Sold, Pending, or Not for Sale",
     })
     .optional(),
-
-  stock: z.coerce
-    .number()
-    .min(0, { message: "Stock cannot be negative" })
-    .optional(),
 });
 
-export type TUpdateProductRequest = z.TypeOf<typeof UpdateProductSchema>;
 export type TProductRequest = z.TypeOf<typeof ProductSchema>;
+export type TUpdateProductRequest = z.TypeOf<typeof UpdateProductSchema>;
 export type TProductResponse = z.TypeOf<typeof ProductSchema> & {
   _id: string;
-  productBase: TProductBaseResponse;
+  category: TCategoryResponse;
   consignment?: {
     supplier: TUserResponse;
   } & z.TypeOf<typeof ConsignmentSchema>;

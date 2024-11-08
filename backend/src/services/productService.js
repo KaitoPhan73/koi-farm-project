@@ -1,4 +1,5 @@
 const Product = require('../models/Product');
+const Category = require('../models/Category');
 
 class ProductService {
   async createProduct(data) {
@@ -8,21 +9,25 @@ class ProductService {
 
   async getAllProducts(query = {}) {
     const {
-      page = 1,
+      page,
       limit = 10,
       category,
+      categoryId,
       minPrice,
       maxPrice,
       gender,
       status,
       sortBy = 'createdAt',
       order = 'desc',
+      search,
     } = query;
 
     const filter = {};
 
-    // Xây dựng filter
-    if (category) filter['productBase.category'] = category;
+    // Build filters
+    if (categoryId || category) {
+      filter.category = categoryId || category;
+    }
     if (gender) filter.gender = gender;
     if (status) filter.status = status;
     if (minPrice || maxPrice) {
@@ -30,38 +35,44 @@ class ProductService {
       if (minPrice) filter.price.$gte = Number(minPrice);
       if (maxPrice) filter.price.$lte = Number(maxPrice);
     }
+    if (search) {
+      filter.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { breed: { $regex: search, $options: 'i' } },
+        { origin: { $regex: search, $options: 'i' } },
+      ];
+    }
 
     const sortOptions = {};
     sortOptions[sortBy] = order === 'desc' ? -1 : 1;
 
     try {
-      const skip = (Number(page) - 1) * Number(limit);
+      // Nếu có page -> thêm skip/limit
+      if (page) {
+        const skip = (Number(page) - 1) * Number(limit);
+        const [products, totalItems] = await Promise.all([
+          Product.find(filter)
+            .populate('category', 'name')
+            .sort(sortOptions)
+            .skip(skip)
+            .limit(Number(limit))
+            .lean(),
+          Product.countDocuments(filter),
+        ]);
 
+        return {
+          products,
+          totalPages: Math.ceil(totalItems / Number(limit)),
+        };
+      }
+
+      // Nếu không có page -> trả về tất cả
       const products = await Product.find(filter)
-        .populate({
-          path: 'productBase',
-          populate: {
-            path: 'category',
-            model: 'Categories',
-          },
-        })
+        .populate('category', 'name')
         .sort(sortOptions)
-        .skip(skip)
-        .limit(Number(limit));
+        .lean();
 
-      const totalItems = await Product.countDocuments(filter);
-      const totalPages = Math.ceil(totalItems / Number(limit));
-
-      return {
-        products,
-        pagination: {
-          currentPage: Number(page),
-          totalPages,
-          totalItems,
-          hasNext: page < totalPages,
-          hasPrev: page > 1,
-        },
-      };
+      return { products };
     } catch (error) {
       throw new Error(`Error fetching products: ${error.message}`);
     }
@@ -69,13 +80,9 @@ class ProductService {
 
   async getProductById(id) {
     try {
-      const product = await Product.findById(id).populate({
-        path: 'productBase',
-        populate: {
-          path: 'category',
-          model: 'Categories',
-        },
-      });
+      const product = await Product.findById(id)
+        .populate('category', 'name')
+        .lean();
 
       if (!product) {
         throw new Error('Product not found');
@@ -92,13 +99,7 @@ class ProductService {
       const product = await Product.findByIdAndUpdate(id, data, {
         new: true,
         runValidators: true,
-      }).populate({
-        path: 'productBase',
-        populate: {
-          path: 'category',
-          model: 'Categories',
-        },
-      });
+      }).populate('category', 'name');
 
       if (!product) {
         throw new Error('Product not found');
@@ -133,43 +134,41 @@ class ProductService {
       // Add text search if term exists
       if (term) {
         query.$or = [
-          { 'productBase.name': { $regex: term, $options: 'i' } },
-          { 'productBase.breed': { $regex: term, $options: 'i' } },
+          { name: { $regex: term, $options: 'i' } },
+          { breed: { $regex: term, $options: 'i' } },
+          { origin: { $regex: term, $options: 'i' } },
         ];
       }
 
       // Add other filters
       Object.keys(filters).forEach((key) => {
         if (filters[key]) {
-          query[key] = filters[key];
+          if (key === 'category' || key === 'categoryId') {
+            query.category = filters[key];
+          } else {
+            query[key] = filters[key];
+          }
         }
       });
 
       const skip = (Number(page) - 1) * Number(limit);
 
       const products = await Product.find(query)
-        .populate({
-          path: 'productBase',
-          populate: {
-            path: 'category',
-            model: 'Categories',
-          },
-        })
+        .populate('category', 'name')
         .skip(skip)
-        .limit(Number(limit));
+        .limit(Number(limit))
+        .lean();
 
       const totalItems = await Product.countDocuments(query);
       const totalPages = Math.ceil(totalItems / Number(limit));
 
       return {
         products,
-        pagination: {
-          currentPage: Number(page),
-          totalPages,
-          totalItems,
-          hasNext: page < totalPages,
-          hasPrev: page > 1,
-        },
+        totalItems,
+        totalPages,
+        currentPage: Number(page),
+        hasNext: page < totalPages,
+        hasPrev: page > 1,
       };
     } catch (error) {
       throw new Error(`Error searching products: ${error.message}`);

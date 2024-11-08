@@ -22,7 +22,7 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { TProductRequest, ProductSchema } from "@/schema/product.schema";
-import { TProductBaseResponse } from "@/schema/product-base.schema";
+import { TCategoryResponse } from "@/schema/category.schema";
 import { createProduct } from "@/apis/product";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
@@ -30,14 +30,16 @@ import { listStatus } from "./config";
 import { Checkbox } from "@/components/ui/checkbox";
 import { TUserResponse } from "@/schema/user.schema";
 import { HttpError, EntityError } from "@/lib/http";
+import { CldUploadWidget } from "next-cloudinary";
+import { DialogImg } from "@/components/dialog-img";
 
 interface FormCreateProductProps {
-  productBases: TProductBaseResponse[];
+  categories: TCategoryResponse[];
   suppliers?: TUserResponse[];
 }
 
 export function FormCreateProduct({
-  productBases,
+  categories,
   suppliers,
 }: FormCreateProductProps) {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
@@ -46,14 +48,19 @@ export function FormCreateProduct({
   const form = useForm<TProductRequest>({
     resolver: zodResolver(ProductSchema),
     defaultValues: {
-      productBase: "",
+      name: "",
+      category: "",
+      breed: "",
+      origin: "",
       size: "M",
       descriptionSize: "",
       age: 0,
       gender: "Male",
       price: 0,
-      status: "Available",
       stock: 0,
+      personality: "",
+      imageUrl: "",
+      status: "Available",
       consignment: {
         isConsignment: false,
         supplier: undefined,
@@ -112,26 +119,118 @@ export function FormCreateProduct({
           <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mb-2">
             <FormField
               control={form.control}
-              name="productBase"
+              name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Product Base</FormLabel>
+                  <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Product Name..." {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="category"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Category</FormLabel>
                   <FormControl>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select Product Base" />
+                        <SelectValue placeholder="Select Category" />
                       </SelectTrigger>
                       <SelectContent>
-                        {productBases.map((item) => (
+                        {categories.map((item) => (
                           <SelectItem key={item._id} value={item._id}>
-                            {item.name} - {item.breed}
+                            {item.name}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="breed"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Breed</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Breed..." {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="origin"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Origin</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Origin..." {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="personality"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Personality</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Personality..." {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="imageUrl"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Upload Image</FormLabel>
+                  <FormControl>
+                    <div className="flex items-center space-x-4">
+                      <CldUploadWidget
+                        signatureEndpoint="/api/sign-image"
+                        onSuccess={(result: any) => {
+                          field.onChange(result?.info.url);
+                        }}
+                      >
+                        {({ open }) => (
+                          <Button
+                            type="button"
+                            className="w-1/2"
+                            onClick={() => open()}
+                          >
+                            Choose Image
+                          </Button>
+                        )}
+                      </CldUploadWidget>
+                      {field.value && (
+                        <div className="w-1/2">
+                          <DialogImg imgURL={field.value} />
+                        </div>
+                      )}
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>

@@ -7,25 +7,23 @@ import { formatPriceVND, formattedDateTime } from "@/lib/formatter";
 
 export const productColumns: CustomColumnDef<TProductResponse>[] = [
   {
-    accessorKey: "productBase.name",
-    id: "productBaseName",
+    accessorKey: "name",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Product Name" />
     ),
     cell: ({ row }) => (
       <div
         className="w-36 truncate cursor-pointer"
-        title={row.getValue("productBaseName")}
+        title={row.getValue("name")}
       >
-        {row.getValue("productBaseName")}
+        {row.getValue("name")}
       </div>
     ),
     enableSorting: false,
     enableColumnFilter: false,
   },
   {
-    accessorKey: "productBase.breed",
-    id: "breed",
+    accessorKey: "breed",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Breed" />
     ),
@@ -38,7 +36,7 @@ export const productColumns: CustomColumnDef<TProductResponse>[] = [
     enableColumnFilter: false,
   },
   {
-    accessorKey: "productBase.category.name",
+    accessorKey: "category.name",
     id: "categoryName",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Category" />
@@ -46,6 +44,19 @@ export const productColumns: CustomColumnDef<TProductResponse>[] = [
     cell: ({ row }) => (
       <div className="w-36 truncate" title={row.getValue("categoryName")}>
         {row.getValue("categoryName") || "N/A"}
+      </div>
+    ),
+    enableSorting: false,
+    enableColumnFilter: false,
+  },
+  {
+    accessorKey: "origin",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Origin" />
+    ),
+    cell: ({ row }) => (
+      <div className="w-36 truncate" title={row.getValue("origin")}>
+        {row.getValue("origin") || "N/A"}
       </div>
     ),
     enableSorting: false,
@@ -67,9 +78,13 @@ export const productColumns: CustomColumnDef<TProductResponse>[] = [
   {
     accessorKey: "size",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Size (cm)" />
+      <DataTableColumnHeader column={column} title="Size" />
     ),
-    cell: ({ row }) => <div>{row.getValue("size")} cm</div>,
+    cell: ({ row }) => (
+      <div>
+        {row.getValue("size")} ({row.original.descriptionSize})
+      </div>
+    ),
     enableSorting: false,
     enableColumnFilter: false,
   },
@@ -82,12 +97,21 @@ export const productColumns: CustomColumnDef<TProductResponse>[] = [
     enableSorting: false,
     enableColumnFilter: false,
   },
+  // {
+  //   accessorKey: "price",
+  //   header: ({ column }) => (
+  //     <DataTableColumnHeader column={column} title="Price" />
+  //   ),
+  //   cell: ({ row }) => <div>{formatPriceVND(row.getValue("price"))}</div>,
+  //   enableSorting: false,
+  //   enableColumnFilter: false,
+  // },
   {
-    accessorKey: "price",
+    accessorKey: "stock",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Price" />
+      <DataTableColumnHeader column={column} title="Stock" />
     ),
-    cell: ({ row }) => <div>{formatPriceVND(row.getValue("price"))}</div>,
+    cell: ({ row }) => <div>{row.getValue("stock")}</div>,
     enableSorting: false,
     enableColumnFilter: false,
   },
