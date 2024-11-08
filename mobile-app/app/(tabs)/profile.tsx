@@ -24,7 +24,7 @@ const ProfileScreen = () => {
 
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
     const isEmailValid = emailRegex.test(email);
-    
+
     const handleLogout = () => {
         Alert.alert(
 
@@ -44,25 +44,25 @@ const ProfileScreen = () => {
     const handleUpdateProfile = async () => {
 
         const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-        const phoneRegex = /^(?:\+84|0)\d{9}$/; 
-        
+        const phoneRegex = /^(?:\+84|0)\d{9}$/;
+
         if (!emailRegex.test(email)) {
             alert("Please enter a valid email address.");
             return;
         }
-    
+
         if (!phoneRegex.test(phone)) {
             alert("Please enter a valid phone number.");
             return;
         }
-    
+
         // Kiểm tra nếu mật khẩu mới và mật khẩu xác nhận không khớp
         if (password !== confirmPassword) {
 
             Alert.alert('Error', 'Passwords do not match');
             return;
         }
-    
+
         // Cập nhật thông tin người dùng
         const userData = {
 
@@ -71,13 +71,14 @@ const ProfileScreen = () => {
             phone,
             password: password ? password : undefined, // Thêm mật khẩu mới nếu có
         };
-    
+
         try {
 
             const response = await apiClient.put(`users/${userId}`, userData);
             if (response.status === 200) {
 
                 Alert.alert('Success', 'Profile updated successfully!');
+                fetchUserData();
             } else {
 
                 Alert.alert('Error', 'Failed to update profile');
@@ -88,7 +89,24 @@ const ProfileScreen = () => {
             Alert.alert('Error', 'Failed to update profile');
         }
     };
+    const fetchUserData = async () => {
+        try {
+            const response = await apiClient.get(`users/${userId}`);
+            const userInfo = response.data;
+            setFullName(userInfo.fullName || '');
+            setEmail(userInfo.email || '');
+            setPhoneNumber(userInfo.phone || '');
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    };
 
+    // Gọi `fetchUserData` khi `session` thay đổi
+    useEffect(() => {
+        if (session) {
+            fetchUserData();
+        }
+    }, [session]);
 
     // const handleUpdateProfile = async () => {
 
@@ -98,7 +116,7 @@ const ProfileScreen = () => {
     //         Alert.alert('Error', 'Passwords do not match');
     //         return;
     //     }
-    
+
     //     // Cập nhật thông tin người dùng
     //     const userData = {
 
@@ -107,7 +125,7 @@ const ProfileScreen = () => {
     //         phone,
     //         password: password ? password : undefined, // Thêm mật khẩu mới nếu có
     //     };
-    
+
     //     try {
 
     //         const response = await apiClient.put(`users/${userId}`, userData);
@@ -125,7 +143,7 @@ const ProfileScreen = () => {
     //     }
     // };
 
-    
+
     useEffect(() => {
         if (session) {
             const userInfo = JSON.parse(session);
@@ -138,48 +156,48 @@ const ProfileScreen = () => {
         }
     }, [session]);
 
-return (
-    <ScrollView style={[styles.container, { backgroundColor: colors.background }]} contentContainerStyle={{ paddingBottom: 2 * 32 }}>
+    return (
+        <ScrollView style={[styles.container, { backgroundColor: colors.background }]} contentContainerStyle={{ paddingBottom: 2 * 32 }}>
 
 
-        <View style={styles.profileImageContainer}>
-            <Image source={{ uri: "https://png.pngtree.com/png-vector/20190805/ourlarge/pngtree-account-avatar-user-abstract-circle-background-flat-color-icon-png-image_1650938.jpg" }} style={styles.profileImage} />
-        </View>
+            <View style={styles.profileImageContainer}>
+                <Image source={{ uri: "https://png.pngtree.com/png-vector/20190805/ourlarge/pngtree-account-avatar-user-abstract-circle-background-flat-color-icon-png-image_1650938.jpg" }} style={styles.profileImage} />
+            </View>
 
-        <View style={styles.nameRoleContainer}>
+            <View style={styles.nameRoleContainer}>
 
-            <Text style={[styles.name, { color: Colors.textPrimary }]}>{fullName || 'User Name'}</Text>
-            <Text style={[styles.role, { color: Colors.textSecondary }]}>CUSTOMER</Text>
-        </View>
+                <Text style={[styles.name, { color: Colors.textPrimary }]}>{fullName || 'User Name'}</Text>
+                <Text style={[styles.role, { color: Colors.textSecondary }]}>CUSTOMER</Text>
+            </View>
 
-        <View style={styles.inputFieldsContainer}>
+            <View style={styles.inputFieldsContainer}>
 
-            <CustomInput
-                label='Full Name'
-                placeholder='John Doe'
-                value={fullName}
-                handleChange={setFullName}
-            />
+                <CustomInput
+                    label='Full Name'
+                    placeholder='John Doe'
+                    value={fullName}
+                    handleChange={setFullName}
+                />
 
-            <CustomInput
-                label='Your Email'
-                placeholder='zerodegreecoder@gmail.com'
-                icon={<Ionicons name={"mail-outline"} size={24} color={Colors.iconSecondary} style={styles.icon} />}
-                value={email}
-                handleChange={setEmail}
-            />
+                <CustomInput
+                    label='Your Email'
+                    placeholder='zerodegreecoder@gmail.com'
+                    icon={<Ionicons name={"mail-outline"} size={24} color={Colors.iconSecondary} style={styles.icon} />}
+                    value={email}
+                    handleChange={setEmail}
+                />
 
-            <CustomInput
-                label='Phone Number'
-                placeholder='+84'
-                icon={<Feather name={"phone"} size={24} color={Colors.iconSecondary} style={styles.icon} />}
-                value={phone}
-                handleChange={setPhoneNumber}
-            />
+                <CustomInput
+                    label='Phone Number'
+                    placeholder='+84'
+                    icon={<Feather name={"phone"} size={24} color={Colors.iconSecondary} style={styles.icon} />}
+                    value={phone}
+                    handleChange={setPhoneNumber}
+                />
 
 
-            {/* New Password input */}
-            <CustomInput
+                {/* New Password input */}
+                <CustomInput
                     label='New Password'
                     placeholder='******'
                     icon={<Feather name={"lock"} size={24} color={Colors.iconSecondary} style={styles.icon} />}
@@ -199,25 +217,25 @@ return (
                     type='password'
 
                 />
-        </View>
+            </View>
 
 
-        <TouchableOpacity style={[styles.updateButton, { borderColor: Colors.orange }]} onPress={handleUpdateProfile}>
-            <Text style={[styles.updateText, { color: Colors.orange }]}>Update Profile</Text>
-        </TouchableOpacity>
+            <TouchableOpacity style={[styles.updateButton, { borderColor: Colors.orange }]} onPress={handleUpdateProfile}>
+                <Text style={[styles.updateText, { color: Colors.orange }]}>Update Profile</Text>
+            </TouchableOpacity>
 
 
-        <Button
-            mode="contained"
-            onPress={handleLogout}
-            style={styles.logoutButton}
-            labelStyle={styles.logoutButtonText}>
-            Logout
-        </Button>
-    </ScrollView>
+            <Button
+                mode="contained"
+                onPress={handleLogout}
+                style={styles.logoutButton}
+                labelStyle={styles.logoutButtonText}>
+                Logout
+            </Button>
+        </ScrollView>
 
 
-);
+    );
 };
 export default ProfileScreen;
 

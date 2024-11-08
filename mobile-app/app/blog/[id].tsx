@@ -78,7 +78,7 @@ const BlogDetail: React.FC = () => {
                     <Text style={styles.title}>{blog.title}</Text>
                     <Text style={styles.blogAuthor}>By {blog.author}</Text>
                     <Text style={styles.blogDate}>{new Date(blog.publishedDate).toLocaleDateString()}</Text>
-                    <Text style={styles.description}>{blog.description}</Text>
+                    <Text style={styles.description}>{"    "} {blog.description}</Text>
                     <View style={styles.tagsContainer}>
                         {blog?.tags?.map((tag) => (
                             <Text key={tag} style={styles.tag}>

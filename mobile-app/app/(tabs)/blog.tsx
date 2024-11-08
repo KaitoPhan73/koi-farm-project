@@ -6,18 +6,19 @@ interface Blog {
   id: string;
   title: string;
   description: string;
-  imageUrl: string; // Đường dẫn đến hình ảnh
-  author: string; // Tên tác giả
-  publishedDate: string; // Ngày xuất bản
-  tags: string[]; // Danh sách thẻ
+  imageUrl: string;
+  author: string;
+  publishedDate: string;
+  tags: string[];
 }
 
 const KoiBlogList: React.FC = () => {
   const router = useRouter();
   const [blogs, setBlogs] = useState<Blog[]>([]);
-  const [loading, setLoading] = useState<boolean>(true); // Thêm trạng thái loading
+  const [loading, setLoading] = useState<boolean>(true);
+  const [displayedBlogsCount, setDisplayedBlogsCount] = useState<number>(5); // Set to 5 to display 5 blogs initially
 
-  // Fetch blogs từ MockAPI khi component mount
+  // Fetch blogs from MockAPI when the component mounts
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
@@ -43,9 +44,27 @@ const KoiBlogList: React.FC = () => {
       onPress={() => router.push(`/blog/${item.id}`)}
     >
       <Text style={styles.blogTitle}>{item.title}</Text>
-      <Text style={styles.blogDescription}>{item.description}</Text>
+      <Text
+        style={styles.blogDescription}
+        numberOfLines={2}
+        ellipsizeMode="tail"
+      >
+        {item.description}
+      </Text>
     </TouchableOpacity>
   );
+
+  // Handle the "See More" / "See Less" button click
+  const handleToggle = () => {
+    if (displayedBlogsCount < blogs.length) {
+      setDisplayedBlogsCount(blogs.length); // Show all blogs
+    } else {
+      setDisplayedBlogsCount(5); // Show 5 blogs initially
+    }
+  };
+
+  // Get the blogs that are currently displayed based on the count
+  const displayedBlogs = blogs.slice(0, displayedBlogsCount);
 
   if (loading) {
     return (
@@ -58,10 +77,17 @@ const KoiBlogList: React.FC = () => {
   return (
     <View>
       <FlatList
-        data={blogs}
+        data={displayedBlogs}
         renderItem={renderBlogItem}
         keyExtractor={item => item.id}
         contentContainerStyle={styles.container}
+        ListFooterComponent={
+          <TouchableOpacity style={styles.seeMoreButton} onPress={handleToggle}>
+            <Text style={styles.seeMoreText}>
+              {displayedBlogsCount < blogs.length ? "See More" : "See Less"}
+            </Text>
+          </TouchableOpacity>
+        }
       />
     </View>
   );
@@ -70,7 +96,7 @@ const KoiBlogList: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
-    backgroundColor: '#f0f4f8', // nền sáng hơn
+    backgroundColor: '#f0f4f8',
   },
   blogItem: {
     marginBottom: 15,
@@ -83,29 +109,36 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
     borderWidth: 1,
-    borderColor: '#e0e0e0', // đường viền nhẹ để tạo điểm nhấn
+    borderColor: '#e0e0e0',
   },
   blogTitle: {
     fontSize: 20,
     fontWeight: '600',
-    color: '#333', // màu tối vừa cho tiêu đề
+    color: '#333',
     marginBottom: 8,
   },
   blogDescription: {
     fontSize: 16,
-    color: '#666', // màu xám nhẹ cho phần mô tả
+    color: '#666',
     lineHeight: 22,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f0f4f8', // Nền giống như phần nội dung
+    backgroundColor: '#f0f4f8',
   },
-  loadingText: {
-    marginTop: 10,
-    fontSize: 18,
-    color: '#333', // Màu cho văn bản loading
+  seeMoreButton: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: '#FFA500',
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  seeMoreText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
 

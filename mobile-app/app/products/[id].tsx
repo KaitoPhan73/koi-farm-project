@@ -29,6 +29,7 @@ const ProductDetails = () => {
     const fetchProduct = async () => {
       try {
         const response = await productAPI.getProductsById(id);
+
         setProduct(response);
       } catch (error) {
         console.error("Error fetching product:", error);
@@ -50,19 +51,19 @@ const ProductDetails = () => {
   }
 
   const isInCart = cartItems.some((item) => item._id === id);
-
+  console.log(product?.data?.imageUrl, "product?.data?.imageUrl")
   const handleAddToCart = async () => {
     if (product) {
       await addToCart({
-        _id: product._id,
-        name: product.name,
-        price: product.price,
-        imageUrl: product.imageUrl,
+        _id: product?._id,
+        name: product?.name,
+        price: product?.price,
+        imageUrl: product?.imageUrl,
         quantity: 1,
       });
     }
   };
-
+  console.log("product", product)
   const toggleCart = () => {
     if (isInCart) {
       removeFromCart(product._id);
@@ -93,36 +94,39 @@ const ProductDetails = () => {
         }}
       />
       <ScrollView>
-        <Image source={{ uri: product?.imageUrl }} style={styles.productImg} />
+        <Image source={{ uri: product?.data?.imageUrl }} style={styles.productImg} />
         <View style={styles.contentContainer}>
-          <Text style={styles.title}>{product?.name}</Text>
+          <Text style={styles.title}>{product?.data?.name}</Text>
           <Text style={styles.infoText}>
-            Category: <Text style={styles.bold}>{product?.category?.name}</Text>
+            Category: <Text style={styles.bold}>{product?.data?.category}</Text>
           </Text>
           <Text style={styles.infoText}>
-            Breed: <Text style={styles.bold}>{product?.breed}</Text>
+            Breed: <Text style={styles.bold}>{product?.data?.breed}</Text>
           </Text>
           <Text style={styles.infoText}>
-            Origin: <Text style={styles.bold}>{product?.origin}</Text>
+            Origin: <Text style={styles.bold}>{product?.data?.origin}</Text>
           </Text>
           <Text style={styles.infoText}>
-            Size: <Text style={styles.bold}>{product?.descriptionSize}</Text>
+            Size: <Text style={styles.bold}>{product?.data?.descriptionSize}</Text>
           </Text>
           <Text style={styles.infoText}>
-            Age: <Text style={styles.bold}>{product?.age} years</Text>
+            Age: <Text style={styles.bold}>{product?.data?.age} years</Text>
           </Text>
           <Text style={styles.infoText}>
-            Gender: <Text style={styles.bold}>{product?.gender}</Text>
+            Gender: <Text style={styles.bold}>{product?.data?.gender}</Text>
           </Text>
           <Text style={styles.infoText}>
-            Personality: <Text style={styles.bold}>{product?.personality}</Text>
+            Personality: <Text style={styles.bold}>{product?.data?.personality}</Text>
           </Text>
           <Text style={styles.infoText}>
             Price:{" "}
-            <Text style={styles.bold}>{formatCurrency(product?.price)}</Text>
+            <Text style={styles.bold}>{formatCurrency(product?.data?.price)}</Text>
           </Text>
           <Text style={styles.infoText}>
-            Stock: <Text style={styles.bold}>{product?.stock} available</Text>
+            Stock: <Text style={styles.bold}>{product?.data?.stock} available</Text>
+          </Text>
+          <Text style={styles.infoText}>
+            Sale Type: <Text style={styles.bold}>{product?.data?.saleType}</Text>
           </Text>
           {product?.consignment?.isConsignment && (
             <Text style={styles.infoText}>
@@ -148,48 +152,64 @@ const ProductDetails = () => {
 
 const styles = StyleSheet.create({
   contentContainer: {
-    paddingHorizontal: 16,
-    backgroundColor: "#f9f9f9",
+    paddingHorizontal: 24,
+    paddingVertical: 32,
+    backgroundColor: "#FFFFFF",
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+    marginTop: -20, // Đẩy nội dung lên một chút để che phần dưới của ảnh
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
   },
   productImg: {
     width: "100%",
-    height: 250,
-    marginBottom: 16,
-    borderRadius: 12,
+    height: 300,
+    marginBottom: 20,
+    // borderBottomLeftRadius: 20,
+    // borderBottomRightRadius: 20,
     resizeMode: "cover",
   },
   title: {
-    fontSize: 26,
-    fontWeight: "bold",
-    color: "#333",
+    fontSize: 28,
+    fontWeight: "700",
+    color: "#222222",
+    marginBottom: 10,
   },
   infoText: {
     fontSize: 16,
-    color: "#555",
+    color: "#666666",
+    lineHeight: 24,
     marginVertical: 4,
   },
   bold: {
-    fontWeight: "bold",
-    color: "#333",
+    fontWeight: "600",
+    color: "#333333",
   },
   addToCartButton: {
-    backgroundColor: "#1e90ff",
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+    backgroundColor: "#FF6F61",
+    paddingVertical: 14,
     alignItems: "center",
-    borderRadius: 8,
+    borderRadius: 10,
     marginTop: 20,
+    shadowColor: "#FF6F61",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
   },
   addToCartText: {
-    color: "white",
+    color: "#FFFFFF",
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: "600",
   },
   errorText: {
     color: "red",
     textAlign: "center",
     marginTop: 20,
+    fontSize: 16,
   },
 });
+
 
 export default ProductDetails;

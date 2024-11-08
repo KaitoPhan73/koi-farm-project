@@ -15,8 +15,8 @@ const CategoryList = () => {
   const outerPadding = 16;
 
   // Debug logs
-  console.log("CategoryList - current category:", category);
-  console.log("CategoryList - current active:", active);
+  // console.log("CategoryList - current category:", category);
+  // console.log("CategoryList - current active:", active);
 
   React.useEffect(() => {
     if (!category && !active) {
@@ -28,10 +28,10 @@ const CategoryList = () => {
   }, []);
 
   const categories = getCategories().data?.items || [];
-  console.log(
-    "Available categories:",
-    categories.map((c) => ({ id: c._id, name: c.name }))
-  );
+  // console.log(
+  //   "Available categories:",
+  //   categories.map((c) => ({ id: c._id, name: c.name }))
+  // );
 
   const categoryList = ["All", ...categories.map((item) => item.name)];
 
@@ -59,16 +59,14 @@ const CategoryList = () => {
 
     return (
       <StyledTouchableOpacity
-        className={`shadow-md rounded-md py-2 px-3 flex-1 justify-center items-center ${
-          isSelected ? "bg-primary" : "bg-white"
-        }`}
+        className={`shadow-md rounded-md py-2 px-3 flex-1 justify-center items-center ${isSelected ? "bg-primary" : "bg-white"
+          }`}
         style={{ backgroundColor: isSelected ? Colors.primaryColor : "white" }}
         onPress={handlePress}
       >
         <StyledText
-          className={`text-md font-semibold ${
-            isSelected ? "text-white" : "text-black"
-          }`}
+          className={`text-md font-semibold ${isSelected ? "text-white" : "text-black"
+            }`}
         >
           {item}
         </StyledText>
