@@ -143,6 +143,7 @@ const ProductDetails = () => {
           >
             <Text style={styles.viewCartText}>View Cart</Text>
           </TouchableOpacity>
+          </View>
       </ScrollView>
 
       <Modal
@@ -355,6 +356,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 20,
   },
+  emptyCartText:{}
 });
 
 export default ProductDetails;
