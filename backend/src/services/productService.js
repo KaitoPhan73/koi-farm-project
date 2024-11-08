@@ -15,6 +15,7 @@ class ProductService {
         size,
         origin,
         breed,
+        saleType,
         sortBy = 'createdAt',
         order = 'desc',
         search,
@@ -31,6 +32,7 @@ class ProductService {
       if (size) filter.size = size;
       if (origin) filter.origin = { $regex: origin.trim(), $options: 'i' };
       if (breed) filter.breed = { $regex: breed.trim(), $options: 'i' };
+      if (saleType) filter.saleType = saleType;
 
       // Price range
       if (minPrice || maxPrice) {

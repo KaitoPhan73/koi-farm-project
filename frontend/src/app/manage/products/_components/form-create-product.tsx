@@ -66,6 +66,7 @@ export function FormCreateProduct({
         supplier: undefined,
         commission: 0,
       },
+      saleType: "Individual",
     },
   });
 
@@ -460,6 +461,31 @@ export function FormCreateProduct({
                 />
               </>
             )}
+
+            <FormField
+              control={form.control}
+              name="saleType"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Sale Type</FormLabel>
+                  <FormControl>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select Sale Type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Individual">Individual</SelectItem>
+                        <SelectItem value="Batch">Batch</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
 
           <Button type="submit" disabled={isLoading}>
