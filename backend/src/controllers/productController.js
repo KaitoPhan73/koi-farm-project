@@ -54,7 +54,7 @@ class ProductController {
 
     res.status(200).json({
       success: true,
-      data: product,
+      product,
     });
   });
 
@@ -68,7 +68,7 @@ class ProductController {
     res.status(200).json({
       success: true,
       message: 'Product updated successfully',
-      data: product,
+      product,
     });
   });
 
@@ -90,7 +90,7 @@ class ProductController {
 
     res.status(200).json({
       success: true,
-      data: result.products,
+      products,
       pagination: result.pagination,
     });
   });

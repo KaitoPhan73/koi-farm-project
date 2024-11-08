@@ -19,7 +19,7 @@ import CartModal from "@/components/cart-modal";
 const ProductDetails = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { addToCart, cartItems, removeFromCart } = useCart();
-  const [product, setProduct] = useState<any>(null);
+  const [product, setProduct] = useState<any>();
   const [isLoading, setIsLoading] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -28,6 +28,8 @@ const ProductDetails = () => {
     const fetchProduct = async () => {
       try {
         const response = await productAPI.getProductsById(id);
+        console.log("🚀 ~ fetchProduct ~ response:", response)
+        
         setProduct(response);
       } catch (error) {
         console.error("Error fetching product:", error);
@@ -104,7 +106,7 @@ const ProductDetails = () => {
       <ScrollView>
         <Image source={{ uri: product?.imageUrl }} style={styles.productImg} />
         <View style={styles.contentContainer}>
-          <Text style={styles.title}>{product?.name}</Text>
+          <Text style={styles.title}>{product.name}</Text>
           <Text style={styles.infoText}>
             Category: <Text style={styles.bold}>{product?.category?.name}</Text>
           </Text>

@@ -1,6 +1,7 @@
 const axios = require("axios");
 const CryptoJS = require("crypto-js");
 const moment = require("moment");
+const Pay = require("../models/zaloPay"); // Mô hình thanh toán Mongoose
 
 // ZaloPay Config
 const zaloPayConfig = {
@@ -10,17 +11,18 @@ const zaloPayConfig = {
   endpoint: "https://sb-openapi.zalopay.vn/v2/create",
 };
 
-// Create Order
+// Create Order and save to database
 const createOrder = async (amount) => {
   const embed_data = {
-    redirecturl: "http://localhost:3000/paymentcomplete",
+    redirecturl: "https://www.facebook.com/profile.php?id=100086570243903",
   };
 
   const items = [{}];
   const transID = Math.floor(Math.random() * 1000000);
+  const app_trans_id = `${moment().format("YYMMDD")}_${transID}`;
   const order = {
     app_id: zaloPayConfig.app_id,
-    app_trans_id: `${moment().format("YYMMDD")}_${transID}`,
+    app_trans_id: app_trans_id,
     app_user: "user123",
     app_time: Date.now(),
     item: JSON.stringify(items),
@@ -47,6 +49,17 @@ const createOrder = async (amount) => {
     order.item;
 
   order.mac = CryptoJS.HmacSHA256(data, zaloPayConfig.key1).toString();
+
+  // Save to database
+  const payment = new Pay({
+    app_trans_id: order.app_trans_id,
+    app_user: order.app_user,
+    amount: order.amount,
+    description: order.description,
+    status: "pending",
+  });
+
+  await payment.save(); // Lưu thông tin đơn hàng vào MongoDB
 
   try {
     const result = await axios.post(zaloPayConfig.endpoint, null, {
@@ -84,7 +97,7 @@ const checkOrderStatus = async (app_trans_id) => {
 };
 
 // Callback Handler
-const callbackHandler = (req, res) => {
+const callbackHandler = async (req, res) => {
   let result = {
     return_code: 0,
     return_message: "",
@@ -105,6 +118,13 @@ const callbackHandler = (req, res) => {
       console.log(
         "update order's status = success where app_trans_id =",
         dataJson["app_trans_id"]
+      );
+
+      // Update payment status in database
+      const updatedPayment = await Pay.findOneAndUpdate(
+        { app_trans_id: dataJson["app_trans_id"] },
+        { status: "success" }, // Chỉnh sửa trạng thái thành công
+        { new: true }
       );
 
       result.return_code = 1;

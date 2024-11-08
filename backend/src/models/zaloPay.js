@@ -1,13 +1,22 @@
 const mongoose = require('mongoose');
 
-const paymentSchema = new mongoose.Schema({
+const paymentSchema = new mongoose.Schema(
+  {
+    app_trans_id: { type: String, required: true, unique: true },
+    app_user: { type: String, required: true },
     amount: { type: Number, required: true },
-    orderId: { type: String, required: true, unique: true }, 
-    status: { type: String, required: true, enum: ['pending', 'success', 'failed'] }, 
-    transactionId: { type: String },
-    clientSecret: { type: String, required: true },
-    currency: { type: String, required: true }, 
-    createdAt: { type: Date, default: Date.now }, 
-});
+    description: { type: String, required: true },
+    status: {
+      type: String,
+      enum: ['pending', 'success', 'failed', 'processing'],
+      default: 'pending',
+    },
+    created_at: { type: Date, default: Date.now },
+    updated_at: { type: Date, default: Date.now },
+  },
+  { timestamps: true } 
+);
 
-module.exports = mongoose.model('ZaloPay', paymentSchema);
+const Pay = mongoose.model('ZaloPay', paymentSchema);
+
+module.exports = Pay;
