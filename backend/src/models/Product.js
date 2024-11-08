@@ -31,14 +31,6 @@ const productSchema = new Schema(
     descriptionSize: {
       type: String,
       required: [true, 'Description size is required'],
-      // validate: {
-      //   validator: function (v) {
-      //     // Kiểm tra format như "3-6 cm" hoặc "10 cm"
-      //     return /^\d+(-\d+)?\s*cm$/.test(v);
-      //   },
-      //   message: (props) =>
-      //     `${props.value} is not a valid size description! Format should be like "3-6 cm" or "10 cm"`,
-      // },
     },
     age: {
       type: Number,
@@ -59,11 +51,20 @@ const productSchema = new Schema(
       required: [true, 'Price is required'],
       min: [1, 'Price must be at least 1'],
     },
+    saleType: {
+      type: String,
+      enum: {
+        values: ['Individual', 'Batch'],
+        message: 'Sale type must be Individual or Batch',
+      },
+      required: [true, 'Sale type is required'],
+      default: 'Individual',
+    },
     stock: {
       type: Number,
       required: true,
-      min: 0,
-      default: 0,
+      min: [1, 'Stock must be at least 1'],
+      default: 1,
     },
     personality: {
       type: String,
