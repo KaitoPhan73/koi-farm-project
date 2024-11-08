@@ -41,7 +41,7 @@ router.post('/', userController.create);
  * @swagger
  * /users:
  *   get:
- *     summary: Get a list of users
+ *     summary: Get all users
  *     tags: [Users]
  *     parameters:
  *       - in: query
@@ -60,7 +60,7 @@ router.post('/', userController.create);
  *       500:
  *         description: Internal server error
  */
-router.get('/', userController.getPagination);
+router.get('/', userController.getAll);
 
 /**
  * @swagger
@@ -141,5 +141,58 @@ router.put('/:id', userController.update);
  *         description: Internal server error
  */
 router.delete('/:id', userController.delete);
+
+/**
+ * @swagger
+ * /users/{id}/status:
+ *   patch:
+ *     tags: [Users]
+ *     summary: Cập nhật trạng thái người dùng
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID của người dùng
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - status
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 enum: [Active, Inactive, Banned]
+ *                 description: Trạng thái mới của người dùng
+ *     responses:
+ *       200:
+ *         description: Cập nhật trạng thái thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: User status updated successfully
+ *                 data:
+ *                   $ref: '#/components/schemas/User'
+ *       400:
+ *         description: Dữ liệu không hợp lệ
+ *       404:
+ *         description: Không tìm thấy người dùng
+ *       500:
+ *         description: Lỗi server
+ */
+router.patch('/:id/status', userController.updateStatus);
 
 module.exports = router;

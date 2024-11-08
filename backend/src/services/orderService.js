@@ -1,42 +1,79 @@
 // services/orderService.js
 const Order = require('../models/Order');
+const OrderItem = require('../models/OrderItem'); // Nếu bạn có model OrderItem
 
-class OrderService {
-  async createOrder(data) {
-    const order = new Order(data);
-    return await order.save();
+// Tạo một order mới
+const createOrder = async (userId, items, totalAmount) => {
+  try {
+    const order = new Order({
+      user: userId,
+      items: items,
+      totalAmount: totalAmount,
+      status: 'Pending',
+    });
+    await order.save();
+    return order;
+  } catch (error) {
+    throw new Error(`Error creating orderddsds: ${error.message}`);
   }
+};
 
-  async getAllOrders(page, limit) {
-    if (page && limit) {
-      const skip = (page - 1) * limit; // Calculate the number of items to skip
-      const orders = await Order.find()
-        .skip(skip)
-        .limit(limit)
-        .sort({ orderDate: -1 }) // Sort by order date or any other relevant field
-        .populate('items'); // Populate items if necessary (make sure 'items' field is referenced correctly)
+// Lấy danh sách tất cả các đơn hàng
+const getAllOrders = async () => {
+  try {
+    const orders = await Order.find().populate('user').populate('items');
+    return orders;
+  } catch (error) {
+    throw new Error('Error fetching orders');
+  }
+};
 
-      const totalItems = await Order.countDocuments(); // Total number of orders
-      const totalPages = Math.ceil(totalItems / limit); // Calculate total pages
+// Lấy thông tin đơn hàng theo ID
+const getOrderById = async (orderId) => {
+  try {
+    const order = await Order.findById(orderId)
+      .populate('user')
+      .populate('items');
+    if (!order) {
+      throw new Error('Order not found');
+    }
+    return order;
+  } catch (error) {
+    throw new Error('Error fetching order');
+  }
+};
 
-      return { orders, totalPages, totalItems };
+// Cập nhật trạng thái đơn hàng
+const updateOrderStatus = async (orderId, status) => {
+  try {
+    const validStatuses = [
+      'Pending',
+      'Processing',
+      'Shipped',
+      'Completed',
+      'Cancelled',
+    ];
+    if (!validStatuses.includes(status)) {
+      throw new Error('Invalid status');
     }
 
-    // If no pagination is provided, return all orders with populated items
-    return await Order.find().populate('items').sort({ orderDate: -1 });
+    const order = await Order.findByIdAndUpdate(
+      orderId,
+      { status },
+      { new: true }
+    );
+    if (!order) {
+      throw new Error('Order not found');
+    }
+    return order;
+  } catch (error) {
+    throw new Error('Error updating order status');
   }
+};
 
-  async getOrderById(id) {
-    return await Order.findById(id);
-  }
-
-  async updateOrder(id, data) {
-    return await Order.findByIdAndUpdate(id, data, { new: true });
-  }
-
-  async deleteOrder(id) {
-    return await Order.findByIdAndDelete(id);
-  }
-}
-
-module.exports = new OrderService();
+module.exports = {
+  createOrder,
+  getAllOrders,
+  getOrderById,
+  updateOrderStatus,
+};

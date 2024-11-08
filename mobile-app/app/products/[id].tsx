@@ -20,7 +20,7 @@ import { formatCurrency } from "@/utils/formatter";
 const ProductDetails = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { addToCart, cartItems, removeFromCart } = useCart();
-  const [product, setProduct] = useState<any>();
+  const [product, setProduct] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -29,7 +29,6 @@ const ProductDetails = () => {
     const fetchProduct = async () => {
       try {
         const response = await productAPI.getProductsById(id);
-        // console.log("🚀 ~ fetchProduct ~ response:", response)
 
         setProduct(response);
       } catch (error) {
@@ -41,6 +40,15 @@ const ProductDetails = () => {
     };
     fetchProduct();
   }, [id]);
+
+  // Return loading spinner or error message if data is not available
+  if (isLoading) {
+    return <ActivityIndicator size="large" color={Colors.tint} />;
+  }
+
+  if (error) {
+    return <Text style={styles.errorText}>{error}</Text>;
+  }
 
   const isInCart = cartItems.some((item) => item._id === id);
   console.log(product?.data?.imageUrl, "product?.data?.imageUrl")
@@ -63,25 +71,6 @@ const ProductDetails = () => {
       handleAddToCart();
     }
   };
-
-  // const navigateToCheckout = () => {
-  //   const totalPrice = cartItems.reduce(
-  //     (total, item) => total + item.price * item.quantity,
-  //     0
-  //   );
-  //   router.push({
-  //     pathname: "/products/checkout",
-  //     params: { totalPrice },
-  //   });
-  // };
-
-  // if (isLoading) {
-  //   return <ActivityIndicator size="large" color={Colors.tint} />;
-  // }
-
-  // if (error) {
-  //   return <Text style={styles.errorText}>{error}</Text>;
-  // }
 
   return (
     <>

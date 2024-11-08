@@ -5,7 +5,6 @@ import { DataTable } from "@/components/table/data-table";
 import { CustomColumnDef } from "@/types/Colunm";
 import { TTableResponse } from "@/types/Table";
 import { useRouter } from "next/navigation";
-import { DialogCreateCategory } from "./dialog-create-category";
 
 interface DataTableProps<TData, TValue> {
   columns: CustomColumnDef<TData, TValue>[];
@@ -16,7 +15,7 @@ interface DataTableProps<TData, TValue> {
   };
 }
 
-const CategoryIndex = <TData, TValue>({
+const UserIndex = <TData, TValue>({
   columns,
   payload,
   params,
@@ -28,9 +27,7 @@ const CategoryIndex = <TData, TValue>({
         {/* <CardReports data={response.payload} /> */}
 
         <div className="flex items-center justify-between">
-          <p className="text-3xl">Manage Categories</p>
-
-          <DialogCreateCategory className="mb-3" />
+          <p className="text-3xl">Manage Users</p>
         </div>
         <DataTable
           payload={{
@@ -45,4 +42,4 @@ const CategoryIndex = <TData, TValue>({
   );
 };
 
-export default CategoryIndex;
+export default UserIndex;
