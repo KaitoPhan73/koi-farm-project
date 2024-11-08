@@ -1,45 +1,31 @@
-// routes/orderItemRoutes.js
-const express = require('express');
+// routes/OrderItemRoutes.js
+const express = require("express");
+const OrderItemController = require("../controllers/OrderItemController");
+
 const router = express.Router();
-const orderItemController = require('../controllers/orderItemController');
 
 /**
  * @swagger
- * tags:
- *   name: OrderItem
- *   description: OrderItem management endpoints
+ *  /order-items:
+ *   get:
+ *     summary: Lấy danh sách tất cả các đơn hàng
+ *     description: Lấy tất cả các đơn hàng từ hệ thống
+ *     tags: [OrderItem]
+ *     responses:
+ *       200:
+ *         description: Danh sách các đơn hàng
+ *       500:
+ *         description: Lỗi server
  */
-
-/**
- * @swagger
- * components:
- *   schemas:
- *     OrderItem:
- *       type: object
- *       required:
- *         - product
- *         - quantity
- *         - price
- *       properties:
- *         product:
- *           type: string
- *           description: ID của sản phẩm
- *         quantity:
- *           type: number
- *           minimum: 1
- *           description: Số lượng sản phẩm
- *         price:
- *           type: number
- *           minimum: 0
- *           description: Giá của sản phẩm tại thời điểm đặt hàng
- */
+router.get("/", OrderItemController.getAllOrderItem);
 
 /**
  * @swagger
  * /order-items:
  *   post:
+ *     summary: Tạo một đơn hàng mới
+ *     description: Tạo một đơn hàng mới với thông tin các sản phẩm trong giỏ hàng
  *     tags: [OrderItem]
- *     summary: Tạo một order item mới
  *     requestBody:
  *       required: true
  *       content:
@@ -48,104 +34,61 @@ const orderItemController = require('../controllers/orderItemController');
  *             $ref: '#/components/schemas/OrderItem'
  *     responses:
  *       201:
- *         description: Order item đã được tạo thành công
- *       400:
- *         description: Dữ liệu không hợp lệ
- */
-router.post('/', orderItemController.create);
-
-/**
- * @swagger
- * /order-items:
- *   get:
- *     tags: [OrderItem]
- *     summary: Lấy danh sách order items
- *     parameters:
- *       - in: query
- *         name: page
- *         schema:
- *           type: integer
- *         description: Số trang
- *       - in: query
- *         name: limit
- *         schema:
- *           type: integer
- *         description: Số lượng item trên mỗi trang
- *     responses:
- *       200:
- *         description: Thành công
+ *         description: Đơn hàng đã được tạo
  *       500:
  *         description: Lỗi server
  */
-router.get('/', orderItemController.getPagination);
+router.post("/", OrderItemController.createOrder);
 
 /**
  * @swagger
  * /order-items/{id}:
  *   get:
+ *     summary: Lấy thông tin đơn hàng theo ID
+ *     description: Lấy chi tiết đơn hàng dựa trên ID
  *     tags: [OrderItem]
- *     summary: Lấy thông tin order item theo ID
  *     parameters:
- *       - in: path
- *         name: id
+ *       - name: id
+ *         in: path
  *         required: true
- *         description: ID của order item
- *         schema:
- *           type: string
+ *         description: ID của đơn hàng
  *     responses:
  *       200:
- *         description: Thành công
- *       404:
- *         description: Không tìm thấy order item
+ *         description: Thông tin đơn hàng
+ *       500:
+ *         description: Lỗi server
  */
-router.get('/:id', orderItemController.getById);
+router.get("/:id", OrderItemController.getOrder);
 
 /**
  * @swagger
- * /order-items/{id}:
+ * /order-items/{id}/status:
  *   put:
+ *     summary: Cập nhật trạng thái đơn hàng
+ *     description: Cập nhật trạng thái của đơn hàng (Pending, Completed, Cancelled)
  *     tags: [OrderItem]
- *     summary: Cập nhật thông tin order item
  *     parameters:
- *       - in: path
- *         name: id
+ *       - name: id
+ *         in: path
  *         required: true
- *         description: ID của order item
- *         schema:
- *           type: string
+ *         description: ID của đơn hàng
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/OrderItem'
+ *             type: object
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 enum: [Pending, Completed, Cancelled]
+ *                 description: Trạng thái mới của đơn hàng
  *     responses:
  *       200:
- *         description: Cập nhật thành công
- *       404:
- *         description: Không tìm thấy order item
+ *         description: Đơn hàng đã được cập nhật trạng thái
+ *       500:
+ *         description: Lỗi server
  */
-router.put('/:id', orderItemController.update);
-
-/**
- * @swagger
- * /order-items/{id}:
- *   delete:
- *     tags: [OrderItem]
- *     summary: Xóa order item
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         description: ID của order item
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Xóa thành công
- *       404:
- *         description: Không tìm thấy order item
- */
-router.delete('/:id', orderItemController.delete);
+router.put("/:id/status", OrderItemController.updateOrderStatus);
 
 module.exports = router;

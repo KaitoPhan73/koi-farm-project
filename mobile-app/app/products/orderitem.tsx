@@ -4,7 +4,6 @@ import { useRouter } from "expo-router";
 import { RouteProp } from "@react-navigation/native";
 import { useRoute } from "@react-navigation/native";
 import axios from "axios"; // To make API calls
-import { WebView } from "react-native-webview"; // Import WebView
 import Colors from "@/constants/Colors";
 
 // Type definition for the cart item
@@ -34,9 +33,26 @@ const OrderItemScreen: React.FC = () => {
   const totalAmount = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
     0
-  ); // Calculate total amount
+  );
 
   const handleZaloPay = async () => {
+    try {
+      setLoading(true);
+      const orderData = {
+        cartItems: cartItems,
+        totalAmount: totalAmount,
+        status: "Pending", 
+      };
+
+      const response = await axios.post(
+        `${process.env.EXPO_PUBLIC_API_URL}/order-items`, 
+        orderData
+      );
+    } catch (error) {
+      console.error("Order initiation failed:", error);
+    } finally {
+      setLoading(false);
+    }
     try {
       const amount = cartItems.reduce(
         (total, item) => total + item.price * item.quantity,
@@ -78,16 +94,16 @@ const OrderItemScreen: React.FC = () => {
             Total: {totalAmount} VND
           </Text>
           <TouchableOpacity
-            onPress={handleZaloPay}
+            onPress={handleZaloPay} 
             style={styles.zaloPayButton}
             disabled={loading}
           >
             {loading ? (
               <Text style={styles.buttonText}>Processing...</Text>
             ) : (
-              <Text style={styles.buttonText}>Thanh Toán với ZaloPay</Text>
+              <Text style={styles.buttonText}>Lưu Đơn Hàng và Thanh Toán</Text>
             )}
-          </TouchableOpacity>
+          </TouchableOpacity> 
         </>
       ) : (
         <Text>Your cart is empty</Text>

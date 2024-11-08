@@ -1,236 +1,204 @@
 import React, { useState } from "react";
-import { ScrollView, Text, View, TextInput, TouchableOpacity, StyleSheet } from "react-native";
-import { DatePickerModal, registerTranslation, en } from "react-native-paper-dates";
-import { Provider as PaperProvider, DefaultTheme } from 'react-native-paper';
-import { CalendarDate } from "react-native-paper-dates"; // Import CalendarDate
-import { Picker } from '@react-native-picker/picker';
+import {
+  ScrollView,
+  Text,
+  View,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+} from "react-native";
+import { Picker } from "@react-native-picker/picker";
+import {
+  Provider as PaperProvider,
+  DefaultTheme,
+  Button,
+} from "react-native-paper";
 
-// Register locale
-registerTranslation("en", en);
+// Cải thiện theme và giao diện
+const MyTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: "#FFA500", // Màu chủ đạo là cam
+    background: "#F9FAFB", // Nền sáng
+    surface: "#ffffff", // Màu nền của các component
+  },
+};
 
 type FormData = {
-    name: string;
-    contact: string;
-    koiType: string;
-    selectedTank: string;
-    checkInDate: Date | null;
-    checkOutDate: Date | null;
-    comments: string;
+  name: string;
+  contact: string;
+  koiType: string;
+  comments: string;
+  address: string;
+  email: string;
 };
 
 const HomeScreen: React.FC = () => {
-    const [formData, setFormData] = useState<FormData>({
-        name: '',
-        contact: '',
-        koiType: '',
-        selectedTank: '',
-        checkInDate: null,
-        checkOutDate: null,
-        comments: ''
-    });
+  const [formData, setFormData] = useState<FormData>({
+    name: "",
+    contact: "",
+    address: "",
+    email: "",
+    koiType: "",
+    comments: "",
+  });
 
-    const [isDatePickerVisible, setDatePickerVisible] = useState(false);
+  const [selectedType, setSelectedType] = useState<string>("");
+  const [isTypeSelected, setIsTypeSelected] = useState<boolean>(false);
 
-    const handleInputChange = (key: keyof FormData, value: string) => {
-        setFormData({ ...formData, [key]: value });
-    };
+  const handleInputChange = (key: keyof FormData, value: string) => {
+    setFormData({ ...formData, [key]: value });
+  };
 
-    const handleSubmit = () => {
-        console.log("Submitted Data:", formData);
-    };
+  const handleSubmit = () => {
+    console.log("Submitted Data:", formData);
+    alert("Đăng ký đã được gửi!");
+  };
 
-    const openDatePicker = () => {
-        setDatePickerVisible(true);
-    };
+  return (
+    <PaperProvider theme={MyTheme}>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.contentContainer}
+      >
+        <View style={styles.formContainer}>
+          <Text style={styles.headerText}>Kí Gửi Cá Koi</Text>
 
-    const onDismiss = () => {
-        setDatePickerVisible(false);
-    };
+          <TextInput
+            placeholder="Họ và tên"
+            style={styles.input}
+            onChangeText={(text) => handleInputChange("name", text)}
+          />
 
-    const onConfirm = ({ startDate, endDate }: { startDate: CalendarDate; endDate: CalendarDate }) => {
-        const checkInDate = startDate ? new Date(startDate) : null;
-        const checkOutDate = endDate ? new Date(endDate) : null;
+          <TextInput
+            placeholder="Số điện thoại"
+            keyboardType="phone-pad"
+            style={styles.input}
+            onChangeText={(text) => handleInputChange("contact", text)}
+          />
+          <TextInput
+            placeholder="Email"
+            keyboardType="email-address"
+            style={styles.input}
+            onChangeText={(text) => handleInputChange("email", text)}
+          />
+          <TextInput
+            placeholder="Address"
+            keyboardType="email-address"
+            style={styles.input}
+            onChangeText={(text) => handleInputChange("address", text)}
+          />
 
-        // Get today's date
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        // Check validity of dates
-        if (checkInDate && !isNaN(checkInDate.getTime()) && checkOutDate && !isNaN(checkOutDate.getTime())) {
-            if (checkInDate < today || checkOutDate < today) {
-                alert("Please select dates from today onwards.");
-                return;
-            }
-
-            setFormData({
-                ...formData,
-                checkInDate: checkInDate,
-                checkOutDate: checkOutDate,
-            });
-        } else {
-            console.error("Invalid date values:", startDate, endDate);
-        }
-
-        setDatePickerVisible(false);
-    };
-
-
-    const MyTheme = {
-        ...DefaultTheme,
-        colors: {
-            ...DefaultTheme.colors,
-            primary: '#FFA500',
-            primaryContainer: '#ffe0b2',
-        },
-    };
-
-    return (
-        <PaperProvider theme={MyTheme}>
-            <ScrollView
-                style={styles.container}
-                contentContainerStyle={styles.contentContainer}
+          <View style={styles.pickerContainer}>
+            <Text style={styles.pickerLabel}>Chọn thể loại kí gửi</Text>
+            <Picker
+              selectedValue={selectedType}
+              onValueChange={(itemValue) => {
+                setSelectedType(itemValue);
+                setIsTypeSelected(true);
+              }}
             >
-                <View style={styles.formContainer}>
-                    <Text style={styles.headerText}>Kí Gửi Cá Koi</Text>
+              <Picker.Item label="Chọn thể loại" value="" />
+              <Picker.Item label="Thực hiện chăm sóc" value="type1" />
+              <Picker.Item
+                label="Thực hiện gửi cho trang trại bán"
+                value="type2"
+              />
+            </Picker>
+          </View>
 
-                    <TextInput
-                        placeholder="Họ và tên"
-                        style={styles.input}
-                        onChangeText={(text) => handleInputChange('name', text)}
-                    />
+          {isTypeSelected && (
+            <Text style={styles.selectedTypeText}>
+              Bạn đã chọn:{" "}
+              {selectedType === "type1"
+                ? "Thực hiện chăm sóc"
+                : "Thực hiện gửi cho trang trại bán"}
+            </Text>
+          )}
 
-                    <TextInput
-                        placeholder="Số điện thoại"
-                        keyboardType="phone-pad"
-                        style={styles.input}
-                        onChangeText={(text) => handleInputChange('contact', text)}
-                    />
+          <TextInput
+            placeholder="Mô tả các cá muốn kí gửi"
+            multiline
+            numberOfLines={5}
+            autoCapitalize="sentences"
+            textAlignVertical="top"
+            style={styles.textArea}
+            onChangeText={(text) => handleInputChange("comments", text)}
+          />
 
-                    <TextInput
-                        placeholder="Loại cá Koi"
-                        style={styles.input}
-                        onChangeText={(text) => handleInputChange('koiType', text)}
-                    />
-
-                    {/* Tank Picker */}
-                    <View style={styles.pickerContainer}>
-                        <Picker
-                            selectedValue={formData.selectedTank}
-                            onValueChange={(itemValue) => handleInputChange('selectedTank', itemValue)}
-                            style={styles.picker}
-                        >
-                            <Picker.Item label="Chọn bể cá" value="" />
-                            <Picker.Item label="Bể A" value="tankA" />
-                            <Picker.Item label="Bể B" value="tankB" />
-                            <Picker.Item label="Bể C" value="tankC" />
-                        </Picker>
-                    </View>
-
-                    <TouchableOpacity onPress={openDatePicker}>
-                        <Text style={styles.dateButton}>
-                            Ngày Check-in: {formData.checkInDate ? formData.checkInDate.toLocaleDateString() : 'Chưa chọn'}
-                        </Text>
-                        <Text style={styles.dateButton}>
-                            Ngày Check-out: {formData.checkOutDate ? formData.checkOutDate.toLocaleDateString() : 'Chưa chọn'}
-                        </Text>
-                    </TouchableOpacity>
-
-                    <TextInput
-                        placeholder="Ghi chú thêm"
-                        multiline
-                        numberOfLines={3}
-                        autoCapitalize="sentences"
-                        textAlignVertical="top"
-                        style={styles.textArea}
-                        onChangeText={(text) => handleInputChange('comments', text)}
-                    />
-
-                    <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-                        <Text style={styles.submitButtonText}>Gửi Đăng Ký</Text>
-                    </TouchableOpacity>
-
-                    <DatePickerModal
-                        mode="range"
-                        locale="en"
-                        visible={isDatePickerVisible}
-                        onDismiss={onDismiss}
-                        startDate={formData.checkInDate ?? new Date()}
-                        endDate={formData.checkOutDate ?? new Date()}
-                        onConfirm={onConfirm}
-                    />
-                </View>
-            </ScrollView>
-        </PaperProvider>
-    );
+          <Button
+            mode="contained"
+            style={styles.submitButton}
+            onPress={handleSubmit}
+          >
+            Gửi Đăng Ký
+          </Button>
+        </View>
+      </ScrollView>
+    </PaperProvider>
+  );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: "#F3F4F6",
-    },
-    contentContainer: {
-        padding: 20,
-    },
-    formContainer: {
-        backgroundColor: "white",
-        padding: 24,
-        borderRadius: 12,
-        shadowColor: "#000",
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-        elevation: 3,
-    },
-    headerText: {
-        textAlign: "center",
-        fontSize: 24,
-        fontWeight: "bold",
-        color: "#FFA500",
-        marginBottom: 24,
-    },
-    input: {
-        borderWidth: 1,
-        borderColor: "#D1D5DB",
-        padding: 12,
-        borderRadius: 8,
-        marginBottom: 16,
-    },
-    pickerContainer: {
-        borderWidth: 1,
-        borderColor: "#D1D5DB",
-        borderRadius: 8,
-        marginBottom: 16,
-    },
-    picker: {
-        height: 50,
-    },
-    dateButton: {
-        borderWidth: 1,
-        borderColor: "#D1D5DB",
-        padding: 12,
-        borderRadius: 8,
-        marginBottom: 16,
-        textAlign: "center",
-        backgroundColor: "#F9FAFB",
-    },
-    textArea: {
-        borderWidth: 1,
-        borderColor: "#D1D5DB",
-        padding: 12,
-        borderRadius: 8,
-        marginBottom: 16,
-        height: 80,
-    },
-    submitButton: {
-        backgroundColor: "#FFA500",
-        padding: 12,
-        borderRadius: 8,
-        alignItems: "center",
-    },
-    submitButtonText: {
-        color: "white",
-        fontWeight: "bold",
-    },
+  container: {
+    flex: 1,
+    backgroundColor: "#F9FAFB", // Nền sáng cho toàn bộ trang
+  },
+  contentContainer: {
+    padding: 20,
+  },
+  formContainer: {
+    backgroundColor: "white",
+    padding: 24,
+    borderRadius: 12,
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  headerText: {
+    textAlign: "center",
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#FFA500", // Màu chữ chủ đạo
+    marginBottom: 24,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#D1D5DB",
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 16,
+  },
+  pickerContainer: {
+    marginBottom: 16,
+  },
+  pickerLabel: {
+    fontSize: 16,
+    marginBottom: 8,
+    color: "#333",
+  },
+  selectedTypeText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#4CAF50", // Màu xanh để thông báo đã chọn
+    marginBottom: 16,
+  },
+  textArea: {
+    borderWidth: 1,
+    borderColor: "#D1D5DB",
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 16,
+    height: 150,
+  },
+  submitButton: {
+    backgroundColor: "#FFA500",
+    padding: 12,
+    borderRadius: 8,
+    alignItems: "center",
+  },
 });
 
 export default HomeScreen;
