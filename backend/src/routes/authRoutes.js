@@ -58,7 +58,7 @@ router.post(
       .withMessage('Address cannot be empty if provided'),
     body('role')
       .optional()
-      .isIn(['Customer', 'Admin'])
+      .isIn(['Customer', 'Manager', 'Staff'])
       .withMessage('Invalid role specified'),
   ],
   authController.register

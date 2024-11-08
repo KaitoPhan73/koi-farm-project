@@ -1,15 +1,24 @@
-import { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ImageBackground, Animated } from 'react-native';
-import { router } from 'expo-router';
-import { useSession } from '@/utils/ctx';
-import { LinearGradient } from 'expo-linear-gradient';
-import { login } from '@/apis/authAPI';
-import Toast from 'react-native-toast-message';
+import { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  ImageBackground,
+  Animated,
+} from "react-native";
+import { router } from "expo-router";
+import { useSession } from "@/utils/ctx";
+import { LinearGradient } from "expo-linear-gradient";
+import { login } from "@/apis/authAPI";
+import Toast from "react-native-toast-message";
 
 export default function SignIn() {
   const { signIn } = useSession();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [emailOpacity, setEmailOpacity] = useState(0.5);
   const [passwordOpacity, setPasswordOpacity] = useState(0.5);
   const [emailFocused, setEmailFocused] = useState(false);
@@ -19,32 +28,32 @@ export default function SignIn() {
   const handleSignIn = async () => {
     try {
       const response = await login(username, password);
-
-    
+      console.log("response-Login", response);
+      // console.log(response.data);
       signIn({
-        token: response.data.token, 
-        user: response.data.user, 
+        token: response.data.token,
+        user: response.data.user,
       });
 
       // Điều hướng sau khi đăng nhập thành công
       Toast.show({
-        type: 'success',
-        text1: 'Chào mừng bạn đến với Golden Koi',
-        text2: 'Golden Koi xin chào!',
-        position: 'top',
+        type: "success",
+        text1: "Chào mừng bạn đến với Golden Koi",
+        text2: "Golden Koi xin chào!",
+        position: "top",
         visibilityTime: 1000,
         autoHide: true,
-        onHide: () => router.replace('/'),
+        onHide: () => router.replace("/"),
       });
     } catch (error) {
       Toast.show({
-        type: 'error',
-        text1: 'Đăng nhập thất bại vui lòng kiểm tra lại thông tin đăng nhập',
-        text2: 'Đăng nhập thất bại',
-        position: 'top',
+        type: "error",
+        text1: "Đăng nhập thất bại vui lòng kiểm tra lại thông tin đăng nhập",
+        text2: "Đăng nhập thất bại",
+        position: "top",
         visibilityTime: 1000,
         autoHide: true,
-        onHide: () => router.replace('/'),
+        onHide: () => router.replace("/"),
       });
     }
   };
@@ -65,14 +74,19 @@ export default function SignIn() {
 
   return (
     <ImageBackground
-      source={{ uri: 'https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExMW1mOWU3OXh4aTAzcHVkODA4bDdsYjFvaWE1ZHJ6dGkwNXFkam91eCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/vu0OvzeHRdvHsxiiML/giphy.gif' }}
+      source={{
+        uri: "https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExMW1mOWU3OXh4aTAzcHVkODA4bDdsYjFvaWE1ZHJ6dGkwNXFkam91eCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/vu0OvzeHRdvHsxiiML/giphy.gif",
+      }}
       style={styles.container}
       resizeMode="cover"
     >
       <View style={styles.overlay}>
         <Text style={styles.title}>Đăng Nhập</Text>
         <TextInput
-          style={[styles.input, { opacity: emailOpacity, ...styles.inputFocused }]}
+          style={[
+            styles.input,
+            { opacity: emailOpacity, ...styles.inputFocused },
+          ]}
           placeholder="UserName"
           value={username}
           onChangeText={setUsername}
@@ -89,7 +103,10 @@ export default function SignIn() {
           }}
         />
         <TextInput
-          style={[styles.input, { opacity: passwordOpacity, ...styles.inputFocused }]}
+          style={[
+            styles.input,
+            { opacity: passwordOpacity, ...styles.inputFocused },
+          ]}
           placeholder="Mật khẩu"
           value={password}
           onChangeText={setPassword}
@@ -104,7 +121,9 @@ export default function SignIn() {
           }}
         />
         <Text style={[styles.forgot, styles.forgotRight]}>Quên mật khẩu ?</Text>
-        <Animated.View style={{ transform: [{ scale: scaleAnim }], width: '100%' }}>
+        <Animated.View
+          style={{ transform: [{ scale: scaleAnim }], width: "100%" }}
+        >
           <TouchableOpacity
             style={styles.buttonContainer}
             onPress={handleSignIn}
@@ -112,7 +131,7 @@ export default function SignIn() {
             onPressOut={handlePressOut}
           >
             <LinearGradient
-              colors={['#00676b', '#008489', '#009298']}
+              colors={["#00676b", "#008489", "#009298"]}
               start={[0, 0]}
               end={[1, 0]}
               style={styles.buttonGradient}
@@ -123,7 +142,11 @@ export default function SignIn() {
         </Animated.View>
         <View style={styles.registerContainer}>
           <Text style={styles.registerText}>Bạn chưa có tài khoản?</Text>
-          <TouchableOpacity onPress={() => {router.push('/sign-up')}}>
+          <TouchableOpacity
+            onPress={() => {
+              router.push("/sign-up");
+            }}
+          >
             <Text style={styles.registerButton}>Đăng ký</Text>
           </TouchableOpacity>
         </View>
@@ -138,34 +161,34 @@ const styles = StyleSheet.create({
   },
   overlay: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     padding: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
   },
   title: {
     fontSize: 32,
-    fontWeight: '900',
+    fontWeight: "900",
     marginBottom: 40,
-    color: '#fff',
+    color: "#fff",
     letterSpacing: 5,
   },
   input: {
     opacity: 0.5,
-    width: '100%',
+    width: "100%",
     padding: 15,
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     borderRadius: 50,
     marginBottom: 15,
     paddingLeft: 30,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   buttonContainer: {
     marginTop: 50,
     borderRadius: 50,
-    width: '100%',
-    shadowColor: '#fff',
+    width: "100%",
+    shadowColor: "#fff",
     shadowOffset: {
       width: 103,
       height: 100,
@@ -177,15 +200,15 @@ const styles = StyleSheet.create({
   buttonGradient: {
     paddingVertical: 15,
     borderRadius: 50,
-    alignItems: 'center',
+    alignItems: "center",
   },
   buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
+    color: "#fff",
+    fontWeight: "bold",
     fontSize: 16,
   },
   inputFocused: {
-    shadowColor: '#fff',
+    shadowColor: "#fff",
     shadowOffset: {
       width: 30,
       height: 30,
@@ -195,34 +218,34 @@ const styles = StyleSheet.create({
     elevation: 30,
   },
   forgot: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: "700",
     marginRight: 20,
   },
   forgotRight: {
-    alignSelf: 'flex-end',
+    alignSelf: "flex-end",
     marginBottom: 15,
   },
   registerContainer: {
     opacity: 0.8,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
     marginTop: 30,
   },
   registerText: {
-    color: 'black',
+    color: "black",
     fontSize: 16,
   },
   registerButton: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginLeft: 10,
-    backgroundColor: '#C50023',
-    paddingHorizontal:15,
-    paddingVertical:3,
-    borderRadius:30
+    backgroundColor: "#C50023",
+    paddingHorizontal: 15,
+    paddingVertical: 3,
+    borderRadius: 30,
   },
 });
