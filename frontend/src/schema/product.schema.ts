@@ -59,6 +59,13 @@ export const ProductSchema = z.object({
       message: "Status must be Available, Sold, Pending, or Not for Sale",
     })
     .default("Available"),
+
+  saleType: z
+    .enum(["Individual", "Batch"], {
+      required_error: "Sale type is required",
+      invalid_type_error: "Sale type must be Individual or Batch",
+    })
+    .default("Individual"),
 });
 
 // Schema for updating Product
@@ -118,6 +125,12 @@ export const UpdateProductSchema = z.object({
   status: z
     .enum(["Available", "Sold", "Pending", "Not for Sale"], {
       message: "Status must be Available, Sold, Pending, or Not for Sale",
+    })
+    .optional(),
+
+  saleType: z
+    .enum(["Individual", "Batch"], {
+      invalid_type_error: "Sale type must be Individual or Batch",
     })
     .optional(),
 });

@@ -6,43 +6,44 @@ class UserController {
       const { name, email, password } = req.body;
 
       if (!name || !email || !password) {
-        return res.status(400).json({ message: 'Name, email, and password are required' });
+        return res
+          .status(400)
+          .json({ message: 'Name, email, and password are required' });
       }
 
       const user = await userService.createUser(req.body);
       res.status(201).json(user);
     } catch (error) {
-      res.status(500).json({ message: `Error creating user: ${error.message}` });
+      res
+        .status(500)
+        .json({ message: `Error creating user: ${error.message}` });
     }
   }
 
   async getAll(req, res) {
     try {
-      const users = await userService.getUsers();
-      res.status(200).json(users);
-    } catch (error) {
-      res.status(500).json({ message: `Error fetching users: ${error.message}` });
-    }
-  }
+      const page = parseInt(req.query.page);
+      const limit = parseInt(req.query.limit);
 
-  async getPagination(req, res) {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-    try {
-      const result = await userService.getPagination(page, limit);
+      const result = await userService.getUsers(page, limit);
       res.status(200).json(result);
     } catch (error) {
-      res.status(500).json({ message: `Error fetching paginated users: ${error.message}` });
+      res.status(500).json({
+        success: false,
+        message: `Error fetching users: ${error.message}`,
+      });
     }
   }
 
   async getById(req, res) {
     try {
       const user = await userService.getUserById(req.params.id);
-      if (!user) return res.status(404).json({ message: 'User not found' });
-      res.status(200).json(user);
+      res.status(200).json(user || {});
     } catch (error) {
-      res.status(500).json({ message: `Error fetching user by ID: ${error.message}` });
+      res.status(500).json({
+        success: false,
+        message: `Error fetching user by ID: ${error.message}`,
+      });
     }
   }
 
@@ -53,7 +54,9 @@ class UserController {
         return res.status(404).json({ message: 'User not found' });
       res.status(200).json(updatedUser);
     } catch (error) {
-      res.status(500).json({ message: `Error updating user: ${error.message}` });
+      res
+        .status(500)
+        .json({ message: `Error updating user: ${error.message}` });
     }
   }
 
@@ -64,7 +67,46 @@ class UserController {
         return res.status(404).json({ message: 'User not found' });
       res.status(200).json({ message: 'User deleted successfully' });
     } catch (error) {
-      res.status(500).json({ message: `Error deleting user: ${error.message}` });
+      res
+        .status(500)
+        .json({ message: `Error deleting user: ${error.message}` });
+    }
+  }
+
+  async updateStatus(req, res) {
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
+
+      // Validate required fields
+      if (!status) {
+        return res.status(400).json({
+          success: false,
+          message: 'Status is required',
+        });
+      }
+
+      // Validate status values
+      const validStatuses = ['Active', 'Inactive', 'Banned'];
+      if (!validStatuses.includes(status)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid status. Status must be Active, Inactive, or Banned',
+        });
+      }
+
+      const result = await userService.updateStatus(id, status);
+
+      if (!result.success) {
+        return res.status(404).json(result);
+      }
+
+      res.status(200).json(result);
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: `Error updating user status: ${error.message}`,
+      });
     }
   }
 }
