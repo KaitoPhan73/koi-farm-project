@@ -22,7 +22,8 @@ interface CartContextType {
   cartItems: CartItem[];
   addToCart: (item: AddToCartParams) => Promise<void>;
   removeFromCart: (id: string) => Promise<void>;
-  updateCartItemQuantity: (id: string, quantity: number) => Promise<void>; // Add this function
+  updateCartItemQuantity: (id: string, quantity: number) => Promise<void>;
+  clearCart: () => Promise<void>; // Thêm clearCart
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -46,18 +47,13 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       let updatedCart: CartItem[];
 
       if (existingItem) {
-        // Cập nhật số lượng nếu sản phẩm đã có trong giỏ hàng
         updatedCart = cartItems.map((cartItem) =>
           cartItem._id === item._id
             ? { ...cartItem, quantity: cartItem.quantity + 1 }
             : cartItem
         );
       } else {
-        // Thêm sản phẩm mới với số lượng ban đầu là 1
-        updatedCart = [
-          ...cartItems,
-          { ...item, quantity: 1 },
-        ];
+        updatedCart = [...cartItems, { ...item, quantity: 1 }];
       }
 
       setCartItems(updatedCart);
@@ -88,9 +84,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const updateCartItemQuantity = async (id: string, quantity: number) => {
     try {
       const updatedCart = cartItems.map((cartItem) =>
-        cartItem._id === id
-          ? { ...cartItem, quantity }
-          : cartItem
+        cartItem._id === id ? { ...cartItem, quantity } : cartItem
       );
 
       setCartItems(updatedCart);
@@ -104,8 +98,23 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const clearCart = async () => {
+    try {
+      setCartItems([]); // Xóa toàn bộ sản phẩm khỏi state
+      await AsyncStorage.removeItem('cart'); // Xóa giỏ hàng khỏi AsyncStorage
+      Toast.show({
+        type: 'success',
+        text1: 'Cart cleared successfully',
+      });
+    } catch (error) {
+      console.error('Failed to clear cart', error);
+    }
+  };
+
   return (
-    <CartContext.Provider value={{ cartItems, addToCart, removeFromCart, updateCartItemQuantity }}>
+    <CartContext.Provider
+      value={{ cartItems, addToCart, removeFromCart, updateCartItemQuantity, clearCart }} // Thêm clearCart vào provider
+    >
       {children}
     </CartContext.Provider>
   );

@@ -1,77 +1,14 @@
-// routes/OrderItemRoutes.js
-const express = require("express");
-const OrderItemController = require("../controllers/OrderItemController");
-
+// routes/orderItemRoutes.js
+const express = require('express');
 const router = express.Router();
+const orderItemController = require('../controllers/orderItemController');
 
 /**
  * @swagger
- *  /order-items:
- *   get:
- *     summary: Lấy danh sách tất cả các đơn hàng
- *     description: Lấy tất cả các đơn hàng từ hệ thống
- *     tags: [OrderItem]
- *     responses:
- *       200:
- *         description: Danh sách các đơn hàng
- *       500:
- *         description: Lỗi server
- */
-router.get("/", OrderItemController.getAllOrderItem);
-
-/**
- * @swagger
- * /order-items:
+ * /api/order-items:
  *   post:
- *     summary: Tạo một đơn hàng mới
- *     description: Tạo một đơn hàng mới với thông tin các sản phẩm trong giỏ hàng
- *     tags: [OrderItem]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/OrderItem'
- *     responses:
- *       201:
- *         description: Đơn hàng đã được tạo
- *       500:
- *         description: Lỗi server
- */
-router.post("/", OrderItemController.createOrder);
-
-/**
- * @swagger
- * /order-items/{id}:
- *   get:
- *     summary: Lấy thông tin đơn hàng theo ID
- *     description: Lấy chi tiết đơn hàng dựa trên ID
- *     tags: [OrderItem]
- *     parameters:
- *       - name: id
- *         in: path
- *         required: true
- *         description: ID của đơn hàng
- *     responses:
- *       200:
- *         description: Thông tin đơn hàng
- *       500:
- *         description: Lỗi server
- */
-router.get("/:id", OrderItemController.getOrder);
-
-/**
- * @swagger
- * /order-items/{id}/status:
- *   put:
- *     summary: Cập nhật trạng thái đơn hàng
- *     description: Cập nhật trạng thái của đơn hàng (Pending, Completed, Cancelled)
- *     tags: [OrderItem]
- *     parameters:
- *       - name: id
- *         in: path
- *         required: true
- *         description: ID của đơn hàng
+ *     summary: Create a new order item
+ *     tags: [OrderItems]
  *     requestBody:
  *       required: true
  *       content:
@@ -79,16 +16,138 @@ router.get("/:id", OrderItemController.getOrder);
  *           schema:
  *             type: object
  *             properties:
- *               status:
+ *               name:
  *                 type: string
- *                 enum: [Pending, Completed, Cancelled]
- *                 description: Trạng thái mới của đơn hàng
+ *               price:
+ *                 type: number
+ *               quantity:
+ *                 type: number
+ *               imageUrl:
+ *                 type: string
+ *             required:
+ *               - name
+ *               - price
+ *               - quantity
+ *               - imageUrl
+ *     responses:
+ *       201:
+ *         description: Order item created successfully
+ *       400:
+ *         description: Bad request
+ *       500:
+ *         description: Internal server error
+ */
+router.post('/', orderItemController.createOrderItem);
+
+/**
+ * @swagger
+ * /api/order-items:
+ *   get:
+ *     summary: Get all order items
+ *     tags: [OrderItems]
  *     responses:
  *       200:
- *         description: Đơn hàng đã được cập nhật trạng thái
- *       500:
- *         description: Lỗi server
+ *         description: A list of order items
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   name:
+ *                     type: string
+ *                   price:
+ *                     type: number
+ *                   quantity:
+ *                     type: number
+ *                   imageUrl:
+ *                     type: string
  */
-router.put("/:id/status", OrderItemController.updateOrderStatus);
+router.get('/', orderItemController.getAllOrderItems);
+
+/**
+ * @swagger
+ * /api/order-items/{orderItemId}:
+ *   get:
+ *     summary: Get an order item by ID
+ *     tags: [OrderItems]
+ *     parameters:
+ *       - in: path
+ *         name: orderItemId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The order item ID
+ *     responses:
+ *       200:
+ *         description: The order item
+ *       404:
+ *         description: Order item not found
+ *       500:
+ *         description: Internal server error
+ */
+router.get('/:orderItemId', orderItemController.getOrderItemById);
+
+/**
+ * @swagger
+ * /api/order-items/{orderItemId}:
+ *   put:
+ *     summary: Update an order item
+ *     tags: [OrderItems]
+ *     parameters:
+ *       - in: path
+ *         name: orderItemId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The order item ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               price:
+ *                 type: number
+ *               quantity:
+ *                 type: number
+ *               imageUrl:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Order item updated successfully
+ *       404:
+ *         description: Order item not found
+ *       500:
+ *         description: Internal server error
+ */
+router.put('/:orderItemId', orderItemController.updateOrderItem);
+
+/**
+ * @swagger
+ * /api/order-items/{orderItemId}:
+ *   delete:
+ *     summary: Delete an order item
+ *     tags: [OrderItems]
+ *     parameters:
+ *       - in: path
+ *         name: orderItemId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The order item ID
+ *     responses:
+ *       200:
+ *         description: Order item deleted
+ *       404:
+ *         description: Order item not found
+ *       500:
+ *         description: Internal server error
+ */
+router.delete('/:orderItemId', orderItemController.deleteOrderItem);
 
 module.exports = router;

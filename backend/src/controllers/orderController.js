@@ -1,78 +1,53 @@
 // controllers/orderController.js
 const orderService = require('../services/orderService');
 
-class OrderController {
-  async create(req, res) {
-    try {
-      const order = await orderService.createOrder(req.body);
-      res.status(201).json(order);
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
+// Tạo đơn hàng
+const createOrder = async (req, res) => {
+  try {
+    const { userId, items, totalAmount } = req.body;
+    const order = await orderService.createOrder(userId, items, totalAmount);
+    return res.status(201).json(order);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
   }
+};
 
-  async getAll(req, res) {
-    try {
-      const { page, limit } = req.query;
-
-      // Use the getAllOrders method from orderService
-      const ordersData = await orderService.getAllOrders(
-        parseInt(page),
-        parseInt(limit)
-      );
-
-      if (page && limit) {
-        const { orders, totalItems, totalPages } = ordersData;
-        return res.status(200).json({
-          page: parseInt(page),
-          limit: parseInt(limit),
-          totalPages,
-          totalItems,
-          items: orders,
-        });
-      } else {
-        // Return all orders if pagination is not provided
-        return res.status(200).json({ items: ordersData });
-      }
-    } catch (error) {
-      return res.status(500).json({ message: error.message });
-    }
+// Lấy tất cả đơn hàng
+const getAllOrders = async (req, res) => {
+  try {
+    const orders = await orderService.getAllOrders();
+    return res.status(200).json(orders);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
   }
+};
 
-  async getById(req, res) {
-    try {
-      const order = await orderService.getOrderById(req.params.id);
-      if (!order) return res.status(404).json({ message: 'Order not found' });
-      res.status(200).json(order);
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
+// Lấy đơn hàng theo ID
+const getOrderById = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const order = await orderService.getOrderById(orderId);
+    return res.status(200).json(order);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
   }
+};
 
-  async update(req, res) {
-    try {
-      const updatedOrder = await orderService.updateOrder(
-        req.params.id,
-        req.body
-      );
-      if (!updatedOrder)
-        return res.status(404).json({ message: 'Order not found' });
-      res.status(200).json(updatedOrder);
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
+// Cập nhật trạng thái đơn hàng
+const updateOrderStatus = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { status } = req.body;
+    const order = await orderService.updateOrderStatus(orderId, status);
+    return res.status(200).json(order);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
   }
+};
 
-  async delete(req, res) {
-    try {
-      const deletedOrder = await orderService.deleteOrder(req.params.id);
-      if (!deletedOrder)
-        return res.status(404).json({ message: 'Order not found' });
-      res.status(200).json({ message: 'Order deleted successfully' });
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
-  }
-}
-
-module.exports = new OrderController();
+module.exports = {
+  createOrder,
+  getAllOrders,
+  getOrderById,
+  updateOrderStatus,
+};
