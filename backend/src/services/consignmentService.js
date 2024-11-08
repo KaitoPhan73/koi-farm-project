@@ -1,41 +1,32 @@
-// services/consignmentService.js
 const Consignment = require('../models/Consignment');
 
 class ConsignmentService {
-  async createConsignment(data) {
-    const consignment = new Consignment(data);
-    return await consignment.save();
-  }
-
-  async getConsignments(page, limit) {
-    if (page && limit) {
-      const skip = (page - 1) * limit; // Calculate the number of items to skip
-      const consignments = await Consignment.find()
-        .skip(skip)
-        .limit(limit)
-        .sort({ createdAt: -1 }); // Optional: Sort by creation date
-
-      const totalItems = await Consignment.countDocuments(); // Total number of consignments
-      const totalPages = Math.ceil(totalItems / limit); // Calculate total pages
-
-      return { consignments, totalPages, totalItems };
+  static async createConsignment(data) {
+    try {
+      const consignment = new Consignment(data);
+      await consignment.save();
+      return consignment;
+    } catch (error) {
+      throw new Error('Error while creating consignment: ' + error.message);
     }
-
-    // If no pagination is provided, return all consignments
-    return await Consignment.find().sort({ createdAt: -1 });
   }
 
-  async getConsignmentById(id) {
-    return await Consignment.findById(id);
+  static async getAllConsignments() {
+    try {
+      return await Consignment.find(); 
+    } catch (error) {
+      throw new Error('Error while fetching consignments: ' + error.message);
+    }
   }
 
-  async updateConsignment(id, data) {
-    return await Consignment.findByIdAndUpdate(id, data, { new: true });
+  static async getConsignmentsByUser(userId) {
+    try {
+      return await Consignment.find({ user: userId }).populate('user', 'name email'); 
+    } catch (error) {
+      throw new Error('Error while fetching consignments for user: ' + error.message);
+    }
   }
-
-  async deleteConsignment(id) {
-    return await Consignment.findByIdAndDelete(id);
-  }
+  
 }
 
-module.exports = new ConsignmentService();
+module.exports = ConsignmentService;
