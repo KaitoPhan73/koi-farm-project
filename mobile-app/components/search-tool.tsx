@@ -29,7 +29,7 @@ const SearchTool = () => {
   };
 
   return (
-    <View className="p-4 flex-row items-center">
+    <View className="flex-row items-center">
       <TextInput
         placeholder="Search..."
         value={searchQuery}

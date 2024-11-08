@@ -138,6 +138,15 @@ export const productColumns: CustomColumnDef<TProductResponse>[] = [
     enableColumnFilter: false,
   },
   {
+    accessorKey: "saleType",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Sale Type" />
+    ),
+    cell: ({ row }) => <div>{row.getValue("saleType")}</div>,
+    enableSorting: false,
+    enableColumnFilter: false,
+  },
+  {
     id: "actions",
     header: "Actions",
     cell: ({ row }) => <RowAction row={row} />,

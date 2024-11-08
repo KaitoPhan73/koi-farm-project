@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { ScrollView, View } from "react-native";
+import { ScrollView } from "react-native";
 import ProductList from "@/components/products-list";
 import { TProductResponse } from "@/schema/product.schema";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -12,12 +12,12 @@ import SearchHeader from "@/components/SearchHeader";
 type SaleType = "Individual" | "Batch" | "All";
 
 export default function Product() {
-  const { category, search, saleType: urlSaleType } = useLocalSearchParams();
+  const { category, search } = useLocalSearchParams();
   const router = useRouter();
   const [products, setProducts] = useState<TProductResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalPages, setTotalPages] = useState(0);
-  const [saleType, setSaleType] = useState<SaleType>("Individual");
+  const [saleType, setSaleType] = useState<SaleType>("All");
   const limit = 6;
 
   const fetchProducts = async (page: number = 1) => {
@@ -26,11 +26,11 @@ export default function Product() {
       const params: any = {
         page,
         limit,
-        saleType: urlSaleType || "Individual",
       };
 
       if (category) params.category = category;
       if (search) params.search = search;
+      if (saleType !== "All") params.saleType = saleType;
 
       const response = await productAPI.getProducts(params);
       setProducts(response.items);
@@ -42,7 +42,7 @@ export default function Product() {
     }
   };
 
-  const handleSaleTypeSelect = (type: SaleType) => {
+  const handleSaleTypeChange = (type: SaleType) => {
     setSaleType(type);
   };
 
@@ -56,35 +56,15 @@ export default function Product() {
     }, [])
   );
 
-  useEffect(() => {
-    if (urlSaleType) {
-      setSaleType(urlSaleType as SaleType);
-    } else {
-      router.setParams({ saleType: "Individual" });
-    }
-  }, [urlSaleType]);
-
   return (
-    <View style={{ flex: 1 }}>
-      <View
-        style={{
-          zIndex: 1000,
-          elevation: 1000,
-        }}
-      >
-        <SearchHeader onSaleTypeSelect={handleSaleTypeSelect} />
-      </View>
-      <ScrollView
-        contentContainerStyle={{ paddingBottom: 20 }}
-        style={{ zIndex: 1, elevation: 1 }}
-      >
-        <CategoryList />
-        {loading ? (
-          <Loading size="large" />
-        ) : (
-          <ProductList productList={products} />
-        )}
-      </ScrollView>
-    </View>
+    <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
+      <SearchHeader onSaleTypeSelect={handleSaleTypeChange} />
+      <CategoryList />
+      {loading ? (
+        <Loading size="large" />
+      ) : (
+        <ProductList productList={products} />
+      )}
+    </ScrollView>
   );
 }

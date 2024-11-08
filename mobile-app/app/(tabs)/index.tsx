@@ -95,14 +95,14 @@ export default function HomeScreen() {
             KOI
           </Text>
         </View>
-        <View style={styles.searchContainer}>
+        {/* <View style={styles.searchContainer}>
           <TextInput
             style={styles.searchInput}
             placeholder="Tìm kiếm..."
             // value={searchQuery}
             // onChangeText={setSearchQuery}
           />
-        </View>
+        </View> */}
       </View>
       <ImageBackground source={nenbien} resizeMode="cover">
         <Text style={styles.titleProduct}>Một số sản phẩm</Text>
