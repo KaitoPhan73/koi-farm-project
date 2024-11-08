@@ -143,11 +143,7 @@ return (
 
 
         <View style={styles.profileImageContainer}>
-            <Image source={{ uri: "https://antimatter.vn/wp-content/uploads/2022/04/anh-avatar-doi-nguoi-that-sau-lung-ban-nam.jpg" }} style={styles.profileImage} />
-            <TouchableOpacity style={[styles.editIconContainer, { backgroundColor: Colors.orange }]} onPress={() => {}}>
-                <Feather name={"edit-3"} size={24} color={Colors.iconWhite} />
-            </TouchableOpacity>
-
+            <Image source={{ uri: "https://png.pngtree.com/png-vector/20190805/ourlarge/pngtree-account-avatar-user-abstract-circle-background-flat-color-icon-png-image_1650938.jpg" }} style={styles.profileImage} />
         </View>
 
         <View style={styles.nameRoleContainer}>
@@ -184,24 +180,25 @@ return (
 
             {/* New Password input */}
             <CustomInput
-                label='New Password'
-                placeholder='******'
-                icon={<Feather name={"lock"} size={24} color={Colors.iconSecondary} style={styles.icon} />}
-                value={password}
-                handleChange={setPassword}
-                secureTextEntry={true}
-            />
+                    label='New Password'
+                    placeholder='******'
+                    icon={<Feather name={"lock"} size={24} color={Colors.iconSecondary} style={styles.icon} />}
+                    value={password}
+                    handleChange={setPassword}
+                    secureTextEntry={true}
+                    type='password'
+                />
 
+                <CustomInput
+                    label='Confirm New Password'
+                    placeholder='******'
+                    icon={<Feather name={"lock"} size={24} color={Colors.iconSecondary} style={styles.icon} />}
+                    value={confirmPassword}
+                    handleChange={setConfirmPassword}
+                    secureTextEntry={true}
+                    type='password'
 
-            {/* Confirm New Password input */}
-            <CustomInput
-                label='Confirm New Password'
-                placeholder='******'
-                icon={<Feather name={"lock"} size={24} color={Colors.iconSecondary} style={styles.icon} />}
-                value={confirmPassword}
-                handleChange={setConfirmPassword}
-                secureTextEntry={true}
-            />
+                />
         </View>
 
 
