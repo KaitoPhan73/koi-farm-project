@@ -26,7 +26,7 @@ class AuthService {
 
   // Hàm đăng ký
   async register(data) {
-    const { username, fullName, email, phone, address, password } = data;
+    const { username, fullName, email, phone, address, password, role } = data;
 
     // Kiểm tra xem username có tồn tại không
     const existingUser = await User.findOne({ username });
@@ -40,7 +40,8 @@ class AuthService {
       email,
       phone,
       address,
-      password, // Mật khẩu sẽ được mã hóa bởi middleware trong schema
+      password,
+      role,
     });
 
     await newUser.save();
