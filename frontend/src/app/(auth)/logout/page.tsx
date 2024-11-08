@@ -1,15 +1,16 @@
 "use client";
 import authClient from "@/apis/client/auth";
 import { RootState } from "@/redux/store";
+import { setUser } from "@/redux/User/userSlice";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
 function LogoutLogic() {
   const router = useRouter();
   const pathname = usePathname();
   const { user } = useSelector((state: RootState) => state.user);
-
+  const dispatch = useDispatch();
   useEffect(() => {
     const controller = new AbortController();
     const signal = controller.signal;
@@ -18,6 +19,7 @@ function LogoutLogic() {
       try {
         localStorage.clear();
         sessionStorage.clear();
+        dispatch(setUser(null));
         await authClient.logoutFromNextClientToNextServer(true, signal);
         router.push(`/login?redirectFrom=${pathname}`);
       } catch (error) {
