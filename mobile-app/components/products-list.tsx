@@ -10,7 +10,7 @@ import { TProductBaseResponse } from "@/schema/productbase.schema";
 import { green } from "react-native-reanimated/lib/typescript/reanimated2/Colors";
 
 type Props = {
-  productList: TProductBaseResponse[];
+  productList: TProductResponse[];
 };
 
 const ProductList = ({ productList = [] }: Props) => {
@@ -60,7 +60,7 @@ const ProductItem = ({
   removeFromCart,
   onPress,
 }: {
-  item: TProductBaseResponse;
+  item: TProductResponse;
   isInCart: boolean;
   addToCart: (item: any) => Promise<void>;
   removeFromCart: (id: string) => Promise<void>;
@@ -88,7 +88,7 @@ const ProductItem = ({
           {item.category?.name || "Unknown Category"}
         </Text>
         <Text style={styles.itemTitle}>{item.name}</Text>
-        <Text style={styles.itemSourceName}>Price: {item.basePrice} VND</Text>
+        <Text style={styles.itemSourceName}>Price: {item.price} VND</Text>
         <Text style={styles.itemOrigin}>Origin: {item.origin} </Text>
       </View>
       <TouchableOpacity onPress={handleCartAction} style={styles.cartButton}>
