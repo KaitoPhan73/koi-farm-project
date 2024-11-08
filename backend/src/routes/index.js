@@ -10,6 +10,7 @@ const categoryRoutes = require('./categoryRoutes');
 const authRoutes = require('./authRoutes');
 const stripePaymentRoutes = require('./paymentRoutes');
 const zaloPayRoutes = require('./zaloPayRoutes');
+const { paymentHandler } = require('../config/paymentHandler');
 
 const router = express.Router();
 
@@ -23,5 +24,6 @@ router.use('/order-items', orderItemRoutes);
 router.use('/auth', authRoutes);
 router.use('/stripe', stripePaymentRoutes);
 router.use('/zalo-pay', zaloPayRoutes);
+router.post('/payment', paymentHandler);
 
 module.exports = router;

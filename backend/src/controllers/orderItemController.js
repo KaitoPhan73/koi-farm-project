@@ -1,97 +1,54 @@
-// controllers/orderItemController.js
-const orderItemService = require('../services/orderItemService');
+// controllers/OrderItemController.js
+const OrderItemService = require("../services/OrderItemService");
 
-class OrderItemController {
-  async create(req, res) {
+const OrderItemController = {
+  // Lấy tất cả đơn hàng
+  getAllOrderItem: async (req, res) => {
     try {
-      const orderItem = await orderItemService.createOrderItem(req.body);
-      res.status(201).json(orderItem);
+      const orders = await OrderItemService.getAllOrders();
+      res.status(200).json(orders);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      console.error("Error fetching all orders:", error);
+      res.status(500).json({ message: "Error fetching all orders" });
     }
-  }
+  },
 
-  async getAll(req, res) {
+  // Tạo một đơn hàng mới
+  createOrder: async (req, res) => {
     try {
-      const orderItems = await orderItemService.getOrderItems();
-      res.status(200).json(orderItems);
+      const orderData = req.body;
+      const order = await OrderItemService.createOrder(orderData);
+      res.status(201).json(order);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      console.error("Error creating order:", error);
+      res.status(500).json({ message: "Error creating order" });
     }
-  }
+  },
 
-  async getPagination(req, res) {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
+  // Lấy đơn hàng theo ID
+  getOrder: async (req, res) => {
     try {
-      const result = await orderItemService.getPagination(page, limit);
-      res.status(200).json(result);
+      const { id } = req.params;
+      const order = await OrderItemService.getOrderById(id);
+      res.status(200).json(order);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      console.error("Error fetching order:", error);
+      res.status(500).json({ message: "Error fetching order" });
     }
-  }
+  },
 
-  async getById(req, res) {
+  // Cập nhật trạng thái đơn hàng
+  updateOrderStatus: async (req, res) => {
     try {
-      const orderItem = await orderItemService.getOrderItemById(req.params.id);
-      if (!orderItem)
-        return res.status(404).json({ message: 'Order item not found' });
-      res.status(200).json(orderItem);
+      const { id } = req.params;
+      const { status } = req.body;
+      const updatedOrder = await OrderItemService.updateOrderStatus(id, status);
+      res.status(200).json(updatedOrder);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      console.error("Error updating order status:", error);
+      res.status(500).json({ message: "Error updating order status" });
     }
-  }
+  },
+};
 
-  async update(req, res) {
-    try {
-      const updatedOrderItem = await orderItemService.updateOrderItem(
-        req.params.id,
-        req.body
-      );
-      if (!updatedOrderItem)
-        return res.status(404).json({ message: 'Order item not found' });
-      res.status(200).json(updatedOrderItem);
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
-  }
-
-  async delete(req, res) {
-    try {
-      const deletedOrderItem = await orderItemService.deleteOrderItem(
-        req.params.id
-      );
-      if (!deletedOrderItem)
-        return res.status(404).json({ message: 'Order item not found' });
-      res.status(200).json({ message: 'Order item deleted successfully' });
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
-  }
-
-  async createWithConsignment(req, res) {
-    try {
-      const { orderItem: orderItemData, consignment: consignmentData } =
-        req.body;
-
-      const result = await orderItemService.createWithConsignment(
-        orderItemData,
-        consignmentData
-      );
-
-      res.status(201).json({
-        success: true,
-        message: 'OrderItem with consignment created successfully',
-        data: result,
-      });
-    } catch (error) {
-      res.status(400).json({
-        success: false,
-        message: 'Failed to create OrderItem with consignment',
-        error: error.message,
-      });
-    }
-  }
-}
-
-module.exports = new OrderItemController();
+module.exports = OrderItemController;

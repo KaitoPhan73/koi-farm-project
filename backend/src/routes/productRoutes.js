@@ -65,6 +65,10 @@ const productController = require('../controllers/productController');
  *           type: string
  *           enum: [Available, Sold, Pending, Not for Sale]
  *           description: Trạng thái sản phẩm
+ *         saleType:
+ *           type: string
+ *           enum: [Individual, Batch]
+ *           description: Kiểu bán hàng (Cá thể hoặc Lô)
  */
 
 /**
@@ -78,7 +82,37 @@ const productController = require('../controllers/productController');
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Product'
+ *             type: object
+ *             required:
+ *               - name
+ *               - category
+ *               - size
+ *               - age
+ *               - gender
+ *               - price
+ *               - saleType
+ *             properties:
+ *               name:
+ *                 type: string
+ *               category:
+ *                 type: string
+ *               breed:
+ *                 type: string
+ *               origin:
+ *                 type: string
+ *               size:
+ *                 type: string
+ *               descriptionSize:
+ *                 type: string
+ *               age:
+ *                 type: number
+ *               gender:
+ *                 type: string
+ *               price:
+ *                 type: number
+ *               saleType:
+ *                 type: string
+ *                 enum: [Individual, Batch]
  *     responses:
  *       201:
  *         description: Sản phẩm đã được tạo thành công
@@ -153,6 +187,12 @@ router.post('/', productController.create);
  *         schema:
  *           type: string
  *         description: Tìm kiếm theo tên hoặc mô tả
+ *       - in: query
+ *         name: saleType
+ *         schema:
+ *           type: string
+ *           enum: [Individual, Batch]
+ *         description: Lọc theo kiểu bán hàng (Cá thể hoặc Lô)
  *     responses:
  *       200:
  *         description: Thành công

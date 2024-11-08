@@ -8,9 +8,10 @@ import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { useCart } from "@/hooks/useCartActions";
 import { TProductBaseResponse } from "@/schema/productbase.schema";
 import { green } from "react-native-reanimated/lib/typescript/reanimated2/Colors";
+import { formatCurrency } from "@/utils/formatter";
 
 type Props = {
-  productList: TProductBaseResponse[];
+  productList: TProductResponse[];
 };
 
 const ProductList = ({ productList = [] }: Props) => {
@@ -24,7 +25,9 @@ const ProductList = ({ productList = [] }: Props) => {
     <>
       <View style={styles.container}>
         {productList.length === 0 ? (
-          <Loading size="large" />
+          <View style={styles.notFoundContainer}>
+            <Text style={styles.notFoundText}>Not Found</Text>
+          </View>
         ) : (
           displayedProductList.map((item) => (
             <View key={item._id} style={styles.itemWrapper}>
@@ -60,7 +63,7 @@ const ProductItem = ({
   removeFromCart,
   onPress,
 }: {
-  item: TProductBaseResponse;
+  item: TProductResponse;
   isInCart: boolean;
   addToCart: (item: any) => Promise<void>;
   removeFromCart: (id: string) => Promise<void>;
@@ -88,7 +91,9 @@ const ProductItem = ({
           {item.category?.name || "Unknown Category"}
         </Text>
         <Text style={styles.itemTitle}>{item.name}</Text>
-        <Text style={styles.itemSourceName}>Price: {item.basePrice} VND</Text>
+        <View style={styles.priceContainer}>
+          <Text style={styles.price}>{formatCurrency(item.price)}</Text>
+        </View>
         <Text style={styles.itemOrigin}>Origin: {item.origin} </Text>
       </View>
       <TouchableOpacity onPress={handleCartAction} style={styles.cartButton}>
@@ -162,6 +167,23 @@ const styles = StyleSheet.create({
     color: Colors.white,
     fontWeight: "bold",
     fontSize: 14,
+  },
+  priceContainer: {
+    marginBottom: 5,
+  },
+  price: {
+    fontSize: 16,
+    color: Colors.black,
+  },
+  notFoundContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 20,
+  },
+  notFoundText: {
+    fontSize: 18,
+    color: Colors.darkGrey,
+    fontWeight: "bold",
   },
 });
 

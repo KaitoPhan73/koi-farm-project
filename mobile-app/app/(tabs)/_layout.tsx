@@ -79,13 +79,18 @@ export default function TabLayout() {
             headerTitleAlign: "center",
             tabBarIcon: ({ color }) => (
               <AntDesign name="profile" size={24} color={color} />
-            ),
-            headerRight: () => (
-              <TouchableOpacity style={styles.headerLogoutButton}>
-                <AntDesign name="logout" size={20} color="orange" />
-                <Text style={styles.headerLogoutText}>Logout</Text>
-              </TouchableOpacity>
-            ),
+            )
+          }}
+        />
+        <Tabs.Screen
+          name="OrderScreen"
+          options={{
+            headerShown: true,
+            title: "Order",
+            headerTitleAlign: "center",
+            tabBarIcon: ({ color }) => (
+              <AntDesign name="profile" size={24} color={color} />
+            )
           }}
         />
       </Tabs>
