@@ -20,7 +20,7 @@ import { formatCurrency } from "@/utils/formatter";
 const ProductDetails = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { addToCart, cartItems, removeFromCart } = useCart();
-  const [product, setProduct] = useState<any>();
+  const [product, setProduct] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -29,8 +29,6 @@ const ProductDetails = () => {
     const fetchProduct = async () => {
       try {
         const response = await productAPI.getProductsById(id);
-        console.log("🚀 ~ fetchProduct ~ response:", response)
-        
         setProduct(response);
       } catch (error) {
         console.error("Error fetching product:", error);
@@ -41,6 +39,15 @@ const ProductDetails = () => {
     };
     fetchProduct();
   }, [id]);
+
+  // Return loading spinner or error message if data is not available
+  if (isLoading) {
+    return <ActivityIndicator size="large" color={Colors.tint} />;
+  }
+
+  if (error) {
+    return <Text style={styles.errorText}>{error}</Text>;
+  }
 
   const isInCart = cartItems.some((item) => item._id === id);
 
@@ -63,25 +70,6 @@ const ProductDetails = () => {
       handleAddToCart();
     }
   };
-
-  const navigateToCheckout = () => {
-    const totalPrice = cartItems.reduce(
-      (total, item) => total + item.price * item.quantity,
-      0
-    );
-    router.push({
-      pathname: "/products/checkout",
-      params: { totalPrice },
-    });
-  };
-
-  if (isLoading) {
-    return <ActivityIndicator size="large" color={Colors.tint} />;
-  }
-
-  if (error) {
-    return <Text style={styles.errorText}>{error}</Text>;
-  }
 
   return (
     <>
@@ -107,7 +95,7 @@ const ProductDetails = () => {
       <ScrollView>
         <Image source={{ uri: product?.imageUrl }} style={styles.productImg} />
         <View style={styles.contentContainer}>
-          <Text style={styles.title}>{product.name}</Text>
+          <Text style={styles.title}>{product?.name}</Text>
           <Text style={styles.infoText}>
             Category: <Text style={styles.bold}>{product?.category?.name}</Text>
           </Text>
@@ -202,7 +190,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 20,
   },
-  emptyCartText:{}
 });
 
 export default ProductDetails;

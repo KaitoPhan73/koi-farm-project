@@ -41,6 +41,9 @@ const CartModal: React.FC<CartModalProps> = ({ visible, onClose }) => {
     >
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
+          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+            <Ionicons name="close" size={30} color="black" />
+          </TouchableOpacity>
           {cartItems.length > 0 ? (
             <>
               <FlatList
@@ -93,9 +96,6 @@ const CartModal: React.FC<CartModalProps> = ({ visible, onClose }) => {
                 >
                   <Text style={styles.paymentButtonText}>Tiếp Tục</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-                  <Text style={styles.closeButtonText}>Close</Text>
-                </TouchableOpacity>
               </View>
             </>
           ) : (
@@ -107,7 +107,7 @@ const CartModal: React.FC<CartModalProps> = ({ visible, onClose }) => {
   );
 };
 
-// Styles remain the same
+// Styles remain the same, with the close button positioned at the top right corner
 const styles = StyleSheet.create({
   modalContainer: {
     flex: 1,
@@ -126,6 +126,13 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
+    position: "relative", // To position the close button
+  },
+  closeButton: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    zIndex: 1, // Ensures the close button stays on top of the content
   },
   cartItem: {
     flexDirection: "row",
@@ -159,14 +166,6 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   paymentButtonText: { color: "white", fontSize: 16 },
-  closeButton: {
-    backgroundColor: "red",
-    padding: 12,
-    alignItems: "center",
-    borderRadius: 8,
-    flex: 1,
-  },
-  closeButtonText: { color: "white", fontSize: 16 },
   emptyCartText: {
     textAlign: "center",
     fontSize: 16,

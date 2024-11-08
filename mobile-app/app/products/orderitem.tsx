@@ -1,12 +1,11 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Linking } from "react-native";
-import { useRouter } from "expo-router";
-import { RouteProp } from "@react-navigation/native";
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from "react-native";
 import { useRoute } from "@react-navigation/native";
-import axios from "axios"; // To make API calls
+import { RouteProp } from "@react-navigation/native";
+import axios from "axios";
 import Colors from "@/constants/Colors";
+import PaymentScreen from "./payment";
 
-// Type definition for the cart item
 interface CartItem {
   _id: string;
   name: string;
@@ -17,62 +16,18 @@ interface CartItem {
 
 type RouteParams = {
   params: {
-    cartItems: string; // Serialized string of cart items
+    cartItems: string;
   };
 };
 
 const OrderItemScreen: React.FC = () => {
   const route = useRoute<RouteProp<RouteParams>>();
-  const router = useRouter();
-
-  const [loading, setLoading] = useState(false); // To handle loading state
-  const [paymentUrl, setPaymentUrl] = useState<string | null>(null); // Store the payment URL
-
-  const cartItems: CartItem[] = JSON.parse(route.params.cartItems); // Parse the serialized cart items
+  const cartItems: CartItem[] = JSON.parse(route.params.cartItems);
 
   const totalAmount = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
     0
   );
-
-  const handleZaloPay = async () => {
-    try {
-      setLoading(true);
-      const orderData = {
-        cartItems: cartItems,
-        totalAmount: totalAmount,
-        status: "Pending", 
-      };
-
-      const response = await axios.post(
-        `${process.env.EXPO_PUBLIC_API_URL}/order-items`, 
-        orderData
-      );
-    } catch (error) {
-      console.error("Order initiation failed:", error);
-    } finally {
-      setLoading(false);
-    }
-    try {
-      const amount = cartItems.reduce(
-        (total, item) => total + item.price * item.quantity,
-        0
-      );
-
-      const response = await axios.post(
-        `${process.env.EXPO_PUBLIC_API_URL}payment`,
-        { amount }
-      );
-
-      if (response.data && response.data.order_url) {
-        Linking.openURL(response.data.order_url).catch((err) =>
-          console.error("Failed to open URL:", err)
-        );
-      }
-    } catch (error) {
-      console.error("Payment initiation failed:", error);
-    }
-  };
 
   return (
     <View style={styles.container}>
@@ -93,17 +48,7 @@ const OrderItemScreen: React.FC = () => {
           <Text style={styles.totalPrice}>
             Total: {totalAmount} VND
           </Text>
-          <TouchableOpacity
-            onPress={handleZaloPay} 
-            style={styles.zaloPayButton}
-            disabled={loading}
-          >
-            {loading ? (
-              <Text style={styles.buttonText}>Processing...</Text>
-            ) : (
-              <Text style={styles.buttonText}>Lưu Đơn Hàng và Thanh Toán</Text>
-            )}
-          </TouchableOpacity> 
+          <PaymentScreen totalAmount={totalAmount} cartItems={cartItems} />
         </>
       ) : (
         <Text>Your cart is empty</Text>
@@ -134,17 +79,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     marginTop: 20,
-  },
-  zaloPayButton: {
-    backgroundColor: Colors.tint,
-    paddingVertical: 12,
-    alignItems: "center",
-    borderRadius: 8,
-    marginTop: 20,
-  },
-  buttonText: {
-    color: "white",
-    fontSize: 16,
   },
 });
 
