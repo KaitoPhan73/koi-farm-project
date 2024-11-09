@@ -9,6 +9,7 @@ import {
 import Colors from "@/constants/Colors";
 import apiClient from "@/apis/apiClient";
 import { useSession } from "@/utils/ctx";
+import { useCart } from "@/hooks/useCartActions";
 
 interface PaymentProps {
   totalAmount: number;
@@ -18,17 +19,18 @@ interface PaymentProps {
     price: number;
     quantity: number;
     imageUrl: string;
-    product: string; // ID của product
+    product: string;
   }[];
 }
 
 const PaymentScreen: React.FC<PaymentProps> = ({ totalAmount, cartItems }) => {
   const [loading, setLoading] = useState(false);
   const { session } = useSession();
+  const { clearCart } = useCart();
 
   const createOrderItem = async (item: any) => {
     const orderItemData = {
-      product: item.product, // Use product ID if available, fallback to _id
+      product: item.product,
       name: item.name,
       price: item.price,
       quantity: item.quantity,
@@ -46,7 +48,7 @@ const PaymentScreen: React.FC<PaymentProps> = ({ totalAmount, cartItems }) => {
       throw error;
     }
   };
-  console.log("cart", cartItems);
+
   const handleZaloPay = async () => {
     if (!session) {
       Alert.alert("Error", "Please login to continue");
@@ -57,35 +59,33 @@ const PaymentScreen: React.FC<PaymentProps> = ({ totalAmount, cartItems }) => {
       setLoading(true);
       const userData = JSON.parse(session);
 
-      // Create all order items concurrently
       const orderItemPromises = cartItems.map((item) => createOrderItem(item));
       const createdOrderItems = await Promise.all(orderItemPromises);
 
-      // Create order with the created items
       const orderData = {
         userId: userData.user._id,
-        items: createdOrderItems.map((item) => item._id), // Assuming the API returns created items with _id
+        items: createdOrderItems.map((item) => item._id),
         totalAmount,
         status: "Pending",
       };
 
-      // Create order
       const orderResponse = await apiClient.post(
         `${process.env.EXPO_PUBLIC_API_URL}orders`,
         orderData
       );
 
-      // Process ZaloPay payment
       const paymentResponse = await apiClient.post(
         `${process.env.EXPO_PUBLIC_API_URL}payment`,
         {
           amount: totalAmount,
-          orderId: orderResponse.data._id, // Pass orderId to payment
+          orderId: orderResponse.data._id,
         }
       );
 
       if (paymentResponse.data?.order_url) {
         await Linking.openURL(paymentResponse.data.order_url);
+        await clearCart();
+        Alert.alert("Success", "Order placed successfully!");
       } else {
         throw new Error("Payment URL not received");
       }

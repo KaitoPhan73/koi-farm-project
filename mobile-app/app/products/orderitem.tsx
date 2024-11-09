@@ -20,6 +20,7 @@ interface CartItem {
   price: number;
   quantity: number;
   imageUrl: string;
+  product: string;
 }
 
 type RouteParams = {
@@ -30,11 +31,41 @@ type RouteParams = {
 
 const OrderItemScreen: React.FC = () => {
   const route = useRoute<RouteProp<RouteParams>>();
-  const cartItems: CartItem[] = JSON.parse(route.params.cartItems);
+  const cartItems: CartItem[] = JSON.parse(route.params.cartItems).map(
+    (item: any) => ({
+      _id: item._id,
+      name: item.name,
+      price: item.price,
+      quantity: item.quantity,
+      imageUrl: item.imageUrl,
+      product: item.product,
+    })
+  );
 
   const totalAmount = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
     0
+  );
+
+  const renderItem = ({ item }: { item: CartItem }) => (
+    <View style={styles.cartItem}>
+      <View style={styles.itemInfo}>
+        <Text
+          style={styles.cartItemText}
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
+          {item.name}
+        </Text>
+        <Text style={styles.quantityText}>Quantity: {item.quantity}</Text>
+      </View>
+      <View style={styles.priceContainer}>
+        <Text style={styles.itemPrice}>{formatCurrency(item.price)}</Text>
+        <Text style={styles.cartItemPrice}>
+          {formatCurrency(item.price * item.quantity)}
+        </Text>
+      </View>
+    </View>
   );
 
   return (
@@ -52,20 +83,7 @@ const OrderItemScreen: React.FC = () => {
             data={cartItems}
             scrollEnabled={true}
             keyExtractor={(item) => item._id}
-            renderItem={({ item }) => (
-              <View style={styles.cartItem}>
-                <Text
-                  style={styles.cartItemText}
-                  numberOfLines={1}
-                  ellipsizeMode="tail"
-                >
-                  {item.name} x {item.quantity}
-                </Text>
-                <Text style={styles.cartItemPrice}>
-                  {formatCurrency(item.price * item.quantity)}
-                </Text>
-              </View>
-            )}
+            renderItem={renderItem}
           />
         </View>
 
@@ -107,14 +125,32 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: 12,
+    padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: "#eee",
+    backgroundColor: "#fff",
+  },
+  itemInfo: {
+    flex: 1,
+    marginRight: 16,
   },
   cartItemText: {
     fontSize: 16,
-    flex: 1,
-    marginRight: 10,
+    fontWeight: "500",
+    marginBottom: 4,
+  },
+  quantityText: {
+    fontSize: 14,
+    color: "#666",
+  },
+  priceContainer: {
+    alignItems: "flex-end",
+  },
+  itemPrice: {
+    fontSize: 14,
+    color: "#666",
+    textDecorationLine: "line-through",
+    marginBottom: 4,
   },
   cartItemPrice: {
     fontSize: 16,
@@ -124,7 +160,7 @@ const styles = StyleSheet.create({
   totalPrice: {
     fontSize: 18,
     fontWeight: "bold",
-    marginBottom: 10,
+    marginBottom: 16,
     textAlign: "right",
     color: Colors.primary,
   },

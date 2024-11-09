@@ -60,6 +60,7 @@ const ProductDetails = () => {
         price: product?.price,
         imageUrl: product?.imageUrl,
         quantity: 1,
+        product: product?._id,
       });
     }
   };
