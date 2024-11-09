@@ -140,4 +140,40 @@ router.get('/:orderId', orderController.getOrderById);
  */
 router.put('/:orderId/status', orderController.updateOrderStatus);
 
+/**
+ * @swagger
+ * /orders/user/{userId}:
+ *   get:
+ *     summary: Get orders by user ID
+ *     tags: [Orders]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the user
+ *     responses:
+ *       200:
+ *         description: List of orders for the user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 items:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Order'
+ *                 totalOrders:
+ *                   type: number
+ *                   example: 5
+ *       500:
+ *         description: Server error
+ */
+router.get('/user/:userId', orderController.getOrdersByUserId);
+
 module.exports = router;

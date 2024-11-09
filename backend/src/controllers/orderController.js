@@ -45,9 +45,24 @@ const updateOrderStatus = async (req, res) => {
   }
 };
 
+// Lấy đơn hàng theo userId
+const getOrdersByUserId = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const result = await orderService.getOrdersByUserId(userId);
+    return res.status(200).json(result);
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   createOrder,
   getAllOrders,
   getOrderById,
   updateOrderStatus,
+  getOrdersByUserId,
 };

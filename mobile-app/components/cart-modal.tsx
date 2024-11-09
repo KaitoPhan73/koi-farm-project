@@ -13,6 +13,7 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 import { useCart } from "@/hooks/useCartActions";
 import { useNavigation } from "@react-navigation/native";
 import { router } from "expo-router";
+import { formatCurrency } from "@/utils/formatter";
 
 interface CartModalProps {
   visible: boolean;
@@ -55,8 +56,16 @@ const CartModal: React.FC<CartModalProps> = ({ visible, onClose }) => {
                       source={{ uri: item.imageUrl }}
                       style={styles.cartItemImage}
                     />
-                    <Text style={styles.cartItemText}>{item.name}</Text>
-                    <Text style={styles.cartItemPrice}>{item.price} VND</Text>
+                    <Text
+                      style={styles.cartItemText}
+                      numberOfLines={1}
+                      ellipsizeMode="tail"
+                    >
+                      {item.name}
+                    </Text>
+                    <Text style={styles.cartItemPrice}>
+                      {formatCurrency(item.price)}
+                    </Text>
                     <View style={styles.cartItemActions}>
                       <TouchableOpacity
                         onPress={() =>
@@ -65,10 +74,15 @@ const CartModal: React.FC<CartModalProps> = ({ visible, onClose }) => {
                       >
                         <Ionicons name="add-circle" size={20} color="green" />
                       </TouchableOpacity>
+                      <Text style={styles.quantityText}>{item.quantity}</Text>
                       <TouchableOpacity
-                        onPress={() =>
-                          updateCartItemQuantity(item._id, item.quantity - 1)
-                        }
+                        onPress={() => {
+                          if (item.quantity <= 1) {
+                            removeFromCart(item._id);
+                          } else {
+                            updateCartItemQuantity(item._id, item.quantity - 1);
+                          }
+                        }}
                       >
                         <Ionicons name="remove-circle" size={20} color="red" />
                       </TouchableOpacity>
@@ -83,23 +97,24 @@ const CartModal: React.FC<CartModalProps> = ({ visible, onClose }) => {
               />
               <Text style={styles.totalPrice}>
                 Total:{" "}
-                {cartItems.reduce(
-                  (total, item) => total + item.price * item.quantity,
-                  0
-                )}{" "}
-                VND
+                {formatCurrency(
+                  cartItems.reduce(
+                    (total, item) => total + item.price * item.quantity,
+                    0
+                  )
+                )}
               </Text>
               <View style={styles.buttonsContainer}>
                 <TouchableOpacity
                   onPress={navigateToOrderItem}
                   style={styles.paymentButton}
                 >
-                  <Text style={styles.paymentButtonText}>Tiếp Tục</Text>
+                  <Text style={styles.paymentButtonText}>Continue</Text>
                 </TouchableOpacity>
               </View>
             </>
           ) : (
-            <Text style={styles.emptyCartText}>Your cart is empty.</Text>
+            <Text style={styles.emptyCartText}>Your cart is empty</Text>
           )}
         </View>
       </View>
@@ -148,7 +163,11 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginRight: 10,
   },
-  cartItemText: { fontSize: 16 },
+  cartItemText: {
+    fontSize: 16,
+    maxWidth: 120, // Limit width for truncation
+    flexShrink: 1,
+  },
   cartItemPrice: { fontSize: 16 },
   cartItemActions: { flexDirection: "row", alignItems: "center" },
   totalPrice: { fontSize: 18, fontWeight: "bold", marginTop: 10 },
@@ -170,6 +189,11 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 16,
     color: "gray",
+  },
+  quantityText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginHorizontal: 8,
   },
 });
 
