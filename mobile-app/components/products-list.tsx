@@ -79,6 +79,7 @@ const ProductItem = ({
         price: item.price,
         imageUrl: item.imageUrl || "",
         quantity: 1,
+        product: item._id,
       });
     }
   };

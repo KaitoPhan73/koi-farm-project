@@ -15,6 +15,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
+import { TOrderItemResponse } from "@/schema/order-item.schema";
 
 export const orderColumns: CustomColumnDef<TOrderResponse>[] = [
   {
@@ -22,11 +23,14 @@ export const orderColumns: CustomColumnDef<TOrderResponse>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="User ID" />
     ),
-    cell: ({ row }) => (
-      <div className="w-36 truncate" title={row.getValue("user")}>
-        {row.getValue("user") || "N/A"}
-      </div>
-    ),
+    cell: ({ row }) => {
+      const user = row.getValue("user") as { username: string; email: string };
+      return (
+        <div className="w-36 truncate" title={user?.username || user?.email}>
+          {user?.username || user?.email || "N/A"}
+        </div>
+      );
+    },
     enableSorting: false,
     enableColumnFilter: false,
   },
@@ -37,7 +41,7 @@ export const orderColumns: CustomColumnDef<TOrderResponse>[] = [
     ),
     cell: ({ row }) => {
       const [open, setOpen] = React.useState(false);
-      const items = row.getValue("items") as string[];
+      const items = row.getValue("items") as any[];
 
       return (
         <>
@@ -48,12 +52,22 @@ export const orderColumns: CustomColumnDef<TOrderResponse>[] = [
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Order Items</DialogTitle>
+                <DialogTitle>Order Details</DialogTitle>
               </DialogHeader>
               <div className="space-y-2">
                 {items?.map((item, index) => (
-                  <div key={index} className="p-2 border rounded-md">
-                    {item}
+                  <div
+                    key={index}
+                    className="flex justify-between items-center p-3 border rounded-md"
+                  >
+                    <div className="font-medium">{item.name}</div>
+                    <div className="text-muted-foreground">
+                      {new Intl.NumberFormat("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      }).format(item.price)}{" "}
+                      x {item.quantity}
+                    </div>
                   </div>
                 ))}
               </div>

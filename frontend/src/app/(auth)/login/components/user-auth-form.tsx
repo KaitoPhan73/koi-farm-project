@@ -25,7 +25,6 @@ import { useDispatch } from "react-redux";
 import { setUser } from "@/redux/User/userSlice";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
-
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const dispatch = useDispatch();

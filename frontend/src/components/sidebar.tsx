@@ -56,9 +56,9 @@ export function Sidebar() {
       ...(user?.role === "Manager"
         ? [
             {
-              href: "/manage/reports",
+              href: "/manage/consignments",
               icon: Megaphone,
-              label: "Report",
+              label: "Consignment",
             },
             {
               href: "/manage/users",

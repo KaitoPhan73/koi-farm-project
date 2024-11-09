@@ -37,4 +37,20 @@ const deleteOrder = async (id: string): Promise<void> => {
   await httpBag.delete(`/orders/${id}`);
 };
 
-export { getAllOrders, getOrderById, createOrder, updateOrder, deleteOrder };
+// Update Order Status
+const updateOrderStatus = async (id?: string, status?: string) => {
+  const response = await httpBag.put<TOrderResponse>(`/orders/${id}/status`, {
+    status,
+  });
+  revalidateTag("orders"); // Optional: If you're using Next.js cache tags
+  return response;
+};
+
+export {
+  getAllOrders,
+  getOrderById,
+  createOrder,
+  updateOrder,
+  deleteOrder,
+  updateOrderStatus,
+};

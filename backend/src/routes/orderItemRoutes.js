@@ -16,6 +16,9 @@ const orderItemController = require('../controllers/orderItemController');
  *           schema:
  *             type: object
  *             properties:
+ *               product:
+ *                 type: string
+ *                 description: Product ID
  *               name:
  *                 type: string
  *               price:
@@ -25,15 +28,46 @@ const orderItemController = require('../controllers/orderItemController');
  *               imageUrl:
  *                 type: string
  *             required:
+ *               - product
  *               - name
  *               - price
  *               - quantity
- *               - imageUrl
  *     responses:
  *       201:
  *         description: Order item created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                     product:
+ *                       type: object
+ *                       properties:
+ *                         _id:
+ *                           type: string
+ *                         name:
+ *                           type: string
+ *                         stock:
+ *                           type: number
+ *                         status:
+ *                           type: string
+ *                     name:
+ *                       type: string
+ *                     price:
+ *                       type: number
+ *                     quantity:
+ *                       type: number
+ *                     imageUrl:
+ *                       type: string
  *       400:
- *         description: Bad request
+ *         description: Bad request - Insufficient stock or Invalid product
  *       500:
  *         description: Internal server error
  */
@@ -55,6 +89,19 @@ router.post('/', orderItemController.createOrderItem);
  *               items:
  *                 type: object
  *                 properties:
+ *                   _id:
+ *                     type: string
+ *                   product:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                       name:
+ *                         type: string
+ *                       stock:
+ *                         type: number
+ *                       status:
+ *                         type: string
  *                   name:
  *                     type: string
  *                   price:
@@ -82,10 +129,34 @@ router.get('/', orderItemController.getAllOrderItems);
  *     responses:
  *       200:
  *         description: The order item
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                 product:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                     name:
+ *                       type: string
+ *                     stock:
+ *                       type: number
+ *                     status:
+ *                       type: string
+ *                 name:
+ *                   type: string
+ *                 price:
+ *                   type: number
+ *                 quantity:
+ *                   type: number
+ *                 imageUrl:
+ *                   type: string
  *       404:
  *         description: Order item not found
- *       500:
- *         description: Internal server error
  */
 router.get('/:orderItemId', orderItemController.getOrderItemById);
 
@@ -109,21 +180,16 @@ router.get('/:orderItemId', orderItemController.getOrderItemById);
  *           schema:
  *             type: object
  *             properties:
- *               name:
- *                 type: string
- *               price:
- *                 type: number
  *               quantity:
  *                 type: number
- *               imageUrl:
- *                 type: string
+ *                 description: New quantity (will update product stock accordingly)
  *     responses:
  *       200:
  *         description: Order item updated successfully
+ *       400:
+ *         description: Bad request - Insufficient stock
  *       404:
  *         description: Order item not found
- *       500:
- *         description: Internal server error
  */
 router.put('/:orderItemId', orderItemController.updateOrderItem);
 
@@ -142,11 +208,9 @@ router.put('/:orderItemId', orderItemController.updateOrderItem);
  *         description: The order item ID
  *     responses:
  *       200:
- *         description: Order item deleted
+ *         description: Order item deleted successfully
  *       404:
  *         description: Order item not found
- *       500:
- *         description: Internal server error
  */
 router.delete('/:orderItemId', orderItemController.deleteOrderItem);
 

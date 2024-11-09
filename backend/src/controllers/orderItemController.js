@@ -4,8 +4,14 @@ const orderItemService = require('../services/orderItemService');
 // Tạo OrderItem mới
 const createOrderItem = async (req, res) => {
   try {
-    const { name, price, quantity, imageUrl } = req.body;
-    const orderItem = await orderItemService.createOrderItem(name, price, quantity, imageUrl);
+    const { name, price, quantity, imageUrl, product } = req.body;
+    const orderItem = await orderItemService.createOrderItem(
+      name,
+      price,
+      quantity,
+      imageUrl,
+      product
+    );
     return res.status(201).json(orderItem);
   } catch (error) {
     return res.status(500).json({ message: error.message });
@@ -38,7 +44,10 @@ const updateOrderItem = async (req, res) => {
   try {
     const { orderItemId } = req.params;
     const updates = req.body;
-    const orderItem = await orderItemService.updateOrderItem(orderItemId, updates);
+    const orderItem = await orderItemService.updateOrderItem(
+      orderItemId,
+      updates
+    );
     return res.status(200).json(orderItem);
   } catch (error) {
     return res.status(500).json({ message: error.message });

@@ -1,6 +1,12 @@
-import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import Toast from 'react-native-toast-message';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useEffect,
+} from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Toast from "react-native-toast-message";
 
 interface CartItem {
   _id: string;
@@ -8,6 +14,7 @@ interface CartItem {
   price: number;
   imageUrl: string | undefined;
   quantity: number;
+  product: string;
 }
 
 interface AddToCartParams {
@@ -16,6 +23,7 @@ interface AddToCartParams {
   price: number;
   imageUrl: string | undefined;
   quantity: number;
+  product: string;
 }
 
 interface CartContextType {
@@ -23,7 +31,7 @@ interface CartContextType {
   addToCart: (item: AddToCartParams) => Promise<void>;
   removeFromCart: (id: string) => Promise<void>;
   updateCartItemQuantity: (id: string, quantity: number) => Promise<void>;
-  clearCart: () => Promise<void>; // Thêm clearCart
+  clearCart: () => Promise<void>;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -33,7 +41,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const loadCart = async () => {
-      const savedCart = await AsyncStorage.getItem('cart');
+      const savedCart = await AsyncStorage.getItem("cart");
       if (savedCart) {
         setCartItems(JSON.parse(savedCart));
       }
@@ -42,8 +50,14 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const addToCart = async (item: AddToCartParams) => {
+    console.log("item", item);
     try {
-      const existingItem = cartItems.find((cartItem) => cartItem._id === item._id);
+      if (!item.product) {
+        throw new Error("Product ID is required");
+      }
+      const existingItem = cartItems.find(
+        (cartItem) => cartItem._id === item._id
+      );
       let updatedCart: CartItem[];
 
       if (existingItem) {
@@ -53,17 +67,20 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             : cartItem
         );
       } else {
-        updatedCart = [...cartItems, { ...item, quantity: 1 }];
+        updatedCart = [
+          ...cartItems,
+          { ...item, quantity: 1, product: item.product },
+        ];
       }
-
+      console.log("updatedCart", updatedCart);
       setCartItems(updatedCart);
-      await AsyncStorage.setItem('cart', JSON.stringify(updatedCart));
+      await AsyncStorage.setItem("cart", JSON.stringify(updatedCart));
       Toast.show({
-        type: 'success',
-        text1: 'Added to cart successfully',
+        type: "success",
+        text1: "Added to cart successfully",
       });
     } catch (error) {
-      console.error('Failed to add item to cart', error);
+      console.error("Failed to add item to cart", error);
     }
   };
 
@@ -71,13 +88,13 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     try {
       const updatedCart = cartItems.filter((item) => item._id !== id);
       setCartItems(updatedCart);
-      await AsyncStorage.setItem('cart', JSON.stringify(updatedCart));
+      await AsyncStorage.setItem("cart", JSON.stringify(updatedCart));
       Toast.show({
-        type: 'success',
-        text1: 'Removed from cart',
+        type: "success",
+        text1: "Removed from cart",
       });
     } catch (error) {
-      console.error('Failed to remove item from cart', error);
+      console.error("Failed to remove item from cart", error);
     }
   };
 
@@ -88,32 +105,38 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       );
 
       setCartItems(updatedCart);
-      await AsyncStorage.setItem('cart', JSON.stringify(updatedCart));
+      await AsyncStorage.setItem("cart", JSON.stringify(updatedCart));
       Toast.show({
-        type: 'success',
-        text1: 'Cart item updated successfully',
+        type: "success",
+        text1: "Cart item updated successfully",
       });
     } catch (error) {
-      console.error('Failed to update cart item quantity', error);
+      console.error("Failed to update cart item quantity", error);
     }
   };
 
   const clearCart = async () => {
     try {
-      setCartItems([]); // Xóa toàn bộ sản phẩm khỏi state
-      await AsyncStorage.removeItem('cart'); // Xóa giỏ hàng khỏi AsyncStorage
+      setCartItems([]); // Clear all items from state
+      await AsyncStorage.removeItem("cart"); // Remove cart from AsyncStorage
       Toast.show({
-        type: 'success',
-        text1: 'Cart cleared successfully',
+        type: "success",
+        text1: "Cart cleared successfully",
       });
     } catch (error) {
-      console.error('Failed to clear cart', error);
+      console.error("Failed to clear cart", error);
     }
   };
 
   return (
     <CartContext.Provider
-      value={{ cartItems, addToCart, removeFromCart, updateCartItemQuantity, clearCart }} // Thêm clearCart vào provider
+      value={{
+        cartItems,
+        addToCart,
+        removeFromCart,
+        updateCartItemQuantity,
+        clearCart,
+      }}
     >
       {children}
     </CartContext.Provider>
@@ -123,7 +146,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 export const useCart = () => {
   const context = useContext(CartContext);
   if (!context) {
-    throw new Error('useCart must be used within a CartProvider');
+    throw new Error("useCart must be used within a CartProvider");
   }
   return context;
 };
