@@ -29,7 +29,7 @@ const ProductDetails = () => {
     const fetchProduct = async () => {
       try {
         const response = await productAPI.getProductsById(id);
-
+        console.log("SSSSSSSSSSSSSSSSSSSSSSSS", response);
         setProduct(response);
       } catch (error) {
         console.error("Error fetching product:", error);
@@ -51,7 +51,7 @@ const ProductDetails = () => {
   }
 
   const isInCart = cartItems.some((item) => item._id === id);
-  console.log(product?.data?.imageUrl, "product?.data?.imageUrl")
+  console.log(product?.imageUrl, "product?.imageUrl");
   const handleAddToCart = async () => {
     if (product) {
       await addToCart({
@@ -63,7 +63,7 @@ const ProductDetails = () => {
       });
     }
   };
-  console.log("product", product)
+  console.log("product", product);
   const toggleCart = () => {
     if (isInCart) {
       removeFromCart(product._id);
@@ -94,39 +94,39 @@ const ProductDetails = () => {
         }}
       />
       <ScrollView>
-        <Image source={{ uri: product?.data?.imageUrl }} style={styles.productImg} />
+        <Image source={{ uri: product?.imageUrl }} style={styles.productImg} />
         <View style={styles.contentContainer}>
-          <Text style={styles.title}>{product?.data?.name}</Text>
+          <Text style={styles.title}>{product?.name}</Text>
           <Text style={styles.infoText}>
-            Category: <Text style={styles.bold}>{product?.data?.category}</Text>
+            Category: <Text style={styles.bold}>{product?.category.name}</Text>
           </Text>
           <Text style={styles.infoText}>
-            Breed: <Text style={styles.bold}>{product?.data?.breed}</Text>
+            Breed: <Text style={styles.bold}>{product?.breed}</Text>
           </Text>
           <Text style={styles.infoText}>
-            Origin: <Text style={styles.bold}>{product?.data?.origin}</Text>
+            Origin: <Text style={styles.bold}>{product?.origin}</Text>
           </Text>
           <Text style={styles.infoText}>
-            Size: <Text style={styles.bold}>{product?.data?.descriptionSize}</Text>
+            Size: <Text style={styles.bold}>{product?.descriptionSize}</Text>
           </Text>
           <Text style={styles.infoText}>
-            Age: <Text style={styles.bold}>{product?.data?.age} years</Text>
+            Age: <Text style={styles.bold}>{product?.age} years</Text>
           </Text>
           <Text style={styles.infoText}>
-            Gender: <Text style={styles.bold}>{product?.data?.gender}</Text>
+            Gender: <Text style={styles.bold}>{product?.gender}</Text>
           </Text>
           <Text style={styles.infoText}>
-            Personality: <Text style={styles.bold}>{product?.data?.personality}</Text>
+            Personality: <Text style={styles.bold}>{product?.personality}</Text>
           </Text>
           <Text style={styles.infoText}>
             Price:{" "}
-            <Text style={styles.bold}>{formatCurrency(product?.data?.price)}</Text>
+            <Text style={styles.bold}>{formatCurrency(product?.price)}</Text>
           </Text>
           <Text style={styles.infoText}>
-            Stock: <Text style={styles.bold}>{product?.data?.stock} available</Text>
+            Stock: <Text style={styles.bold}>{product?.stock} available</Text>
           </Text>
           <Text style={styles.infoText}>
-            Sale Type: <Text style={styles.bold}>{product?.data?.saleType}</Text>
+            Sale Type: <Text style={styles.bold}>{product?.saleType}</Text>
           </Text>
           {product?.consignment?.isConsignment && (
             <Text style={styles.infoText}>
@@ -210,6 +210,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
-
 
 export default ProductDetails;

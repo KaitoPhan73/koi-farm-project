@@ -28,13 +28,13 @@ const OrderIndex = <TData, TValue>({
       <div className="flex h-full flex-1 flex-col">
         <div className="flex items-center justify-between">
           <p className="text-3xl">Order Management</p>
-          <Button
+          {/* <Button
             variant="default"
             className="mb-3"
             onClick={() => router.push("/admin/orders/create")}
           >
             Create Order
-          </Button>
+          </Button> */}
         </div>
         <DataTable
           payload={{

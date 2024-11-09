@@ -25,7 +25,7 @@ export function middleware(request: NextRequest) {
   // Redirect to appropriate dashboard if logged in and trying to access auth paths
   if (accessToken && authPaths.some((path) => pathname.startsWith(path))) {
     if (user?.role === "Manager") {
-      return NextResponse.redirect(new URL("/admin/reports", request.url));
+      return NextResponse.redirect(new URL("/manage/reports", request.url));
     }
     if (user?.role === "Staff") {
       return NextResponse.redirect(new URL("/manage/products", request.url));

@@ -58,7 +58,7 @@ const HomeScreen: React.FC = () => {
 
   const handleSubmit = async () => {
     if (!selectedType || (selectedType === "type2" && !selectedMethod)) {
-      alert("Vui lòng chọn đầy đủ thông tin về loại và hình thức kí gửi.");
+      alert("Please provide both the type and method of consignment.");
       return;
     }
 
@@ -76,10 +76,12 @@ const HomeScreen: React.FC = () => {
         fullData
       );
 
-      alert("Đăng ký đã được gửi thành công!");
+      alert("Registration submitted successfully!");
     } catch (error) {
-      console.error("Lỗi khi gửi dữ liệu:", error);
-      alert("Đã xảy ra lỗi khi gửi đăng ký. Vui lòng thử lại!");
+      console.error("Error sending data:", error);
+      alert(
+        "An error occurred while submitting the registration. Please try again!"
+      );
     }
   };
 
@@ -90,10 +92,10 @@ const HomeScreen: React.FC = () => {
         contentContainerStyle={styles.contentContainer}
       >
         <View style={styles.formContainer}>
-          <Text style={styles.headerText}>Kí Gửi Cá Koi</Text>
+          <Text style={styles.headerText}>Koi Fish Consignment</Text>
 
           <TextInput
-            placeholder="Họ và tên"
+            placeholder="Full Name"
             style={styles.input}
             onChangeText={(text) => handleInputChange("name", text)}
           />
@@ -107,7 +109,7 @@ const HomeScreen: React.FC = () => {
           />
 
           <TextInput
-            placeholder="Số điện thoại"
+            placeholder="Phone Number"
             keyboardType="number-pad"
             style={styles.input}
             onChangeText={(text) =>
@@ -116,13 +118,13 @@ const HomeScreen: React.FC = () => {
           />
 
           <TextInput
-            placeholder="Địa chỉ"
+            placeholder="Address"
             style={styles.input}
             onChangeText={(text) => handleInputChange("address", text)}
           />
 
           <View style={styles.pickerContainer}>
-            <Text style={styles.pickerLabel}>Chọn thể loại kí gửi</Text>
+            <Text style={styles.pickerLabel}>Select Consignment Type</Text>
             <Picker
               selectedValue={selectedType}
               onValueChange={(itemValue) => {
@@ -130,18 +132,15 @@ const HomeScreen: React.FC = () => {
                 setIsTypeSelected(true);
               }}
             >
-              <Picker.Item label="Chọn thể loại" value="" />
-              <Picker.Item label="Thực hiện chăm sóc" value="type1" />
-              <Picker.Item
-                label="Thực hiện gửi cho trang trại bán"
-                value="type2"
-              />
+              <Picker.Item label="Choose Type" value="" />
+              <Picker.Item label="Care Service" value="type1" />
+              <Picker.Item label="Farm Sale Consignment" value="type2" />
             </Picker>
           </View>
 
           {isTypeSelected && selectedType === "type2" && (
             <>
-              <Text style={styles.pickerLabel}>Chọn hình thức kí gửi</Text>
+              <Text style={styles.pickerLabel}>Select Consignment Method</Text>
               <View style={styles.radioGroup}>
                 <View style={styles.radioItem}>
                   <RadioButton
@@ -151,7 +150,7 @@ const HomeScreen: React.FC = () => {
                     }
                     onPress={() => setSelectedMethod("offline")}
                   />
-                  <Text>Offline (Khách nuôi thông thường)</Text>
+                  <Text>Offline (Regular Customer)</Text>
                 </View>
                 <View style={styles.radioItem}>
                   <RadioButton
@@ -161,7 +160,7 @@ const HomeScreen: React.FC = () => {
                     }
                     onPress={() => setSelectedMethod("online")}
                   />
-                  <Text>Online (Khách nuôi để kinh doanh)</Text>
+                  <Text>Online (Business Customer)</Text>
                 </View>
               </View>
             </>
@@ -169,24 +168,24 @@ const HomeScreen: React.FC = () => {
 
           {isTypeSelected && (
             <Text style={styles.selectedTypeText}>
-              Bạn đã chọn:{" "}
+              Selected:{" "}
               {selectedType === "type1"
-                ? "Thực hiện chăm sóc"
-                : "Thực hiện gửi cho trang trại bán"}
+                ? "Care Service"
+                : "Farm Sale Consignment"}
               {selectedType === "type2" && selectedMethod && (
                 <Text>
                   {" "}
-                  - Hình thức:{" "}
+                  - Method:{" "}
                   {selectedMethod === "offline"
-                    ? "Offline (Khách nuôi thông thường)"
-                    : "Online (Khách nuôi để kinh doanh)"}
+                    ? "Offline (Regular Customer)"
+                    : "Online (Business Customer)"}
                 </Text>
               )}
             </Text>
           )}
 
           <TextInput
-            placeholder="Mô tả các cá muốn kí gửi"
+            placeholder="Describe your koi fish for consignment"
             multiline
             numberOfLines={5}
             autoCapitalize="sentences"
@@ -200,7 +199,7 @@ const HomeScreen: React.FC = () => {
             style={styles.submitButton}
             onPress={handleSubmit}
           >
-            Gửi Đăng Ký
+            Submit Registration
           </Button>
         </View>
       </ScrollView>

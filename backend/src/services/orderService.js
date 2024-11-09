@@ -71,9 +71,28 @@ const updateOrderStatus = async (orderId, status) => {
   }
 };
 
+// Lấy danh sách đơn hàng theo userId
+const getOrdersByUserId = async (userId) => {
+  try {
+    const orders = await Order.find({ user: userId })
+      .populate('user', '-password') // Loại bỏ password khi populate user
+      .populate('items')
+      .sort({ createdAt: -1 }); // Sắp xếp theo thời gian tạo mới nhất
+
+    return {
+      success: true,
+      items: orders,
+      totalOrders: orders.length,
+    };
+  } catch (error) {
+    throw new Error(`Error fetching orders by user ID: ${error.message}`);
+  }
+};
+
 module.exports = {
   createOrder,
   getAllOrders,
   getOrderById,
   updateOrderStatus,
+  getOrdersByUserId, // Export thêm method mới
 };

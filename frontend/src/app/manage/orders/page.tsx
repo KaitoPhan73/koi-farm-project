@@ -1,5 +1,5 @@
 "use server";
-import { orderColumns } from "./_components/colunm";
+import { orderColumns } from "./_components/column";
 import OrderIndex from "./_components";
 import { getAllOrders } from "@/apis/order";
 
